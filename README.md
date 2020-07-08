@@ -8,4 +8,4 @@ Load data from the skale chain via the [RPC snapshot endpoint](https://github.co
 
 ## Starting the dev environment:
 
-`docker-compose up -d`
+`make start`
