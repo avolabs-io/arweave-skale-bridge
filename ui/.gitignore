@@ -1,9 +1,3 @@
-.DS_Store
+lib/
+*.bs.js
 .merlin
-.bsb.lock
-npm-debug.log
-lib/bs
-node_modules
-bundleOutput
-dist
-*.local

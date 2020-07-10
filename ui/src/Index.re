@@ -1,3 +1,6 @@
-[%%raw "import './index.css'"];
-
-ReactDOMRe.renderToElementWithId(<App />, "root");
+ReactDOMRe.renderToElementWithId(
+  <ApolloClient.React.ApolloProvider client=Client.instance>
+    <App />
+  </ApolloClient.React.ApolloProvider>,
+  "root",
+);

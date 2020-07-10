@@ -1,34 +1,40 @@
 {
-    "name": "vite-reason-react-starter",
-    "reason": {
-        "react-jsx": 3
-    },
-    "sources": {
-        "dir": "src",
-        "subdirs": true
-    },
-    "bsc-flags": [
-        "-bs-super-errors",
-        "-bs-no-version-header"
-    ],
-    "package-specs": [
-        {
-            "module": "es6",
-            "in-source": true
-        }
-    ],
-    "suffix": ".bs.js",
-    "namespace": true,
-    "bs-dependencies": [
-        "reason-react"
-    ],
-    "refmt": 3
-    // You can uncomment the next warnings sections to get a stricter compilation.
-    // e.g: fail compilation on non exhaustive pattern matches and other goodies.
-    // For more information please refer to this blog post:
-    // https://dev.to/yawaramin/ocaml-reasonml-best-practice-warnings-and-errors-4mkm
-    //   "warnings": {
-    //     "number": "+A-48",
-    //     "error": "+A-3-44-102"
-    //   }
+  "name": "examples",
+  "graphql": {
+    "extend-mutation": "ApolloClient.GraphQL_PPX.ExtendMutation",
+    "extend-query": "ApolloClient.GraphQL_PPX.ExtendQuery",
+    "extend-subscription": "ApolloClient.GraphQL_PPX.ExtendSubscription"
+  },
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "ppx-flags": [
+    [
+      "@reasonml-community/graphql-ppx/ppx",
+      "-template-tag=ApolloClient.GraphQL_PPX.templateTagReturnType",
+      "-template-tag-import=gql",
+      "-template-tag-location=@apollo/client"
+    ]
+  ],
+  "reason": {
+    "react-jsx": 3
+  },
+  "refmt": 3,
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "bs-dependencies": [
+    "@jeddeloh/reason-apollo-client",
+    "@reasonml-community/graphql-ppx",
+    "@yawaramin/prometo",
+    "reason-promise",
+    "reason-react"
+  ]
 }
