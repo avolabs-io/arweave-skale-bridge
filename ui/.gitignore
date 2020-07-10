@@ -1,3 +1,6 @@
 lib/
 *.bs.js
 .merlin
+.bsb.lock
+graphql_schema.json.hash
+graphql_schema.json.marshaled
