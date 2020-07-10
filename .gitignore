@@ -1,4 +1,4 @@
 config/*
 !config/config.json
-
+yarn-error.log
 node_modules

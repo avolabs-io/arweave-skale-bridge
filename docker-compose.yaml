@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.6"
 services:
   run:
     volumes:
@@ -11,7 +11,45 @@ services:
       - DATA_DIR=/data_dir
       - OPTIONS= --http-port 1234 --ws-port 1233 --config /config.json -d /data_dir --ipcpath /data_dir -v 3 --web3-trace --enable-debug-behavior-apis --aa no
     image: skalenetwork/schain:1.46-develop.27
-# volumes:
-# data_dir: "/data_dir:/home/jasoons/Documents/skale/arweave-skale-bridge/data_dir"
+  hasura-actions:
+    build: ./actions
+    ports:
+      - "${ACTIONS_PORT_EXTERNAL}:${ACTIONS_PORT}"
+    environment:
+      PORT: ${ACTIONS_PORT}
+    command: ${ACTIONS_START_COMMAND}
+    restart: always
+  postgres:
+    # container_name: hasura-postgres
+    image: postgres:12
+    restart: always
+    ports:
+      - "${POSTGRES_EXTERNAL_PORT}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  graphql-engine:
+    # container_name: hasura-graphql-engine
+    image: hasura/graphql-engine:latest
+    # image: hasura/graphql-engine:v1.2.0
+    ports:
+      - "${HASURA_EXTERNAL_PORT}:8080"
+    volumes:
+      # - ./wildcards/metadata:/hasura-metadata
+      - ./wildcards/migrations:/hasura-migrations
+    depends_on:
+      - "postgres"
+      - "hasura-actions"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_NO_OF_RETRIES: 10
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
+      # HASURA_GRAPHQL_JWT_SECRET: '{"type": "RS512", "key": "-----BEGIN CERTIFICATE-----\nMIIDCTCCAfGgAwIBAgIJOdJoI1EOl9+vMA0GCSqGSIb3DQEBCwUAMCIxIDAeBgNV\nBAMTF3Rlc3Rpbmctd2MuZXUuYXV0aDAuY29tMB4XDTIwMDQyNzE1NDEzNFoXDTM0\nMDEwNDE1NDEzNFowIjEgMB4GA1UEAxMXdGVzdGluZy13Yy5ldS5hdXRoMC5jb20w\nggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDKNSR31KbAUFerabOGyi0m\nWKy8Jg9/3WgpCg9OhlpJioRzfIt16K7mexcLiHpr9uUp1OzOzrNKqB+QZDmPHTB7\nceXDA7fICRaK9iXxM9v2hTnpoEAgjtzKGXICh5WYfYViKygGnvcgAXsgB5nImC/E\n0PlPU8hRRYzUuE3jWJWX/Mk/VPsO4jnscCWNZ22c5mNBnP11WZhuEeJIJWsuqeww\nklmnii0Kph8uEH5B7smU+KSvsSUMDvp9uHHrgtPCHkatCNvZqofDGF7eHqote4qE\nJq/vAWnVZ+qOGKDlqgmjUZZ4fNdgPldVGRJug++Wvr4R0IjCanRPpKw9WoZ4JTL9\nAgMBAAGjQjBAMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFC8LofSbWxiV05KA\nXQQ0jjM/vUQaMA4GA1UdDwEB/wQEAwIChDANBgkqhkiG9w0BAQsFAAOCAQEACEJd\n2DA8twhq2S5DmS3MsMCksl5BPnpT9hDKjEdJyu1tlC/vjULFbQiVECQTaJj4vI2V\nHtTyrEezVmmt2wR1tfdmDbPdiO6hKEuCOlArViz4MMvCvSCW5LkUlYGZW/gZw8SJ\ngPt3nCNC4f7bHXGoaBgCtvK+mF+7tZPgMh1gjiGnFaeY5D7dENPiy+Gb/lvqPXuQ\neYf/Bmxut/M644bDGI1ad6PBSvdqcVeO80Q0ODykBMQk4+PsDPy5b8zqcTRGTcz4\nnvXG3cwcFqsirrEKGQ6xGhAgmdGwLchdUkYEBlkTOOsGPOkEaBmoOI3trF0IDBLz\nl1xGg60lmC71CFRNjA==\n-----END CERTIFICATE-----"}'
 volumes:
+  db_data:
   data_dir:
