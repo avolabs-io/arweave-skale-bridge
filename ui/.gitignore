@@ -1,4 +1,4 @@
-lib/
+lib/bs
 *.bs.js
 .merlin
 .bsb.lock
