@@ -1,0 +1,66 @@
+version: 2
+tables:
+- table:
+    schema: public
+    name: arweave_endpoint
+  object_relationships:
+  - name: user
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: user
+        column_mapping:
+          user_id: id
+- table:
+    schema: public
+    name: arweave_key
+  object_relationships:
+  - name: user
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: user
+        column_mapping:
+          user_id: id
+- table:
+    schema: public
+    name: skale_end_point
+  object_relationships:
+  - name: user
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: user
+        column_mapping:
+          user_id: id
+- table:
+    schema: public
+    name: user
+  array_relationships:
+  - name: arweave_endpoints
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: arweave_endpoint
+        column_mapping:
+          id: user_id
+  - name: arweave_keys
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: arweave_key
+        column_mapping:
+          id: user_id
+  - name: skale_endpoints
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: skale_end_point
+        column_mapping:
+          id: user_id

@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "public"."user"("id" text NOT NULL, PRIMARY KEY ("id") , UNIQUE
+      ("id"));
+  type: run_sql
+- args:
+    name: user
+    schema: public
+  type: add_existing_table_or_view

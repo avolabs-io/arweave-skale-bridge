@@ -1,0 +1,13 @@
+- args:
+    name: arweave_endpoints
+    table:
+      name: user
+      schema: public
+    using:
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        remote_table:
+          name: arweave_endpoint
+          schema: public
+  type: create_array_relationship

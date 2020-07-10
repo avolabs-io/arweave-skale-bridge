@@ -1,0 +1,6 @@
+- args:
+    relationship: user
+    table:
+      name: arweave_endpoint
+      schema: public
+  type: drop_relationship
