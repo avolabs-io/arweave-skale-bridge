@@ -3,25 +3,32 @@
 import * as React from "react";
 import * as Router from "./Router.bs.js";
 import * as NotFound from "./components/NotFound.bs.js";
-import * as GqlExamples from "./gql-exampls/GqlExamples.bs.js";
+import * as LoginJs from "./login.js";
+
+var make = LoginJs.default;
+
+var LoginScreen = {
+  make: make
+};
 
 function App(Props) {
   var route = Router.useRouter(undefined);
   if (route !== undefined) {
     if (route) {
-      return React.createElement(GqlExamples.make, {});
-    } else {
       return React.createElement("p", undefined, "MAIN");
+    } else {
+      return React.createElement(make, {});
     }
   } else {
     return React.createElement(NotFound.make, {});
   }
 }
 
-var make = App;
+var make$1 = App;
 
 export {
-  make ,
+  LoginScreen ,
+  make$1 as make,
   
 }
-/* react Not a pure module */
+/* make Not a pure module */

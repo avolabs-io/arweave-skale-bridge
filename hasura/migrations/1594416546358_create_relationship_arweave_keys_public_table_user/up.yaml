@@ -1,7 +1,7 @@
 - args:
     name: arweave_keys
     table:
-      name: user
+      name: bridge_user
       schema: public
     using:
       manual_configuration:

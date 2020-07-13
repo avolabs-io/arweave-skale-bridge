@@ -1,0 +1,8 @@
+- args:
+    definition:
+      forward_client_headers: false
+      headers: []
+      timeout_seconds: 60
+      url: https://api.graph.cool/simple/v1/cjdgba1jw4ggk0185ig4bhpsn
+    name: gql_example_test_endpoint
+  type: add_remote_schema

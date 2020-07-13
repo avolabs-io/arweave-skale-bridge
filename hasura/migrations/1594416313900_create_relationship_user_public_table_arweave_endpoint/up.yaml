@@ -1,5 +1,5 @@
 - args:
-    name: user
+    name: bridge_user
     table:
       name: arweave_endpoint
       schema: public
@@ -8,6 +8,6 @@
         column_mapping:
           user_id: id
         remote_table:
-          name: user
+          name: bridge_user
           schema: public
   type: create_object_relationship

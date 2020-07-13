@@ -1,10 +1,11 @@
 - args:
     cascade: false
     read_only: false
-    sql: CREATE TABLE "public"."user"("id" text NOT NULL, PRIMARY KEY ("id") , UNIQUE
+    sql:
+      CREATE TABLE "public"."bridge_user"("id" text NOT NULL, PRIMARY KEY ("id") , UNIQUE
       ("id"));
   type: run_sql
 - args:
-    name: user
+    name: bridge_user
     schema: public
   type: add_existing_table_or_view

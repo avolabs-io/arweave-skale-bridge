@@ -1,10 +1,14 @@
-let graphqlEndpoint = "api.graph.cool/simple/v1/cjdgba1jw4ggk0185ig4bhpsn";
+let headers = {"x-hasura-admin-secret": "testing"};
+// let headers = {"X-Hasura-User-ID": "jason", "X-Hasura-Role": "user"};
 
-let headers = {"high": "five"};
+[@bs.val]
+external graphqlEndpoint: string = "process.env.REACT_APP_GRAPHQL_ENDPOINT";
+[@bs.val] external isHttpsEnv: string = "process.env.REACT_APP_IS_HTTPS";
+let isHttps = isHttpsEnv == "true";
 
 let httpLink =
   ApolloClient.Link.HttpLink.make(
-    ~uri=_ => "https://" ++ graphqlEndpoint,
+    ~uri=_ => (isHttps ? "https://" : "http://") ++ graphqlEndpoint,
     ~credentials="include",
     ~headers=Obj.magic(headers),
     (),
@@ -13,7 +17,7 @@ let httpLink =
 let wsLink =
   ApolloClient.Link.WebSocketLink.(
     make(
-      ~uri="wss://" ++ graphqlEndpoint,
+      ~uri=(isHttps ? "wss://" : "ws://") ++ graphqlEndpoint,
       ~options=
         ClientOptions.make(
           ~connectionParams=

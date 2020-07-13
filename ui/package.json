@@ -15,7 +15,8 @@
     "start": "react-scripts start",
     "ui:build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "update-schema": "npx get-graphql-schema http://localhost:8080/v1/graphql -j > graphql_schema.json"
   },
   "devDependencies": {
     "@reasonml-community/graphql-ppx": "^1.0.0-beta.18",
@@ -29,6 +30,7 @@
     "@jeddeloh/reason-apollo-client": "^0.0.1-alpha.3",
     "@yawaramin/prometo": "0.11.0",
     "graphql": "^14.0.0",
+    "onegraph-auth": "^2.2.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "reason-promise": "1.1.1",

@@ -1,5 +1,5 @@
 - args:
-    relationship: user
+    relationship: bridge_user
     table:
       name: skale_end_point
       schema: public

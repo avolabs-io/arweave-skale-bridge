@@ -31,7 +31,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   graphql-engine:
     # container_name: hasura-graphql-engine
-    image: hasura/graphql-engine:latest
+    image: hasura/graphql-engine:v1.3.0-beta.4
+    # image: hasura/graphql-engine:latest
     # image: hasura/graphql-engine:v1.2.0
     ports:
       - "${HASURA_EXTERNAL_PORT}:8080"

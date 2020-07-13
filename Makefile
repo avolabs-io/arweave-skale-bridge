@@ -20,11 +20,11 @@ actions-logs:
 
 .PHONY: stop-dev
 stop-dev:
-	docker-compose down
+	docker-compose -p hasura down
 
 .PHONY: stop-dev
 hard-restart-dev:
-	docker-compose down -v
+	docker-compose -p hasura down -v
 	make start-dev
 
 .PHONY: restart-dev

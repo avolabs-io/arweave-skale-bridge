@@ -1,5 +1,5 @@
 - args:
-    relationship: user
+    relationship: bridge_user
     table:
       name: arweave_key
       schema: public

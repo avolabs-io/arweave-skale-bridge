@@ -4,41 +4,45 @@ tables:
     schema: public
     name: arweave_endpoint
   object_relationships:
-  - name: user
+  - name: bridge_user
     using:
       manual_configuration:
         remote_table:
           schema: public
-          name: user
+          name: bridge_user
         column_mapping:
           user_id: id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - user_id
+      - uri
+      filter: {}
 - table:
     schema: public
     name: arweave_key
   object_relationships:
-  - name: user
+  - name: bridge_user
     using:
       manual_configuration:
         remote_table:
           schema: public
-          name: user
+          name: bridge_user
         column_mapping:
           user_id: id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - pub_key
+      - priv_key
+      - user_id
+      filter: {}
 - table:
     schema: public
-    name: skale_end_point
-  object_relationships:
-  - name: user
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: user
-        column_mapping:
-          user_id: id
-- table:
-    schema: public
-    name: user
+    name: bridge_user
   array_relationships:
   - name: arweave_endpoints
     using:
@@ -64,3 +68,52 @@ tables:
           name: skale_end_point
         column_mapping:
           id: user_id
+  insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+      - id
+      backend_only: false
+  select_permissions:
+  - role: any
+    permission:
+      columns:
+      - id
+      filter: {}
+  - role: user
+    permission:
+      columns:
+      - id
+      filter: {}
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      filter: {}
+      check: null
+  delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+- table:
+    schema: public
+    name: skale_end_point
+  object_relationships:
+  - name: bridge_user
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: bridge_user
+        column_mapping:
+          user_id: id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - user_id
+      - uri
+      filter: {}
