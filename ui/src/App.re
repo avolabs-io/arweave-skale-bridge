@@ -1,5 +1,5 @@
 module LoginScreen = {
-  [@bs.module "./login.js"] [@react.component]
+  [@bs.module "./deprecated/login.js"] [@react.component]
   external make: unit => React.element = "default";
 };
 
@@ -9,10 +9,11 @@ let make = () => {
 
   // <NotFound />;
   switch (route) {
+  // | Some(Main) => <p> "MAIN"->React.string </p>
+  | Some(Config) => <Config />
   | Some(Main) => <LoginScreen />
   // | Some(Main) => <p> "MAIN"->React.string </p>
-  | Some(GqlExamplesPage) => <p> "MAIN"->React.string </p>
-  // | Some(GqlExamplesPage) => <GqlExamples />
+  | Some(GqlExamplesPage) => <GqlExamples />
   | None => <NotFound />
   };
 };

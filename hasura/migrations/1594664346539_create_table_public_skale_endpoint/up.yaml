@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "public"."skale_endpoint"("id" serial NOT NULL, "uri" text NOT
+      NULL, "user_id" text NOT NULL, PRIMARY KEY ("id") , UNIQUE ("id"));
+  type: run_sql
+- args:
+    name: skale_endpoint
+    schema: public
+  type: add_existing_table_or_view

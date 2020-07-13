@@ -1,0 +1,8 @@
+- args:
+    cascade: true
+    read_only: false
+    sql: |-
+      insert into bridge_user (id) values
+        ('jasoons'),
+        ('denhampreen');
+  type: run_sql

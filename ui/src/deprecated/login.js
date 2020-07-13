@@ -1,3 +1,4 @@
+// TODO: this uses onegraph for login, which is convenient. Unfortunately it had some bugs!
 import OneGraphAuth from "onegraph-auth";
 
 import React, { Component } from "react";

@@ -1,0 +1,16 @@
+- args:
+    hasura_fields:
+    - user_id
+    name: github_user_id
+    remote_field:
+      gitHub:
+        arguments: {}
+        field:
+          user:
+            arguments:
+              login: $user_id
+    remote_schema: onegraph
+    table:
+      name: skale_endpoint
+      schema: public
+  type: create_remote_relationship
