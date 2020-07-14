@@ -1,0 +1,11 @@
+- args:
+    name: onegraph
+  type: remove_remote_schema
+- args:
+    definition:
+      forward_client_headers: false
+      headers: []
+      timeout_seconds: 60
+      url: https://serve.onegraph.com/graphql?app_id=80d287f5-a514-46ca-a17a-caa263b8e2cb
+    name: onegraph
+  type: add_remote_schema

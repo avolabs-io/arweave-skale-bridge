@@ -75,19 +75,6 @@ tables:
 - table:
     schema: public
     name: skale_endpoint
-  remote_relationships:
-  - definition:
-      remote_field:
-        gitHub:
-          field:
-            user:
-              arguments:
-                login: $user_id
-          arguments: {}
-      hasura_fields:
-      - user_id
-      remote_schema: onegraph
-    name: github_user_id
 remote_schemas:
 - name: gql_example_test_endpoint
   definition:
@@ -97,3 +84,4 @@ remote_schemas:
   definition:
     url: https://serve.onegraph.com/graphql?app_id=80d287f5-a514-46ca-a17a-caa263b8e2cb
     timeout_seconds: 60
+    forward_client_headers: true

@@ -7,13 +7,14 @@ module LoginScreen = {
 let make = () => {
   let route = Router.useRouter();
 
-  // <NotFound />;
-  switch (route) {
-  // | Some(Main) => <p> "MAIN"->React.string </p>
-  | Some(Config) => <Config />
-  | Some(Main) => <LoginScreen />
-  // | Some(Main) => <p> "MAIN"->React.string </p>
-  | Some(GqlExamplesPage) => <GqlExamples />
-  | None => <NotFound />
-  };
+  <Login>
+    {switch (route) {
+     // | Some(Main) => <p> "MAIN"->React.string </p>
+     | Some(Config) => <Config />
+     | Some(Main) => <LoginScreen />
+     // | Some(Main) => <p> "MAIN"->React.string </p>
+     | Some(GqlExamplesPage) => <GqlExamples />
+     | None => <NotFound />
+     }}
+  </Login>;
 };

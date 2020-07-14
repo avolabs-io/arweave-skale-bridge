@@ -1,0 +1,6 @@
+- args:
+    name: github_user_id
+    table:
+      name: skale_endpoint
+      schema: public
+  type: delete_remote_relationship
