@@ -15,7 +15,7 @@ module AddSkaleEndpointMutation = [%graphql
 
 module GetUserSkaleEndpointsQuery = [%graphql
   {|
-  query MyQuery {
+  query EndpointQuery {
     skale_endpoint {
       uri
       user_id
@@ -83,9 +83,9 @@ let make = () => {
   LoginManager.setUser("jasoons"); /* ONLY HERE FOR TESTING PURPOSES */
 
   // TODO: if the user has zero endpoints maybe it should be true by default?
-  let (showEditSkaleEndpoints, setShowEditSkaleEndpoints) =
+  let (showEditArweaveEndpoints, setShowEditArweaveEndpoints) =
     React.useState(() => false);
-  let (selectedSkaleEndpoint, setSelectedSkaleEndpoint) =
+  let (selectedArweaveEndpoint, setSelectedArweaveEndpoint) =
     React.useState(() => "");
   // TODO: if the user has zero endpoints maybe it should be true by default?
   let (showEditSkaleEndpoints, setShowEditSkaleEndpoints) =
@@ -93,7 +93,7 @@ let make = () => {
   let (selectedSkaleEndpoint, setSelectedSkaleEndpoint) =
     React.useState(() => "");
 
-  let queryResult =
+  let skaleEndpointsQueryResult =
     GetUserSkaleEndpointsQuery.use(
       ~fetchPolicy=CacheAndNetwork,
       ~errorPolicy=All,
@@ -103,7 +103,7 @@ let make = () => {
   <div>
     <h3> "Select the desired skale endpoint"->React.string </h3>
     <div>
-      {switch (queryResult) {
+      {switch (skaleEndpointsQueryResult) {
        | {loading: true, data: None} => <p> "Loading"->React.string </p>
        | {loading, data: Some(data), error} =>
          <>
@@ -153,7 +153,7 @@ let make = () => {
      }}
     <h3> "Select the desired arweave endpoint"->React.string </h3>
     <div>
-      {switch (queryResult) {
+      {switch (skaleEndpointsQueryResult) {
        | {loading: true, data: None} => <p> "Loading"->React.string </p>
        | {loading, data: Some(data), error} =>
          <>

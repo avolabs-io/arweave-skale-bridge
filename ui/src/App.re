@@ -11,8 +11,8 @@ let make = () => {
     {switch (route) {
      // | Some(Main) => <p> "MAIN"->React.string </p>
      | Some(Config) => <Config />
-     | Some(Main) => <LoginScreen />
-     // | Some(Main) => <p> "MAIN"->React.string </p>
+     //  | Some(Main) => <LoginScreen />
+     | Some(Main) => <p> "MAIN"->React.string </p>
      | Some(GqlExamplesPage) => <GqlExamples />
      | None => <NotFound />
      }}
