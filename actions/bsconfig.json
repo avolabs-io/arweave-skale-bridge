@@ -1,19 +1,46 @@
 {
   "name": "skale-arweave-bridge-actions",
-  "version": "0.1.0",
-  "sources": {
-    "dir": "src",
-    "subdirs": true
+  "graphql": {
+    "extend-mutation": "ApolloClient.GraphQL_PPX.ExtendMutation",
+    "extend-query": "ApolloClient.GraphQL_PPX.ExtendQuery",
+    "extend-subscription": "ApolloClient.GraphQL_PPX.ExtendSubscription"
   },
-  "package-specs": {
-    "module": "commonjs",
-    "in-source": true
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "ppx-flags": [
+    [
+      "@reasonml-community/graphql-ppx/ppx",
+      "-template-tag=ApolloClient.GraphQL_PPX.templateTagReturnType",
+      "-template-tag-import=gql",
+      "-template-tag-location=@apollo/client"
+    ],
+    "decco/ppx",
+    "bs-let/ppx"
+  ],
+  "reason": {
+    "react-jsx": 3
   },
+  "refmt": 3,
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    }
+  ],
   "suffix": ".bs.js",
-  "bs-dependencies": ["bs-express", "decco", "serbet", "bs-fetch"],
-  "ppx-flags": ["decco/ppx", "bs-let/ppx", "@baransu/graphql_ppx_re/ppx"],
-  "warnings": {
-    "error": "+101"
-  },
-  "refmt": 3
+  "bs-dependencies": [
+    "@jeddeloh/reason-apollo-client",
+    "bs-express",
+    "decco",
+    "serbet",
+    "bs-fetch",
+    "@reasonml-community/graphql-ppx",
+    // "@yawaramin/prometo",
+    // "reason-promise",
+    "reason-react" // This is needed by apollo probably... Don't use in code
+  ]
 }

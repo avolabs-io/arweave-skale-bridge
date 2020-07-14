@@ -10,25 +10,27 @@
     "re:clean": "bsb -clean-world",
     "start": "node ./src/index.js",
     "watch": "nodemon ./src/index.js",
-    "generate-ppx-schema": "gqlschema http://localhost:8080 -i -o graphql_schema.json"
+    "update-schema": "npx get-graphql-schema http://localhost:8080/v1/graphql -h 'x-hasura-admin-secret=testing' -j > graphql_schema.json"
   },
   "devDependencies": {
-    "@baransu/graphql_ppx_re": "^1.0.0-beta.9",
+    "@reasonml-community/graphql-ppx": "^1.0.0-beta.18",
     "bs-let": "^0.1.16",
-    "bs-platform": "^7.3.2",
+    "bs-platform": "^8.0.3",
     "decco": "^1.2.1",
     "dotenv": "^8.2.0",
-    "graphql": "^15.1.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
-    "apollo-client": "^2.6.10",
-    "apollo-link-http": "^1.5.17",
-    "apollo-link-ws": "^1.0.20",
+    "@apollo/client": "^3.0.0-rc.6",
+    "@apollo/link-ws": "^2.0.0-beta.3",
+    "@jeddeloh/reason-apollo-client": "^0.0.1-alpha.3",
     "bs-express": "^1.0.1",
     "bs-fetch": "^0.6.1",
+    "graphql": "^14.0.0",
     "graphql-tag": "^2.10.3",
     "isomorphic-fetch": "^2.2.1",
+    "react": "^16.13.1",
+    "reason-react": "^0.9.1",
     "serbet": "^0.4.0",
     "subscriptions-transport-ws": "^0.9.16"
   }
