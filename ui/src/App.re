@@ -1,5 +1,3 @@
-[%raw "require('./css/globals.css')"];
-
 module LoginScreen = {
   [@bs.module "./deprecated/login.js"] [@react.component]
   external make: unit => React.element = "default";
@@ -8,15 +6,16 @@ module LoginScreen = {
 [@react.component]
 let make = () => {
   let route = Router.useRouter();
-
-  <Login>
-    {switch (route) {
-     // | Some(Main) => <p> "MAIN"->React.string </p>
-     | Some(Config) => <Config />
-     //  | Some(Main) => <LoginScreen />
-     | Some(Main) => <p> "MAIN"->React.string </p>
-     | Some(GqlExamplesPage) => <GqlExamples />
-     | None => <NotFound />
-     }}
-  </Login>;
+  <div className="app">
+    <Login>
+      {switch (route) {
+       // | Some(Main) => <p> "MAIN"->React.string </p>
+       | Some(Config) => <Config />
+       //  | Some(Main) => <LoginScreen />
+       | Some(Main) => <p> ""->React.string </p>
+       | Some(GqlExamplesPage) => <GqlExamples />
+       | None => <NotFound />
+       }}
+    </Login>
+  </div>;
 };

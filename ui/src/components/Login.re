@@ -74,11 +74,17 @@ let make = (~children) => {
     ->ignore;
     ();
   };
-  <div>
-    <button onClick> "Login with Github"->React.string </button>
-    {isLoggedIn
-       ? <p> "logged in"->React.string </p>
-       : <p> "Not logged in"->React.string </p>}
-    children
+  <div className="login">
+    <div> <img /> </div>
+    <button onClick className="login-button">
+      "LOGIN WITH GITHUB"->React.string
+      <img src="./assets/github.svg" className="gh-icon" />
+    </button>
+    <code data="debug" className="code-block">
+      {isLoggedIn
+         ? <p> "logged in"->React.string </p>
+         : <p> "Not logged in"->React.string </p>}
+      children
+    </code>
   </div>;
 };

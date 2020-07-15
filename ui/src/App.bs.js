@@ -8,8 +8,6 @@ import * as NotFound from "./components/NotFound.bs.js";
 import * as GqlExamples from "./gql-exampls--reference-only/GqlExamples.bs.js";
 import * as LoginJs from "./deprecated/login.js";
 
-((require('./css/globals.css')));
-
 var make = LoginJs.default;
 
 var LoginScreen = {
@@ -22,7 +20,7 @@ function App(Props) {
   if (route !== undefined) {
     switch (route) {
       case /* Main */0 :
-          tmp = React.createElement("p", undefined, "MAIN");
+          tmp = React.createElement("p", undefined, "");
           break;
       case /* Config */1 :
           tmp = React.createElement(Config.make, {});
@@ -35,9 +33,11 @@ function App(Props) {
   } else {
     tmp = React.createElement(NotFound.make, {});
   }
-  return React.createElement(Login.make, {
-              children: tmp
-            });
+  return React.createElement("div", {
+              className: "app"
+            }, React.createElement(Login.make, {
+                  children: tmp
+                }));
 }
 
 var make$1 = App;
@@ -47,4 +47,4 @@ export {
   make$1 as make,
   
 }
-/*  Not a pure module */
+/* make Not a pure module */

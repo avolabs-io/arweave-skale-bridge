@@ -1,4 +1,4 @@
-[%raw "require('./css/global.css')"];
+[%raw "require('./styles/css/global.css')"];
 
 ReactDOMRe.renderToElementWithId(
   <RootProvider>

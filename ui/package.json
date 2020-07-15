@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "run-p re:watch terminal-start",
     "build": "run-s re:build ui:build",
-    "vite:serve": "vite",
-    "vite:build": "vite build",
+    "scss-dev": "node-sass --watch src/styles/scss -o src/styles/css",
+    "scss": "node-sass src/styles/scss -o src/styles/css",
     "re:build": "bsb -make-world -clean-world",
     "re:watch": "bsb -make-world -clean-world -w",
     "re:clean": "bsb -clean-world",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@reasonml-community/graphql-ppx": "^1.0.0-beta.18",
     "bs-platform": "^8.0.3",
+    "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "react-scripts": "^3.4.1"
   },
