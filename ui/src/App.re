@@ -1,3 +1,5 @@
+[%raw "require('./css/globals.css')"];
+
 module LoginScreen = {
   [@bs.module "./deprecated/login.js"] [@react.component]
   external make: unit => React.element = "default";

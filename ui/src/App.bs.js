@@ -8,6 +8,8 @@ import * as NotFound from "./components/NotFound.bs.js";
 import * as GqlExamples from "./gql-exampls--reference-only/GqlExamples.bs.js";
 import * as LoginJs from "./deprecated/login.js";
 
+((require('./css/globals.css')));
+
 var make = LoginJs.default;
 
 var LoginScreen = {
@@ -45,4 +47,4 @@ export {
   make$1 as make,
   
 }
-/* make Not a pure module */
+/*  Not a pure module */
