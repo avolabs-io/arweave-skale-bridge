@@ -71,15 +71,22 @@ let make = (~children) => {
     ();
   };
   <div className="login">
-    <div> <img src="./assets/skale-arweave.svg" /> </div>
-    <button onClick className="login-button">
-      "LOGIN WITH GITHUB"->React.string
-      <img src="./assets/github.svg" className="gh-icon" />
-    </button>
-    <code data="debug" className="code-block">
-      // {isLoggedIn
-      //    ? <p> "logged in"->React.string </p>
-      //    : <p> "Not logged in"->React.string </p>}
-       children </code>
+    {!isLoggedIn
+       //TODO: !isLoggedIn
+       ? <React.Fragment>
+           <div> <img src="./assets/skale-arweave.svg" /> </div>
+           <button onClick className="login-button">
+             "LOGIN WITH GITHUB"->React.string
+             <img src="./assets/github.svg" className="gh-icon" />
+           </button>
+         </React.Fragment>
+       // <code
+       //   data="debug"
+       //   className="code-block"
+       //   // {isLoggedIn
+       //   //    ? <p> "logged in"->React.string </p>
+       //   //    : <p> "Not logged in"->React.string </p>}
+       // />
+       : <React.Fragment> children </React.Fragment>}
   </div>;
 };

@@ -4,9 +4,9 @@
   "description": "Examples for reason-apollo-client",
   "private": true,
   "scripts": {
-    "dev": "run-p re:watch terminal-start",
+    "dev": "run-p re:watch terminal-start scss-dev",
     "build": "run-s re:build ui:build",
-    "scss-dev": "node-sass --watch src/styles/scss -o src/styles/css",
+    "scss-dev": "node-sass --watch src/styles/scss -o src/styles/css -q",
     "scss": "node-sass src/styles/scss -o src/styles/css",
     "re:build": "bsb -make-world -clean-world",
     "re:watch": "bsb -make-world -clean-world -w",

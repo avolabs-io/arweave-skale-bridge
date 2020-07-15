@@ -100,7 +100,7 @@ let make = () => {
       GetUserSkaleEndpointsQuery.makeVariables(),
     );
 
-  <div>
+  <div className="configuration">
     <h3> "Select the desired skale endpoint"->React.string </h3>
     <div>
       {switch (skaleEndpointsQueryResult) {
