@@ -7,6 +7,11 @@ import * as ReactDOMRe from "reason-react/src/legacy/ReactDOMRe.bs.js";
 import * as RootProvider from "./providers/RootProvider.bs.js";
 import * as Client$1 from "@apollo/client";
 
+<<<<<<< HEAD
+=======
+((require('./css/global.css')));
+
+>>>>>>> origin/code-share
 ReactDOMRe.renderToElementWithId(React.createElement(RootProvider.make, {
           children: React.createElement(Client$1.ApolloProvider, {
                 client: Client.instance,

@@ -1,3 +1,5 @@
+[%raw "require('./css/global.css')"];
+
 ReactDOMRe.renderToElementWithId(
   <RootProvider>
     <ApolloClient.React.ApolloProvider client=Client.instance>
