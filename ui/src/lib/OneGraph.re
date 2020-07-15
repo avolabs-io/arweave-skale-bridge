@@ -1,11 +1,11 @@
-[@bs.deriving jsConverter]
+// [@bs.deriving jsConverter]
 type logins = string; //[ | `github | `youtube | `facebook];
-type apiAuthHeaders;
+// type apiAuthHeaders;
 type authConstructorArgs = {appId: string};
 type t = {
   login: (. logins) => Js.Promise.t(unit),
   isLoggedIn: (. logins) => Js.Promise.t(bool),
-  authHeaders: (. unit) => apiAuthHeaders,
+  authHeaders: (. unit) => RootProvider.authHeader,
 };
 [@bs.module "onegraph-auth"] [@bs.new]
 external initialize: authConstructorArgs => t = "default";

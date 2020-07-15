@@ -16,17 +16,6 @@ module MeQuery = [%graphql
    |}
 ];
 
-module PeopleQuery = [%graphql
-  {|
-  query PeopleQuery {
-    people: allPersons {
-      id
-      name
-    }
-  }
-|}
-];
-
 let getProfileInfo = () => {
   Client.instance
   ->ApolloClient.query(~query=(module MeQuery), ())
@@ -49,29 +38,31 @@ let getProfileInfo = () => {
 [@react.component]
 let make = (~children) => {
   let authObject = OneGraph.initialize({appId: appId});
-  let (isLoggedIn, setLoggedIn) = React.useState(_ => false);
-  let handleLoginStatusChange = loginStatus => {
-    if (loginStatus) {
-      Js.log(authObject.authHeaders(.));
-      getProfileInfo();
-    } else {
-      ();
-    };
-    setLoggedIn(_ => loginStatus);
-  };
+  let isLoggedIn = RootProvider.useIsLoggedIn();
+
   React.useEffect0(() => {
     Js.Promise.then_(
-      loginStatus => {handleLoginStatusChange(loginStatus)->async},
+      loginStatus => {
+        (loginStatus ? RootProvider.useLogin(authObject.authHeaders(.)) : ())
+        ->async
+      },
       authObject.isLoggedIn(. "github"),
     )
     ->ignore;
     None;
   });
+  // TODO: move more of this logic to the RootProvider.
   let onClick = _ => {
     Js.Promise.then_(
       _ => {
         Js.Promise.then_(
-          loginStatus => {handleLoginStatusChange(loginStatus)->async},
+          loginStatus => {
+            (
+              loginStatus
+                ? RootProvider.useLogin(authObject.authHeaders(.)) : ()
+            )
+            ->async
+          },
           authObject.isLoggedIn(. "github"),
         )
         ->ignore;
@@ -83,16 +74,6 @@ let make = (~children) => {
     ->ignore;
     ();
   };
-  /*
-     {
-     me {
-       github {
-         login
-         bio
-       }
-     }
-   }
-      */
   <div>
     <button onClick> "Login with Github"->React.string </button>
     {isLoggedIn

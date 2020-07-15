@@ -8,6 +8,11 @@ type rootContextType = {
   userName: string,
   authHeader,
 };
+type rootActions =
+  | LogOut
+  | Login(authHeader)
+  | LoadDetails(string, string);
+
 let defaultContext = {
   isLoggedIn: false,
   userId: "",
@@ -17,11 +22,6 @@ let defaultContext = {
   },
 };
 
-type rootActions =
-  | LogOut
-  | Login(authHeader)
-  | LoadDetails(string, string);
-
 let reducer = (prevState, action) =>
   switch (action) {
   | LogOut => defaultContext
@@ -29,15 +29,14 @@ let reducer = (prevState, action) =>
   | LoadDetails(userName, userId) => {...prevState, userName, userId}
   };
 
-let rootContext = React.createContext((defaultContext, _ => ()));
-
 module RootContext = {
+  let context = React.createContext((defaultContext, _ => ()));
   let makeProps = (~value, ~children, ()) => {
     "value": value,
     "children": children,
   };
 
-  let make = React.Context.provider(rootContext);
+  let make = React.Context.provider(context);
 };
 
 [@react.component]
@@ -46,3 +45,28 @@ let make = (~children) => {
 
   <RootContext value=(rootState, dispatch)> children </RootContext>;
 };
+
+let useLogout: unit => unit =
+  () => {
+    let (_, dispatch) = React.useContext(RootContext.context);
+    dispatch(LogOut);
+  };
+
+let useLogin: authHeader => unit =
+  authHeader => {
+    // calls OneGraph.login...
+    let (_, dispatch) = React.useContext(RootContext.context);
+    dispatch(Login(authHeader));
+  };
+
+let useLoadDetails: (string, string) => unit =
+  (userName, userId) => {
+    let (_, dispatch) = React.useContext(RootContext.context);
+    dispatch(LoadDetails(userName, userId));
+  };
+
+let useIsLoggedIn: unit => bool =
+  () => {
+    let (state, _) = React.useContext(RootContext.context);
+    state.isLoggedIn;
+  };
