@@ -52,12 +52,13 @@ let useLogout: unit => unit =
     dispatch(LogOut);
   };
 
-let useLogin: authHeader => unit =
+let useLogin = () => {
+  let (_, dispatch) = React.useContext(RootContext.context);
   authHeader => {
     // calls OneGraph.login...
-    let (_, dispatch) = React.useContext(RootContext.context);
     dispatch(Login(authHeader));
   };
+};
 
 let useLoadDetails: (string, string) => unit =
   (userName, userId) => {

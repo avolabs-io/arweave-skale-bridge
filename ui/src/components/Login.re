@@ -43,7 +43,8 @@ let make = (~children) => {
   React.useEffect0(() => {
     Js.Promise.then_(
       loginStatus => {
-        (loginStatus ? RootProvider.useLogin(authObject.authHeaders(.)) : ())
+        // (loginStatus ? RootProvider.useLogin(authObject.authHeaders(.)) : ())
+        ()
         ->async
       },
       authObject.isLoggedIn(. "github"),
@@ -56,13 +57,8 @@ let make = (~children) => {
     Js.Promise.then_(
       _ => {
         Js.Promise.then_(
-          loginStatus => {
-            (
-              loginStatus
-                ? RootProvider.useLogin(authObject.authHeaders(.)) : ()
-            )
-            ->async
-          },
+          // loginStatus => {RootProvider.useLogin()->async},
+          _ => ()->async,
           authObject.isLoggedIn(. "github"),
         )
         ->ignore;
@@ -75,16 +71,15 @@ let make = (~children) => {
     ();
   };
   <div className="login">
-    <div> <img /> </div>
+    <div> <img src="./assets/skale-arweave.svg" /> </div>
     <button onClick className="login-button">
       "LOGIN WITH GITHUB"->React.string
       <img src="./assets/github.svg" className="gh-icon" />
     </button>
     <code data="debug" className="code-block">
-      {isLoggedIn
-         ? <p> "logged in"->React.string </p>
-         : <p> "Not logged in"->React.string </p>}
-      children
-    </code>
+      // {isLoggedIn
+      //    ? <p> "logged in"->React.string </p>
+      //    : <p> "Not logged in"->React.string </p>}
+       children </code>
   </div>;
 };
