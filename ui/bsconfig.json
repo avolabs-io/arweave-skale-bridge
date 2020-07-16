@@ -17,7 +17,8 @@
       "-template-tag=ApolloClient.GraphQL_PPX.templateTagReturnType",
       "-template-tag-import=gql",
       "-template-tag-location=@apollo/client"
-    ]
+    ],
+    "bs-log/ppx"
   ],
   "reason": {
     "react-jsx": 3
@@ -35,6 +36,7 @@
     "@reasonml-community/graphql-ppx",
     "@yawaramin/prometo",
     "reason-promise",
-    "reason-react"
+    "reason-react",
+    "bs-log"
   ]
 }

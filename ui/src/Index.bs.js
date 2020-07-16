@@ -2,21 +2,27 @@
 
 import * as App from "./App.bs.js";
 import * as React from "react";
-import * as Client from "./Client.bs.js";
 import * as ReactDOMRe from "reason-react/src/legacy/ReactDOMRe.bs.js";
 import * as RootProvider from "./providers/RootProvider.bs.js";
-import * as Client$1 from "@apollo/client";
 
 ((require('./styles/css/global.css')));
 
+function Index$ApolloProvider(Props) {
+  return Props.children;
+}
+
+var ApolloProvider = {
+  make: Index$ApolloProvider
+};
+
 ReactDOMRe.renderToElementWithId(React.createElement(RootProvider.make, {
-          children: React.createElement(Client$1.ApolloProvider, {
-                client: Client.instance,
+          children: React.createElement(Index$ApolloProvider, {
                 children: React.createElement(App.make, {})
               })
         }), "root");
 
 export {
+  ApolloProvider ,
   
 }
 /*  Not a pure module */

@@ -9,7 +9,7 @@ external graphqlEndpoint: string = "process.env.REACT_APP_GRAPHQL_ENDPOINT";
 [@bs.val] external isHttpsEnv: string = "process.env.REACT_APP_IS_HTTPS";
 let isHttps = isHttpsEnv == "true";
 
-let httpLink =
+let httpLink = headers =>
   ApolloClient.Link.HttpLink.make(
     ~uri=_ => (isHttps ? "https://" : "http://") ++ graphqlEndpoint,
     ~credentials="include",
@@ -17,7 +17,7 @@ let httpLink =
     (),
   );
 
-let wsLink =
+let wsLink = headers =>
   ApolloClient.Link.WebSocketLink.(
     make(
       ~uri=(isHttps ? "wss://" : "ws://") ++ graphqlEndpoint,
@@ -32,7 +32,7 @@ let wsLink =
     )
   );
 
-let terminatingLink =
+let terminatingLink = headers =>
   ApolloClient.Link.split(
     ~test=
       ({query}) => {
@@ -43,39 +43,78 @@ let terminatingLink =
         | None => false
         };
       },
-    ~whenTrue=wsLink,
-    ~whenFalse=httpLink,
+    ~whenTrue=wsLink(headers),
+    ~whenFalse=httpLink(headers),
   );
 
-let instance =
-  ApolloClient.(
-    make(
-      ~cache=Cache.InMemoryCache.make(),
-      ~connectToDevTools=true,
-      ~defaultOptions=
-        DefaultOptions.make(
-          ~mutate=
-            DefaultMutateOptions.make(
-              ~awaitRefetchQueries=true,
-              ~fetchPolicy=NetworkOnly,
-              ~errorPolicy=All,
+// let instance =
+//   ApolloClient.(
+//     make(
+//       ~cache=Cache.InMemoryCache.make(),
+//       ~connectToDevTools=true,
+//       ~defaultOptions=
+//         DefaultOptions.make(
+//           ~mutate=
+//             DefaultMutateOptions.make(
+//               ~awaitRefetchQueries=true,
+//               ~fetchPolicy=NetworkOnly,
+//               ~errorPolicy=All,
+//               (),
+//             ),
+//           ~query=
+//             DefaultQueryOptions.make(
+//               ~fetchPolicy=NetworkOnly,
+//               ~errorPolicy=All,
+//               (),
+//             ),
+//           ~watchQuery=
+//             DefaultWatchQueryOptions.make(
+//               ~fetchPolicy=NetworkOnly,
+//               ~errorPolicy=All,
+//               (),
+//             ),
+//           (),
+//         ),
+//       ~link=terminatingLink,
+//       (),
+//     )
+//   );
+
+let useGlobalApolloInstance = () => {
+  let headers = RootProvider.useHeaders();
+  React.useMemo1(
+    () =>
+      ApolloClient.(
+        make(
+          ~cache=Cache.InMemoryCache.make(),
+          ~connectToDevTools=true,
+          ~defaultOptions=
+            DefaultOptions.make(
+              ~mutate=
+                DefaultMutateOptions.make(
+                  ~awaitRefetchQueries=true,
+                  ~fetchPolicy=NetworkOnly,
+                  ~errorPolicy=All,
+                  (),
+                ),
+              ~query=
+                DefaultQueryOptions.make(
+                  ~fetchPolicy=NetworkOnly,
+                  ~errorPolicy=All,
+                  (),
+                ),
+              ~watchQuery=
+                DefaultWatchQueryOptions.make(
+                  ~fetchPolicy=NetworkOnly,
+                  ~errorPolicy=All,
+                  (),
+                ),
               (),
             ),
-          ~query=
-            DefaultQueryOptions.make(
-              ~fetchPolicy=NetworkOnly,
-              ~errorPolicy=All,
-              (),
-            ),
-          ~watchQuery=
-            DefaultWatchQueryOptions.make(
-              ~fetchPolicy=NetworkOnly,
-              ~errorPolicy=All,
-              (),
-            ),
+          ~link=terminatingLink(headers),
           (),
-        ),
-      ~link=terminatingLink,
-      (),
-    )
+        )
+      ),
+    [|headers|],
   );
+};

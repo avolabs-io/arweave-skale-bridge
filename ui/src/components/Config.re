@@ -1,3 +1,5 @@
+open Globals;
+
 // TODO: enforce that the "user <-> uri" combination is unique. https://github.com/hasura/graphql-engine/issues/2200
 //       I had no luck first time I tried.
 module AddSkaleEndpointMutation = [%graphql
@@ -31,6 +33,7 @@ module EditSkaleEndpoint = {
     // TODO: allow removing endpoints.
     let (mutate, result) = AddSkaleEndpointMutation.use();
     let (newSkaleEndpoint, setNewSkaleEndpoint) = React.useState(() => "");
+    let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
 
     let onSubmit = _ =>
       mutate(
@@ -39,7 +42,7 @@ module EditSkaleEndpoint = {
         |],
         AddSkaleEndpointMutation.makeVariables(
           ~uri=newSkaleEndpoint,
-          ~userId=LoginManager.getUser(),
+          ~userId=usersIdDetails.login,
           (),
         ),
       )
@@ -80,8 +83,6 @@ module EditSkaleEndpoint = {
 
 [@react.component]
 let make = () => {
-  LoginManager.setUser("jasoons"); /* ONLY HERE FOR TESTING PURPOSES */
-
   // TODO: if the user has zero endpoints maybe it should be true by default?
   let (showEditArweaveEndpoints, setShowEditArweaveEndpoints) =
     React.useState(() => false);

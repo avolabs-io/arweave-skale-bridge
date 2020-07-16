@@ -1,21 +1,13 @@
-module LoginScreen = {
-  [@bs.module "./deprecated/login.js"] [@react.component]
-  external make: unit => React.element = "default";
-};
-
 [@react.component]
 let make = () => {
   let route = Router.useRouter();
   <div className="app">
-    <Login>
-      {switch (route) {
-       // | Some(Main) => <p> "MAIN"->React.string </p>
-       | Some(Config) => <Config />
-       //  | Some(Main) => <LoginScreen />
-       | Some(Main) => <p> ""->React.string </p>
-       | Some(GqlExamplesPage) => <GqlExamples />
-       | None => <NotFound />
-       }}
-    </Login>
+    {switch (route) {
+     | Some(Config) => <Login> <Config /> </Login>
+     | Some(Main) => <Login> <p> "Home page"->React.string </p> </Login>
+     | Some(About) => <About />
+     | Some(GqlExamplesPage) => <GqlExamples />
+     | None => <NotFound />
+     }}
   </div>;
 };
