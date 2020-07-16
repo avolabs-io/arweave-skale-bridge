@@ -68,45 +68,59 @@ let useLogout: unit => unit =
     dispatch(LogOut);
   };
 
-let loadProfileInfo = dispatch => {
-  // MeQuery.(
-  //   Client.instance
-  //   ->ApolloClient.query(~query=(module MeQuery), ())
-  //   // let {me} = onegraphResponse;
-  //   // dispatch(LoadDetails(userDataResponse.github.login, "b"))
-  //   // let {me} = userDataResponse->Obj.magic;
-  //   // let user = userDataResponse.user;
-  //   ->Js.Promise.then_(
-  //       (result: ApolloClient__ApolloClient.ApolloQueryResult.t(_)) => {
-  //         switch (result) {
-  //         | {data: Some({user: {github: Some({login, name, bio})}})} =>
-  //           ();
-  //           dispatch();
-  //         | _ =>
-  //           %log.error
-  //           "ERROR: user's info not found";
-  //           ();
-  //         };
-  //         ()->async;
-  //       },
-  //       _,
-  //     )
-  //   ->Js.Promise.catch(
-  //       error => {
-  //         [%log.error "ERROR: loading user's info"; ("error", error)];
-  //         ()->async;
-  //       },
-  //       _,
-  //     )
-  // );
-  ()
-  ->async;
+let useAuth = () => {
+  let (state, _) = React.useContext(RootContext.context);
+  state.authHeader;
+};
+let useHeaders = () => {
+  switch (useAuth()) {
+  | Some(authHeader) => {
+      "x-hasura-role": "user",
+      "Authorization": authHeader.auth,
+    }
+  | None => {"x-hasura-role": "public", "Authorization": ""}
+  };
+};
+
+let useLoadProfileInfo = () => {
+  let (_, dispatch) = React.useContext(RootContext.context);
+  let headers = useHeaders();
+  // TODO: this reloads a second hasura client. Rather turn this into a 'fetch' request. OR turn this into a hook directly (not a hook that returns a function).
+  let client = Client.useGlobalApolloInstance(headers);
+  () => {
+    MeQuery.(
+      client
+      ->ApolloClient.query(~query=(module MeQuery), ())
+      ->Js.Promise.then_(
+          (result: ApolloClient__ApolloClient.ApolloQueryResult.t(_)) => {
+            switch (result) {
+            | {data: Some({user: {github: Some(userDetails)}})} =>
+              Js.log("LOADED USERS DETAILS");
+              Js.log(userDetails);
+              dispatch(LoadDetails(userDetails));
+            | _ =>
+              %log.error
+              "ERROR: user's info not found";
+              ();
+            };
+            ()->async;
+          },
+          _,
+        )
+      ->Js.Promise.catch(
+          error => {
+            [%log.error "ERROR: loading user's info"; ("error", error)];
+            ()->async;
+          },
+          _,
+        )
+    );
+  };
 };
 
 let useLogin = () => {
   let (_, dispatch) = React.useContext(RootContext.context);
   authHeader => {
-    // calls OneGraph.login...
     dispatch(Login(authHeader));
   };
 };
@@ -135,9 +149,3 @@ let useCurrentUserDetailsWithDefault: unit => userDetailsObj =
         },
       );
   };
-
-let useHeaders = () => {
-  let (state, _) = React.useContext(RootContext.context);
-  // state.authHeader;
-  {"x-hasura-role": "public"};
-};

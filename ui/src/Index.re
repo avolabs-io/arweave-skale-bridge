@@ -3,9 +3,11 @@
 module ApolloProvider = {
   [@react.component]
   let make = (~children) => {
-    // <ApolloClient.React.ApolloProvider client=Client.instance>
-    children;
-    // </ApolloClient.React.ApolloProvider>;
+    let headers = RootProvider.useHeaders();
+    <ApolloClient.React.ApolloProvider
+      client={Client.useGlobalApolloInstance(headers)}>
+      children
+    </ApolloClient.React.ApolloProvider>;
   };
 };
 

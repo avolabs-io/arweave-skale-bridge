@@ -9,11 +9,14 @@ let make = (~children) => {
   let isLoggedIn = RootProvider.useIsLoggedIn();
   let performLogin = RootProvider.useLogin();
   let (isLoadingAuth, setIsLoadingAuth) = React.useState(_ => true);
+  let optAuthHeader = RootProvider.useAuth();
+  let loadUserData = RootProvider.useLoadProfileInfo();
 
+  // Log the user in if they aren't logged in yet:
   React.useEffect0(() => {
     Js.Promise.then_(
       loginStatus => {
-        setIsLoadingAuth(_ => false);
+        // setIsLoadingAuth(_ => false);
         (
           if (loginStatus) {
             performLogin(authObject.authHeaders(.));
@@ -21,13 +24,28 @@ let make = (~children) => {
             ();
           }
         )
-        ->async;
+        ->async
       },
       authObject.isLoggedIn(. "github"),
     )
     ->ignore;
     None;
   });
+
+  // Load user's info if not already loaded:
+  React.useMemo1(
+    () => {
+      switch (optAuthHeader) {
+      | Some(_) => loadUserData()->ignore
+      | None => ()
+      };
+      // TODO: add a way to safely cancel loading user data here if component remounts/unmounts.
+      None;
+    },
+    [|optAuthHeader|],
+  )
+  ->ignore;
+
   // TODO: move more of this logic to the RootProvider.
   let onClick = _ => {
     Js.Promise.then_(
