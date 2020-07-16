@@ -1,10 +1,16 @@
-type t;
+// [@bs.deriving jsConverter]
+type logins = string; //[ | `github | `youtube | `facebook];
+// type apiAuthHeaders;
+type authConstructorArgs = {appId: string};
+type t = {
+  login: (. logins) => Js.Promise.t(unit),
+  isLoggedIn: (. logins) => Js.Promise.t(bool),
+  authHeaders: (. unit) => RootProvider.authHeader,
+};
 [@bs.module "onegraph-auth"] [@bs.new]
-external initialize: unit => t = "default";
+external initialize: authConstructorArgs => t = "default";
 
-[@bs.deriving jsConverter]
-type logins = [ | `github | `youtube | `facebook];
-[@bs.send] external login: logins => Js.Promise.t(unit) = "login";
-[@bs.send] external isLoggedIn: logins => Js.Promise.t(bool);
-type apiAuthHeaders;
-[@bs.send] external authHeaders: unit => apiAuthHeaders;
+// [@bs.send] external login: (t, logins) => Js.Promise.t(unit) = "login";
+// [@bs.send] external isLoggedIn: (t, logins) => Js.Promise.t(bool);
+
+// [@bs.send] external authHeaders: (t, unit) => apiAuthHeaders;

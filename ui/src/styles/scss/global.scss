@@ -1,0 +1,86 @@
+/* 
+
+Color palette v0
+-----------------
+dark blue: #5B7ABA
+dark blue gradient: linear-gradient(
+    to right,
+    #2a5298,
+    #1e3c72
+  );
+*/
+
+$dark-color: #121925;
+$primary-blue: #5b7aba;
+$white: #fff;
+$blue-gradient-light: #2a5298;
+$blue-gradient-dark: #1e3c72;
+
+body {
+  /* background-color: #ff875c; */
+  background-color: $blue-gradient-dark; /* fallback for old browsers */
+  background-color: -webkit-linear-gradient(
+    to right,
+    $blue-gradient-light,
+    $blue-gradient-dark
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background-color: linear-gradient(
+    to right,
+    $blue-gradient-light,
+    $blue-gradient-dark
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  color: $primary-blue;
+  padding: 0;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-image: url("/assets/bridge-silhouette-blue.png");
+  background-size: 100% auto;
+  background-position: bottom right;
+}
+
+.app {
+  height: calc(100vh - 80px);
+  width: calc(100vw - 80px);
+  padding: 20px;
+  margin: 20px;
+  border: 2px solid $white;
+  border-radius: 4px;
+}
+
+.login {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.login-button {
+  background-color: transparent;
+  border: none;
+}
+.login-button {
+  background-color: $dark-color;
+  color: $white;
+  border: none;
+  font-size: 24px;
+  padding: 1rem;
+  border-radius: 1rem;
+  outline: none;
+}
+
+.login-button:hover {
+  opacity: 0.6;
+}
+
+.gh-icon {
+  height: 24px;
+  margin-left: 4px;
+  transform: translateY(3px);
+}
+
+.configuration {
+  select {
+    padding: 1rem;
+  }
+}

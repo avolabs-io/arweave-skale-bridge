@@ -1,5 +1,5 @@
 include Belt;
-// include Async;
+include Async;
 
 let oMap = Belt.Option.map;
 let (<$>) = oMap;
