@@ -1,3 +1,5 @@
+open Globals;
+
 // TODO: enforce that the "user <-> uri" combination is unique. https://github.com/hasura/graphql-engine/issues/2200
 //       I had no luck first time I tried.
 module AddSkaleEndpointMutation = [%graphql
@@ -9,14 +11,13 @@ module AddSkaleEndpointMutation = [%graphql
         user_id
       }
     }
-
   |}
 ];
 
 module GetUserSkaleEndpointsQuery = [%graphql
   {|
-  query EndpointQuery {
-    skale_endpoint {
+  query EndpointQuery($userId: String!) {
+    skale_endpoint (where: {user_id: {_eq: $userId}}){
       uri
       user_id
       id
@@ -31,15 +32,21 @@ module EditSkaleEndpoint = {
     // TODO: allow removing endpoints.
     let (mutate, result) = AddSkaleEndpointMutation.use();
     let (newSkaleEndpoint, setNewSkaleEndpoint) = React.useState(() => "");
+    let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
 
     let onSubmit = _ =>
       mutate(
         ~refetchQueries=[|
-          GetUserSkaleEndpointsQuery.refetchQueryDescription(),
+          GetUserSkaleEndpointsQuery.refetchQueryDescription(
+            GetUserSkaleEndpointsQuery.makeVariables(
+              ~userId=usersIdDetails.login,
+              (),
+            ),
+          ),
         |],
         AddSkaleEndpointMutation.makeVariables(
           ~uri=newSkaleEndpoint,
-          ~userId=LoginManager.getUser(),
+          ~userId=usersIdDetails.login,
           (),
         ),
       )
@@ -80,8 +87,6 @@ module EditSkaleEndpoint = {
 
 [@react.component]
 let make = () => {
-  LoginManager.setUser("jasoons"); /* ONLY HERE FOR TESTING PURPOSES */
-
   // TODO: if the user has zero endpoints maybe it should be true by default?
   let (showEditArweaveEndpoints, setShowEditArweaveEndpoints) =
     React.useState(() => false);
@@ -93,11 +98,16 @@ let make = () => {
   let (selectedSkaleEndpoint, setSelectedSkaleEndpoint) =
     React.useState(() => "");
 
+  let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
+
   let skaleEndpointsQueryResult =
     GetUserSkaleEndpointsQuery.use(
       ~fetchPolicy=CacheAndNetwork,
       ~errorPolicy=All,
-      GetUserSkaleEndpointsQuery.makeVariables(),
+      GetUserSkaleEndpointsQuery.makeVariables(
+        ~userId=usersIdDetails.login,
+        (),
+      ),
     );
 
   <div className="configuration">

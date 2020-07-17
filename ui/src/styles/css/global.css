@@ -23,7 +23,8 @@ body {
   background-repeat: no-repeat;
   background-image: url("/assets/bridge-silhouette-blue.png");
   background-size: 100% auto;
-  background-position: bottom right; }
+  background-position: bottom right;
+  font-family: Arial, Helvetica, sans-serif; }
 
 .app {
   height: calc(100vh - 80px);
@@ -39,26 +40,36 @@ body {
   top: 50%;
   transform: translate(-50%, -50%); }
 
-.login-button {
-  background-color: transparent;
-  border: none; }
-
-.login-button {
+button {
   background-color: #121925;
   color: #fff;
   border: none;
-  font-size: 24px;
+  font-size: 20px;
   padding: 1rem;
   border-radius: 1rem;
   outline: none; }
 
-.login-button:hover {
+button:hover {
   opacity: 0.6; }
 
-.gh-icon {
-  height: 24px;
-  margin-left: 4px;
+button > img {
+  height: 20px;
+  margin: 0 4px;
   transform: translateY(3px); }
+
+.logout {
+  position: absolute;
+  right: 40px; }
 
 .configuration select {
   padding: 1rem; }
+
+.login-container,
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; }
+
+.joint-logo {
+  width: 400px; }

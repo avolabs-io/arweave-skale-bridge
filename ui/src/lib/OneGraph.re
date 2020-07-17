@@ -4,6 +4,7 @@ type logins = string; //[ | `github | `youtube | `facebook];
 type authConstructorArgs = {appId: string};
 type t = {
   login: (. logins) => Js.Promise.t(unit),
+  logout: (. logins) => Js.Promise.t(unit),
   isLoggedIn: (. logins) => Js.Promise.t(bool),
   authHeaders: (. unit) => RootProvider.authHeader,
 };

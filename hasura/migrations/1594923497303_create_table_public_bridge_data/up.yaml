@@ -1,0 +1,13 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "public"."bridge_data"("id" serial NOT NULL, "userId" text NOT
+      NULL, "contentType" text NOT NULL, "frequency" text NOT NULL, "skaleEndpointId"
+      text NOT NULL, "arweaveEndpointId" text NOT NULL, "active" boolean NOT NULL,
+      "status" text NOT NULL, "metaData" jsonb NOT NULL, "label" text NOT NULL, PRIMARY
+      KEY ("id") , UNIQUE ("id"));
+  type: run_sql
+- args:
+    name: bridge_data
+    schema: public
+  type: add_existing_table_or_view

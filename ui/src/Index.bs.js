@@ -9,14 +9,27 @@ import * as Client$1 from "@apollo/client";
 
 ((require('./styles/css/global.css')));
 
+function Index$ApolloProvider(Props) {
+  var children = Props.children;
+  var headers = RootProvider.useHeaders(undefined);
+  return React.createElement(Client$1.ApolloProvider, {
+              client: Client.useGlobalApolloInstance(headers),
+              children: children
+            });
+}
+
+var ApolloProvider = {
+  make: Index$ApolloProvider
+};
+
 ReactDOMRe.renderToElementWithId(React.createElement(RootProvider.make, {
-          children: React.createElement(Client$1.ApolloProvider, {
-                client: Client.instance,
+          children: React.createElement(Index$ApolloProvider, {
                 children: React.createElement(App.make, {})
               })
         }), "root");
 
 export {
+  ApolloProvider ,
   
 }
 /*  Not a pure module */

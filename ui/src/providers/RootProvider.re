@@ -1,32 +1,48 @@
+open Globals;
+
 type authHeader = {
   [@bs.as "Authorization"]
   auth: string,
 };
+module MeQuery = [%graphql
+  {|
+  query MeQuery {
+     user: me {
+       github {
+         login
+         name
+         bio
+       }
+     }
+   }
+   |}
+];
+
+type userDetailsObj = MeQuery.t_user_github;
 type rootContextType = {
   isLoggedIn: bool,
-  userId: string,
-  userName: string,
-  authHeader,
+  userDetails: option(userDetailsObj),
+  authHeader: option(authHeader),
 };
 type rootActions =
   | LogOut
   | Login(authHeader)
-  | LoadDetails(string, string);
+  | LoadDetails(userDetailsObj);
 
-let defaultContext = {
-  isLoggedIn: false,
-  userId: "",
-  userName: "",
-  authHeader: {
-    auth: "",
-  },
-};
+let defaultContext = {isLoggedIn: false, userDetails: None, authHeader: None};
 
 let reducer = (prevState, action) =>
   switch (action) {
   | LogOut => defaultContext
-  | Login(authHeader) => {...prevState, isLoggedIn: true, authHeader}
-  | LoadDetails(userName, userId) => {...prevState, userName, userId}
+  | Login(authHeader) => {
+      ...prevState,
+      isLoggedIn: true,
+      authHeader: Some(authHeader),
+    }
+  | LoadDetails(userDetails) => {
+      ...prevState,
+      userDetails: Some(userDetails),
+    }
   };
 
 module RootContext = {
@@ -46,28 +62,96 @@ let make = (~children) => {
   <RootContext value=(rootState, dispatch)> children </RootContext>;
 };
 
-let useLogout: unit => unit =
+let useLogout: (unit, unit => Js.Promise.t(unit)) => unit =
   () => {
     let (_, dispatch) = React.useContext(RootContext.context);
-    dispatch(LogOut);
+    logoutFunction => {
+      Js.Promise.then_(() => dispatch(LogOut)->async, logoutFunction())
+      ->ignore;
+    };
   };
+
+let useAuth = () => {
+  let (state, _) = React.useContext(RootContext.context);
+  state.authHeader;
+};
+let useHeaders = () => {
+  switch (useAuth()) {
+  | Some(authHeader) => {
+      // "x-hasura-role": "user",
+      "x-hasura-admin-secret": "testing",
+      "Authorization": authHeader.auth,
+    }
+  | None => {
+      "x-hasura-admin-secret": "testing",
+      // "x-hasura-role": "public",
+      "Authorization": "",
+    }
+  };
+};
+
+let useLoadProfileInfo = () => {
+  let (_, dispatch) = React.useContext(RootContext.context);
+  let headers = useHeaders();
+  // TODO: this reloads a second hasura client. Rather turn this into a 'fetch' request. OR turn this into a hook directly (not a hook that returns a function).
+  let client = Client.useGlobalApolloInstance(headers);
+  () => {
+    MeQuery.(
+      client
+      ->ApolloClient.query(~query=(module MeQuery), ())
+      ->Js.Promise.then_(
+          (result: ApolloClient__ApolloClient.ApolloQueryResult.t(_)) => {
+            switch (result) {
+            | {data: Some({user: {github: Some(userDetails)}})} =>
+              dispatch(LoadDetails(userDetails))
+            | _ =>
+              %log.error
+              "ERROR: user's info not found";
+              ();
+            };
+            ()->async;
+          },
+          _,
+        )
+      ->Js.Promise.catch(
+          error => {
+            [%log.error "ERROR: loading user's info"; ("error", error)];
+            ()->async;
+          },
+          _,
+        )
+    );
+  };
+};
 
 let useLogin = () => {
   let (_, dispatch) = React.useContext(RootContext.context);
   authHeader => {
-    // calls OneGraph.login...
     dispatch(Login(authHeader));
   };
 };
-
-let useLoadDetails: (string, string) => unit =
-  (userName, userId) => {
-    let (_, dispatch) = React.useContext(RootContext.context);
-    dispatch(LoadDetails(userName, userId));
-  };
 
 let useIsLoggedIn: unit => bool =
   () => {
     let (state, _) = React.useContext(RootContext.context);
     state.isLoggedIn;
+  };
+
+let useCurrentUserDetails: unit => option(userDetailsObj) =
+  () => {
+    let (state, _) = React.useContext(RootContext.context);
+    state.userDetails;
+  };
+
+let useCurrentUserDetailsWithDefault: unit => userDetailsObj =
+  () => {
+    useCurrentUserDetails()
+    ->Option.mapWithDefault(
+        MeQuery.{bio: None, name: None, login: ""},
+        info => {
+          %log.warn
+          "Users data isn't loaded yet. Make sure you only run this hook inside components that are inside the `<Login>` component!";
+          info;
+        },
+      );
   };

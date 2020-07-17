@@ -30,10 +30,12 @@
     "@apollo/link-ws": "^2.0.0-beta.3",
     "@jeddeloh/reason-apollo-client": "^0.0.1-alpha.3",
     "@yawaramin/prometo": "0.11.0",
+    "bs-log": "^1.2.0",
     "graphql": "^14.0.0",
     "onegraph-auth": "^2.2.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-loader-spinner": "^3.1.14",
     "reason-promise": "1.1.1",
     "reason-react": "^0.9.1",
     "subscriptions-transport-ws": "^0.9.16"

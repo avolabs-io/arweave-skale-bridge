@@ -1,0 +1,24 @@
+- args:
+    permission:
+      allow_upsert: true
+      backend_only: false
+      check:
+        userId:
+          _eq: X-Hasura-User-Id
+      columns:
+      - active
+      - id
+      - metaData
+      - arweaveEndpointId
+      - contentType
+      - frequency
+      - label
+      - skaleEndpointId
+      - status
+      - userId
+      set: {}
+    role: user
+    table:
+      name: bridge_data
+      schema: public
+  type: create_insert_permission

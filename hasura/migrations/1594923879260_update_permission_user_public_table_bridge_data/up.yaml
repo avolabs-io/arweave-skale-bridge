@@ -1,0 +1,25 @@
+- args:
+    permission:
+      allow_aggregations: false
+      backend_only: false
+      columns:
+      - id
+      - userId
+      - contentType
+      - frequency
+      - skaleEndpointId
+      - arweaveEndpointId
+      - active
+      - status
+      - metaData
+      - label
+      computed_fields: []
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+      limit: null
+    role: user
+    table:
+      name: bridge_data
+      schema: public
+  type: create_select_permission
