@@ -1,0 +1,13 @@
+- args:
+    name: bridge_sync_rel
+    table:
+      name: bridge_data
+      schema: public
+    using:
+      manual_configuration:
+        column_mapping:
+          id: bridge_id
+        remote_table:
+          name: bridge_sync
+          schema: public
+  type: create_array_relationship

@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "public"."sync_status"("sync_status" Text NOT NULL, PRIMARY
+      KEY ("sync_status") , UNIQUE ("sync_status"));
+  type: run_sql
+- args:
+    name: sync_status
+    schema: public
+  type: add_existing_table_or_view

@@ -1,0 +1,6 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."arweave_key" ADD CONSTRAINT "arweave_key_user_id_key"
+      UNIQUE ("user_id");
+  type: run_sql

@@ -1,0 +1,13 @@
+- args:
+    name: bridge_lookup
+    table:
+      name: bridge_sync
+      schema: public
+    using:
+      manual_configuration:
+        column_mapping:
+          bridge_id: id
+        remote_table:
+          name: bridge_data
+          schema: public
+  type: create_object_relationship

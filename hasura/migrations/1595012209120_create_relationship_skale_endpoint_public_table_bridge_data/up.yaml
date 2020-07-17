@@ -1,0 +1,13 @@
+- args:
+    name: skale_endpoint
+    table:
+      name: bridge_data
+      schema: public
+    using:
+      manual_configuration:
+        column_mapping:
+          skale_endpoint_id: id
+        remote_table:
+          name: skale_endpoint
+          schema: public
+  type: create_object_relationship

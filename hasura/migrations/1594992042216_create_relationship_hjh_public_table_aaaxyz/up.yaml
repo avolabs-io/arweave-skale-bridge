@@ -1,0 +1,13 @@
+- args:
+    name: hjh
+    table:
+      name: aaaxyz
+      schema: public
+    using:
+      manual_configuration:
+        column_mapping:
+          id: link
+        remote_table:
+          name: aaa
+          schema: public
+  type: create_array_relationship

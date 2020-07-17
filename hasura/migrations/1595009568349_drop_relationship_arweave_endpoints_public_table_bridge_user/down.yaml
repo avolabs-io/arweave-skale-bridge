@@ -1,0 +1,12 @@
+- args:
+    name: arweave_endpoints
+    table:
+      name: bridge_user
+      schema: public
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: arweave_endpoint
+          schema: public
+  type: create_array_relationship

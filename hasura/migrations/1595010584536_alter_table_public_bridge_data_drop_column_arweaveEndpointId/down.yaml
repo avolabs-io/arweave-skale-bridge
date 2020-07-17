@@ -1,0 +1,11 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_data" ADD COLUMN "arweaveEndpointId" text;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_data" ALTER COLUMN "arweaveEndpointId" DROP
+      NOT NULL;
+  type: run_sql

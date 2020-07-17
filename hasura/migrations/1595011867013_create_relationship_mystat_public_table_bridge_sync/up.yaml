@@ -1,0 +1,13 @@
+- args:
+    name: mystat
+    table:
+      name: bridge_sync
+      schema: public
+    using:
+      manual_configuration:
+        column_mapping:
+          status: sync_status
+        remote_table:
+          name: sync_status
+          schema: public
+  type: create_object_relationship

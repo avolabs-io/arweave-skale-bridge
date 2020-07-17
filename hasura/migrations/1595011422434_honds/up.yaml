@@ -1,0 +1,6 @@
+- args:
+    cascade: true
+    read_only: false
+    sql: INSERT INTO sync_status (sync_status) VALUES ('initiated'), ('pending'),
+      ('synced'), ('failed');
+  type: run_sql
