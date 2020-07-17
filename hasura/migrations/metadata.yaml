@@ -3,27 +3,9 @@ tables:
 - table:
     schema: public
     name: arweave_endpoint
-  object_relationships:
-  - name: bridge_user
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: bridge_user
-        column_mapping:
-          user_id: id
 - table:
     schema: public
     name: arweave_key
-  object_relationships:
-  - name: bridge_user
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: bridge_user
-        column_mapping:
-          user_id: id
 - table:
     schema: public
     name: bridge_data
@@ -35,7 +17,14 @@ tables:
           schema: public
           name: arweave_endpoint
         column_mapping:
-          arweaveEndpointId: id
+          arweave_endpoint_id: id
+  - name: arweave_key
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: arweave_key
+        column_mapping:
           userId: user_id
   - name: skale_endpoint
     using:
@@ -44,103 +33,42 @@ tables:
           schema: public
           name: skale_endpoint
         column_mapping:
-          skaleEndpointId: id
-          userId: user_id
-  insert_permissions:
-  - role: user
-    permission:
-      check:
-        userId:
-          _eq: X-Hasura-User-Id
-      columns:
-      - active
-      - id
-      - metaData
-      - arweaveEndpointId
-      - contentType
-      - frequency
-      - label
-      - skaleEndpointId
-      - status
-      - userId
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - userId
-      - contentType
-      - frequency
-      - skaleEndpointId
-      - arweaveEndpointId
-      - active
-      - status
-      - metaData
-      - label
-      filter:
-        userId:
-          _eq: X-Hasura-User-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - active
-      - id
-      - metaData
-      - arweaveEndpointId
-      - contentType
-      - frequency
-      - label
-      - skaleEndpointId
-      - status
-      - userId
-      filter:
-        userId:
-          _eq: X-Hasura-User-Id
-      check: null
-- table:
-    schema: public
-    name: bridge_user
+          skale_endpoint_id: id
   array_relationships:
-  - name: arweave_endpoints
+  - name: bridge_sync_rel
     using:
       manual_configuration:
         remote_table:
           schema: public
-          name: arweave_endpoint
+          name: bridge_sync
         column_mapping:
-          id: user_id
-  - name: arweave_keys
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: arweave_key
-        column_mapping:
-          id: user_id
-  - name: skale_endpoints
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: skale_end_point
-        column_mapping:
-          id: user_id
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      filter:
-        id:
-          _eq: X-Hasura-User-Id
+          id: bridge_id
 - table:
     schema: public
-    name: skale_end_point
+    name: bridge_sync
+  object_relationships:
+  - name: bridge_lookup
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: bridge_data
+        column_mapping:
+          bridge_id: id
+  - name: mystat
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: sync_status
+        column_mapping:
+          status: sync_status
 - table:
     schema: public
     name: skale_endpoint
+- table:
+    schema: public
+    name: sync_status
 remote_schemas:
 - name: gql_example_test_endpoint
   definition:

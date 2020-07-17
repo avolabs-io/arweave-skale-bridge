@@ -1,0 +1,8 @@
+- args:
+    name: mystatus
+    table:
+      name: bridge_data
+      schema: public
+    using:
+      foreign_key_constraint_on: status
+  type: create_object_relationship

@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_data" DROP COLUMN "arweaveEndpointId" CASCADE;
+  type: run_sql

@@ -1,0 +1,6 @@
+- args:
+    relationship: bridge_lookup
+    table:
+      name: bridge_sync
+      schema: public
+  type: drop_relationship

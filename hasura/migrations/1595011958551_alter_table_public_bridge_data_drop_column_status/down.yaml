@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_data" ADD COLUMN "status" text;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_data" ALTER COLUMN "status" DROP NOT NULL;
+  type: run_sql

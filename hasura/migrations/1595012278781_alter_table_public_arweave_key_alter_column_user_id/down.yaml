@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."arweave_key" DROP CONSTRAINT "arweave_key_user_id_key";
+  type: run_sql

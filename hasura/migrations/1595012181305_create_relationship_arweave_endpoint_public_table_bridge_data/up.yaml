@@ -1,0 +1,13 @@
+- args:
+    name: arweave_endpoint
+    table:
+      name: bridge_data
+      schema: public
+    using:
+      manual_configuration:
+        column_mapping:
+          arweave_endpoint_id: id
+        remote_table:
+          name: arweave_endpoint
+          schema: public
+  type: create_object_relationship
