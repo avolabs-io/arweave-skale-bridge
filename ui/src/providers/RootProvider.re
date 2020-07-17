@@ -100,9 +100,7 @@ let useLoadProfileInfo = () => {
           (result: ApolloClient__ApolloClient.ApolloQueryResult.t(_)) => {
             switch (result) {
             | {data: Some({user: {github: Some(userDetails)}})} =>
-              Js.log("LOADED USERS DETAILS");
-              Js.log(userDetails);
-              dispatch(LoadDetails(userDetails));
+              dispatch(LoadDetails(userDetails))
             | _ =>
               %log.error
               "ERROR: user's info not found";

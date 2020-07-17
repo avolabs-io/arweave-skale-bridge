@@ -1,0 +1,23 @@
+- args:
+    permission:
+      backend_only: false
+      columns:
+      - active
+      - id
+      - metaData
+      - arweaveEndpointId
+      - contentType
+      - frequency
+      - label
+      - skaleEndpointId
+      - status
+      - userId
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+      set: {}
+    role: user
+    table:
+      name: bridge_data
+      schema: public
+  type: create_update_permission

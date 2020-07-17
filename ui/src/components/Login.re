@@ -6,7 +6,7 @@ Dotenv.config();
 /*
  LOGIN TREE - display tree on initial page load:
 
-   Has checked if the user is already logged in?
+   Has finished checking if the user is already logged in (previously)?
      TRUE ->
        is logged in?
          TRUE ->

@@ -1,0 +1,6 @@
+- args:
+    relationship: bridge_user
+    table:
+      name: skale_end_point
+      schema: public
+  type: drop_relationship

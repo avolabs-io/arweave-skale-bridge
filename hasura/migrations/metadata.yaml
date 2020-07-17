@@ -26,6 +26,81 @@ tables:
           user_id: id
 - table:
     schema: public
+    name: bridge_data
+  object_relationships:
+  - name: arweave_endpoint
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: arweave_endpoint
+        column_mapping:
+          arweaveEndpointId: id
+          userId: user_id
+  - name: skale_endpoint
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: skale_endpoint
+        column_mapping:
+          skaleEndpointId: id
+          userId: user_id
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        userId:
+          _eq: X-Hasura-User-Id
+      columns:
+      - active
+      - id
+      - metaData
+      - arweaveEndpointId
+      - contentType
+      - frequency
+      - label
+      - skaleEndpointId
+      - status
+      - userId
+      backend_only: false
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - userId
+      - contentType
+      - frequency
+      - skaleEndpointId
+      - arweaveEndpointId
+      - active
+      - status
+      - metaData
+      - label
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - active
+      - id
+      - metaData
+      - arweaveEndpointId
+      - contentType
+      - frequency
+      - label
+      - skaleEndpointId
+      - status
+      - userId
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+      check: null
+- table:
+    schema: public
     name: bridge_user
   array_relationships:
   - name: arweave_endpoints
@@ -63,15 +138,6 @@ tables:
 - table:
     schema: public
     name: skale_end_point
-  object_relationships:
-  - name: bridge_user
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: bridge_user
-        column_mapping:
-          user_id: id
 - table:
     schema: public
     name: skale_endpoint
