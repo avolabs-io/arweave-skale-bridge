@@ -62,10 +62,13 @@ let make = (~children) => {
   <RootContext value=(rootState, dispatch)> children </RootContext>;
 };
 
-let useLogout: unit => unit =
+let useLogout: (unit, unit => Js.Promise.t(unit)) => unit =
   () => {
     let (_, dispatch) = React.useContext(RootContext.context);
-    dispatch(LogOut);
+    logoutFunction => {
+      Js.Promise.then_(() => dispatch(LogOut)->async, logoutFunction())
+      ->ignore;
+    };
   };
 
 let useAuth = () => {

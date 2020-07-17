@@ -4,9 +4,21 @@ import * as About from "./components/About.bs.js";
 import * as Login from "./components/Login.bs.js";
 import * as React from "react";
 import * as Config from "./components/Config.bs.js";
+import * as Logout from "./components/Logout.bs.js";
 import * as Router from "./Router.bs.js";
 import * as NotFound from "./components/NotFound.bs.js";
 import * as GqlExamples from "./gql-exampls--reference-only/GqlExamples.bs.js";
+
+function App$AuthenticatedRoute(Props) {
+  var children = Props.children;
+  return React.createElement(Login.make, {
+              children: children
+            });
+}
+
+var AuthenticatedRoute = {
+  make: App$AuthenticatedRoute
+};
 
 function App(Props) {
   var route = Router.useRouter(undefined);
@@ -14,12 +26,12 @@ function App(Props) {
   if (route !== undefined) {
     switch (route) {
       case /* Main */0 :
-          tmp = React.createElement(Login.make, {
+          tmp = React.createElement(App$AuthenticatedRoute, {
                 children: React.createElement("p", undefined, "Home page")
               });
           break;
       case /* Config */1 :
-          tmp = React.createElement(Login.make, {
+          tmp = React.createElement(App$AuthenticatedRoute, {
                 children: React.createElement(Config.make, {})
               });
           break;
@@ -36,12 +48,13 @@ function App(Props) {
   }
   return React.createElement("div", {
               className: "app"
-            }, tmp);
+            }, React.createElement(Logout.make, {}), tmp);
 }
 
 var make = App;
 
 export {
+  AuthenticatedRoute ,
   make ,
   
 }

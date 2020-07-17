@@ -4,25 +4,25 @@ Dotenv.config();
 [@bs.val] external appId: string = "process.env.REACT_APP_LOGIN_APP_ID";
 
 /*
- LOGIN TREE - display tree on initial page load:
+  LOGIN TREE - display tree on initial page load:
 
-   Has finished checking if the user is already logged in (previously)?
-     TRUE ->
-       is logged in?
-         TRUE ->
-           has loaded users data?
-             TRUE ->
-               has loaded users bridge data?
-                 TRUE ->
-                   has user got any active bridges?
-                     TRUE -> show overwiev screen
-                     FALSE -> kick off process for user to define a bridge
-                 FALSE -> load bridge data (show loader)
-             FALSE -> load users data (show loader)
-         FALSE -> Show Login Screen
-     FALSE ->
-       show a loading screen until "TRUE" (finished checking if user is logged in)
- */
+    Has finished checking if the user is already logged in (previously)?
+      TRUE ->
+        is logged in?
+          TRUE ->
+            has loaded users data?
+              TRUE ->
+                has loaded users bridge data?
+                  TRUE ->
+                    has user got any active bridges?
+                      TRUE -> show overwiev screen
+                      FALSE -> kick off process for user to define a bridge
+                  FALSE -> load bridge data (show loader)
+              FALSE -> load users data (show loader)
+          FALSE -> Show Login Screen
+      FALSE ->
+        show a loading screen until "TRUE" (finished checking if user is logged in)
+ //  */
 
 /*
  mutation MyMutation {
@@ -57,10 +57,10 @@ module HasLoadedUsersBridgeData = {
       useGetSkaleEndpointsQueryResult(usersIdDetails.login);
     switch (endpointQueryResult) {
     | {loading: true, data: None} =>
-      <p> "Denham - please make a nice loader here"->React.string </p>
+      <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
     | {loading: _, data: Some(data), error: _} =>
       switch (data.skale_endpoint) {
-      | [||] => <> "Start the onboarding process"->React.string </>
+      | [||] => <Onboarding />
       | _ => <> children </>
       }
     | {loading: false, data: None} =>
@@ -96,10 +96,10 @@ module UserProfileDataLoader = {
     | Some(_) =>
       <HasLoadedUsersBridgeData> children </HasLoadedUsersBridgeData>
     | None =>
-      <h1>
-        "Loading users data. DENHAM - I leave it up to you to put a proper login loader of your choice here :)"
-        ->React.string
-      </h1>
+      <div className="loader-container">
+        <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
+      </div>
+    // <h3> "Loading users data."->React.string </h3> // TODO @jason I think it loads too fast normally to have text here with it. For some of the slower requests we can add text but not on these short ones
     };
   };
 };
@@ -109,8 +109,8 @@ let make = (~children) => {
   let authObject = OneGraph.initialize({appId: appId});
   let isLoggedIn = RootProvider.useIsLoggedIn();
   let performLogin = RootProvider.useLogin();
-  let (isLoadingAuth, setIsLoadingAuth) = React.useState(_ => true);
-  let isLoadingData = !isLoggedIn || isLoadingAuth;
+  let (isLoadingAuth, setIsLoadingAuth) = React.useState(_ => false);
+  let isLoadingData = !isLoggedIn && isLoadingAuth;
 
   let recordLogin = () => {
     Js.Promise.then_(
@@ -129,7 +129,7 @@ let make = (~children) => {
     );
   };
 
-  // // Log the user in if they aren't logged in yet:
+  // Log the user in if they aren't logged in yet:
   React.useEffect0(() => {
     if (isLoggedIn) {
       ();
@@ -141,27 +141,28 @@ let make = (~children) => {
 
   // TODO: move more of this logic to the RootProvider.
   let onClick = _ => {
+    setIsLoadingAuth(_ => true);
     Js.Promise.then_(_ => {recordLogin()}, authObject.login(. "github"))
     ->ignore;
     ();
   };
 
   <div className="login">
-    {if (isLoadingData) {
-       <h1>
-         "Loading previous logins - DENHAM - I leave it up to you to put a proper login loader of your choice here :)"
-         ->React.string
-       </h1>;
-     } else if (isLoggedIn) {
+    {if (isLoggedIn) {
        <UserProfileDataLoader> children </UserProfileDataLoader>;
+     } else if (isLoadingData) {
+       <div className="loader-container">
+         <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
+         <h3> "Logging in..."->React.string </h3>
+       </div>;
      } else {
-       <>
-         <div> <img src="./assets/skale-arweave.svg" /> </div>
+       <div className="login-container">
+         <img src="./assets/skale-arweave.svg" className="joint-logo" />
          <button onClick className="login-button">
            "LOGIN WITH GITHUB"->React.string
            <img src="./assets/github.svg" className="gh-icon" />
          </button>
-       </>;
+       </div>;
      }}
   </div>;
 };

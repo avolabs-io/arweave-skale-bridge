@@ -35,6 +35,7 @@
     "onegraph-auth": "^2.2.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-loader-spinner": "^3.1.14",
     "reason-promise": "1.1.1",
     "reason-react": "^0.9.1",
     "subscriptions-transport-ws": "^0.9.16"
