@@ -4,28 +4,20 @@ type onboardingSteps =
   | GenerateArweaveWallet
   | OnboardingComplete;
 
-module CreateSkaleEndpoint = {
-  [@react.component]
-  let make = (~moveToNextStep) => {
-    <div>
-      "step 1"->React.string
-      <button onClick=moveToNextStep> "Next"->React.string </button>
-    </div>;
-  };
-};
 module GeneratingArweaveWallet = {
   [@react.component]
   let make = (~moveToNextStep) => {
-    <div>
+    <div className="funnel-step-container">
       "step 2"->React.string
       <button onClick=moveToNextStep> "Next"->React.string </button>
     </div>;
   };
 };
+
 module CreateArweaveEndpoint = {
   [@react.component]
   let make = (~moveToNextStep) => {
-    <div>
+    <div className="funnel-step-container">
       "step 3"->React.string
       <button onClick=moveToNextStep> "Next"->React.string </button>
     </div>;
@@ -38,7 +30,7 @@ let make = () => {
 
   switch (onboardingStep) {
   | SkaleEndpoint =>
-    <CreateSkaleEndpoint
+    <SkaleEndpoint
       moveToNextStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
     />
   | GenerateArweaveWallet =>
