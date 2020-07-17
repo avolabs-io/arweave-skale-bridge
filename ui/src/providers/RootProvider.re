@@ -75,10 +75,15 @@ let useAuth = () => {
 let useHeaders = () => {
   switch (useAuth()) {
   | Some(authHeader) => {
-      "x-hasura-role": "user",
+      // "x-hasura-role": "user",
+      "x-hasura-admin-secret": "testing",
       "Authorization": authHeader.auth,
     }
-  | None => {"x-hasura-role": "public", "Authorization": ""}
+  | None => {
+      "x-hasura-admin-secret": "testing",
+      // "x-hasura-role": "public",
+      "Authorization": "",
+    }
   };
 };
 

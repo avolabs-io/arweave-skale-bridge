@@ -11,14 +11,13 @@ module AddSkaleEndpointMutation = [%graphql
         user_id
       }
     }
-
   |}
 ];
 
 module GetUserSkaleEndpointsQuery = [%graphql
   {|
-  query EndpointQuery {
-    skale_endpoint {
+  query EndpointQuery($userId: String!) {
+    skale_endpoint (where: {user_id: {_eq: $userId}}){
       uri
       user_id
       id
@@ -38,7 +37,12 @@ module EditSkaleEndpoint = {
     let onSubmit = _ =>
       mutate(
         ~refetchQueries=[|
-          GetUserSkaleEndpointsQuery.refetchQueryDescription(),
+          GetUserSkaleEndpointsQuery.refetchQueryDescription(
+            GetUserSkaleEndpointsQuery.makeVariables(
+              ~userId=usersIdDetails.login,
+              (),
+            ),
+          ),
         |],
         AddSkaleEndpointMutation.makeVariables(
           ~uri=newSkaleEndpoint,
@@ -94,11 +98,16 @@ let make = () => {
   let (selectedSkaleEndpoint, setSelectedSkaleEndpoint) =
     React.useState(() => "");
 
+  let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
+
   let skaleEndpointsQueryResult =
     GetUserSkaleEndpointsQuery.use(
       ~fetchPolicy=CacheAndNetwork,
       ~errorPolicy=All,
-      GetUserSkaleEndpointsQuery.makeVariables(),
+      GetUserSkaleEndpointsQuery.makeVariables(
+        ~userId=usersIdDetails.login,
+        (),
+      ),
     );
 
   <div className="configuration">
