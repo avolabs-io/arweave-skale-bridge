@@ -162,13 +162,9 @@ module SkaleEndpointDropdown = {
       //  setSelectedSkaleEndpoint(_ => value);
 
         {skaleEndpoints
-         ->Belt.Array.map(endpoint
-             //  <option value="endpoint"> "endpoint.uri"->React.string </option>
-             =>
-               <option value={endpoint.uri}>
-                 endpoint.uri->React.string
-               </option>
-             )
+         ->Belt.Array.map(endpoint =>
+             <option value={endpoint.uri}> endpoint.uri->React.string </option>
+           )
          ->React.array}
       </select>;
   };
