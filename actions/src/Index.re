@@ -41,63 +41,52 @@ module StartCron = {
       body_out_encode,
       handler: (body, _req) => {
         let instance = Arweave.defaultInstance;
-        let wallet = instance->Arweave.generateWallet();
-        wallet->Js.Promise.then_(
-                  jwk => {
-                    Js.log(jwk);
-                    let jwkString = Js.Json.stringify(jwk->Obj.magic);
-                    Js.log(jwkString);
+        let%Async jwk = instance->Arweave.generateWallet();
 
-                    instance
-                    ->Arweave.getPublicKey(jwk)
-                    ->Js.Promise.then_(
-                        pubKey => {
-                          let escapeString = [%bs.raw
-                            {|stringToEscape => escape(stringToEscape)|}
-                          ];
-                          let jwkStringEscaped = escapeString(jwkString);
-                          Client.instance
-                          ->ApolloClient.mutate(
-                              ~mutation=(module AddArweaveWallet),
-                              {
-                                privKey:
-                                  {
-                                    kty: "Hasura sucks, why does this work but not the real data??",
-                                    n: "Hasura sucks, why does this work but not the real data??",
-                                    e: "Hasura sucks, why does this work but not the real data??",
-                                    d: "Hasura sucks, why does this work but not the real data??",
-                                    p: "Hasura sucks, why does this work but not the real data??",
-                                    q: "Hasura sucks, why does this work but not the real data??",
-                                    dp: "Hasura sucks, why does this work but not the real data??",
-                                    dq: "Hasura sucks, why does this work but not the real data??",
-                                    qi:
-                                      "random value to make it accept this"
-                                      ++ Js.Math.random_int(0, 10000000)
-                                         ->string_of_int,
-                                  }
-                                  ->Arweave.jwk_encode,
-                                pubKey,
-                                userId: body.input.userId,
-                              },
-                            )
-                          ->Js.Promise.then_(
-                              _result => {address: pubKey}->async,
-                              _,
-                            )
-                          ->Js.Promise.catch(
-                              error => {
-                                Js.log2("error", error);
+        Js.log(jwk);
+        let jwkString = Js.Json.stringify(jwk->Obj.magic);
+        Js.log(jwkString);
 
-                                {address: "ERROR"}->async;
-                              },
-                              _,
-                            );
-                        },
-                        _,
-                      );
-                  },
-                  _,
-                );
+        let%Async pubKey = instance->Arweave.getPublicKey(jwk);
+
+        let escapeString = [%bs.raw
+          {|stringToEscape => escape(stringToEscape)|}
+        ];
+        let jwkStringEscaped = escapeString(jwkString);
+
+        Client.instance
+        ->ApolloClient.mutate(
+            ~mutation=(module AddArweaveWallet),
+            {
+              privKey:
+                {
+                  kty: jwk.kty,
+                  n: "Hasura sucks, why does this work but not the real data??",
+                  e: "Hasura sucks, why does this work but not the real data??",
+                  d: "Hasura sucks, why does this work but not the real data??",
+                  p: "Hasura sucks, why does this work but not the real data??",
+                  q: "Hasura sucks, why does this work but not the real data??",
+                  dp: "Hasura sucks, why does this work but not the real data??",
+                  dq: "Hasura sucks, why does this work but not the real data??",
+                  qi:
+                    "random value to make it accept this"
+                    ++ Js.Math.random_int(0, 10000000)->string_of_int,
+                }
+                ->Arweave.jwk_encode,
+              // jwk->Arweave.jwk_encode,
+              pubKey,
+              userId: body.input.userId,
+            },
+          )
+        ->Js.Promise.then_(_result => {address: pubKey}->async, _)
+        ->Js.Promise.catch(
+            error => {
+              Js.log2("error", error);
+
+              {address: "ERROR"}->async;
+            },
+            _,
+          );
       },
     });
 };
