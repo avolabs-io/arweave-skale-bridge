@@ -121,6 +121,11 @@ button:hover {
       text-transform: uppercase; }
       .menu .menu-inner ul :hover {
         opacity: 0.8; }
+    .menu .menu-inner li {
+      font-family: "Nunito", sans-serif;
+      font-weight: bold;
+      text-decoration: none;
+      color: #fff; }
     .menu .menu-inner .menu-item-with-icon {
       display: flex;
       flex-flow: row nowrap;

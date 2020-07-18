@@ -132,6 +132,12 @@ button:hover {
         opacity: 0.8;
       }
     }
+    li {
+      font-family: "Nunito", sans-serif;
+      font-weight: bold;
+      text-decoration: none;
+      color: $white;
+    }
     .menu-item-with-icon {
       display: flex;
       flex-flow: row nowrap;

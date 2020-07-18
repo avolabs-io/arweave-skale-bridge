@@ -15,7 +15,7 @@ Mobile Sizes
 -----------------
 
 */
-.container {
+.frequency .container {
   display: block;
   position: relative;
   margin: 0px auto;
@@ -23,16 +23,16 @@ Mobile Sizes
   height: auto;
   padding: 20px; }
 
-h2 {
+.frequency h2 {
   color: #aaaaaa; }
 
-.container ul {
+.frequency .container ul {
   list-style: none;
   margin: 0;
   padding: 0;
   overflow: auto; }
 
-ul li {
+.frequency ul li {
   color: #aaaaaa;
   display: block;
   position: relative;
@@ -40,11 +40,11 @@ ul li {
   width: 100%;
   height: 80px; }
 
-ul li input[type="radio"] {
+.frequency ul li input[type="radio"] {
   position: absolute;
   visibility: hidden; }
 
-ul li label {
+.frequency ul li label {
   display: block;
   position: relative;
   font-weight: 300;
@@ -56,10 +56,10 @@ ul li label {
   cursor: pointer;
   -webkit-transition: all 0.25s linear; }
 
-ul li:hover label {
+.frequency ul li:hover label {
   color: #ffffff; }
 
-ul li .check {
+.frequency ul li .check {
   display: block;
   position: absolute;
   border: 5px solid #aaaaaa;
@@ -72,10 +72,10 @@ ul li .check {
   transition: border 0.25s linear;
   -webkit-transition: border 0.25s linear; }
 
-ul li:hover .check {
+.frequency ul li:hover .check {
   border: 5px solid #ffffff; }
 
-ul li .check::before {
+.frequency ul li .check::before {
   display: block;
   position: absolute;
   content: "";
@@ -88,11 +88,11 @@ ul li .check::before {
   transition: background 0.25s linear;
   -webkit-transition: background 0.25s linear; }
 
-input[type="radio"]:checked ~ .check {
+.frequency input[type="radio"]:checked ~ .check {
   border: 3px solid #fff; }
 
-input[type="radio"]:checked ~ .check::before {
+.frequency input[type="radio"]:checked ~ .check::before {
   background: #fff; }
 
-input[type="radio"]:checked ~ label {
+.frequency input[type="radio"]:checked ~ label {
   color: #fff; }
