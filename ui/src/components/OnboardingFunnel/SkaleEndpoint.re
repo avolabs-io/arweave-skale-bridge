@@ -171,7 +171,7 @@ module SkaleEndpointDropdown = {
 };
 
 [@react.component]
-let make = (~moveToNextStep) => {
+let make = (~moveToNextStep, ~moveToPrevStep) => {
   let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
   let skaleEndpointsQueryResult =
     GetUserSkaleEndpointsQuery.use(
@@ -207,5 +207,6 @@ let make = (~moveToNextStep) => {
      }}
     <EditSkaleEndpoint />
     <button onClick=moveToNextStep> "Next"->React.string </button>
+    <button onClick=moveToPrevStep> "Prev"->React.string </button>
   </div>;
 };
