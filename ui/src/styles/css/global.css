@@ -9,6 +9,12 @@ dark blue gradient: linear-gradient(
     #1e3c72
   );
 */
+/* 
+
+Mobile Sizes
+-----------------
+
+*/
 body {
   /* background-color: #ff875c; */
   background-color: #1e3c72;
@@ -70,8 +76,17 @@ button:hover {
   position: absolute;
   right: 40px; }
 
-.configuration select {
-  padding: 1rem; }
+.funnel-step-container select,
+.funnel-step-container input {
+  padding: 1rem;
+  font-size: 14px;
+  margin-bottom: 1rem; }
+
+.funnel-step-container input {
+  width: calc(100% - calc(2rem + 2px)); }
+
+.funnel-step-container select {
+  width: 100%; }
 
 .login-container,
 .loader-container {
@@ -82,14 +97,6 @@ button:hover {
 
 .joint-logo {
   width: 400px; }
-
-.funnel-step-container {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  margin: 1rem;
-  border: 2px solid #fff;
-  border-radius: 4px; }
 
 .menu {
   background-color: #121925;

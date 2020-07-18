@@ -1,0 +1,65 @@
+/* 
+
+Color palette v0
+-----------------
+dark blue: #5B7ABA
+dark blue gradient: linear-gradient(
+    to right,
+    #2a5298,
+    #1e3c72
+  );
+*/
+/* 
+
+Mobile Sizes
+-----------------
+
+*/
+.funnel-step-container {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  margin: 1rem;
+  border: 2px solid #fff;
+  border-radius: 4px; }
+  @media (min-width: 768px) {
+    .funnel-step-container {
+      min-width: 300px; } }
+  .funnel-step-container h2 {
+    font-family: "Nunito", sans-serif;
+    font-weight: bold;
+    color: #fff;
+    margin-top: 0; }
+  .funnel-step-container .prev-next-container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between; }
+    .funnel-step-container .prev-next-container button {
+      color: #fff;
+      padding: 0.2rem;
+      text-transform: uppercase;
+      font-family: "Nunito", sans-serif;
+      font-weight: bold;
+      font-size: 12px;
+      background-color: #121925;
+      border-radius: 5px; }
+
+.overview h4 {
+  color: #fff;
+  margin: 5px 0; }
+
+.overview p {
+  color: #7f97c9;
+  margin: 2px 0; }
+
+.full-width-button {
+  color: #fff;
+  width: 100%;
+  margin: 2rem 0 0 0;
+  padding: 0.4rem;
+  text-transform: uppercase;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #121925;
+  border-radius: 5px; }

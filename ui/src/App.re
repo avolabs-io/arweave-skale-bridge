@@ -17,6 +17,9 @@ let make = () => {
        </AuthenticatedRoute>
      | Some(CreateBridge) =>
        <AuthenticatedRoute> <Onboarding /> </AuthenticatedRoute>
+     | Some(Profile) => <AuthenticatedRoute> <Profile /> </AuthenticatedRoute>
+     | Some(Dashboard) =>
+       <AuthenticatedRoute> <Dashboard /> </AuthenticatedRoute>
      | Some(Config) => <AuthenticatedRoute> <Config /> </AuthenticatedRoute>
      | Some(About) => <About />
      | Some(GqlExamplesPage) => <GqlExamples />

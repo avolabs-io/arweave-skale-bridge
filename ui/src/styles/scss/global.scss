@@ -1,20 +1,4 @@
-/* 
-
-Color palette v0
------------------
-dark blue: #5B7ABA
-dark blue gradient: linear-gradient(
-    to right,
-    #2a5298,
-    #1e3c72
-  );
-*/
-
-$dark-color: #121925;
-$primary-blue: #5b7aba;
-$white: #fff;
-$blue-gradient-light: #2a5298;
-$blue-gradient-dark: #1e3c72;
+@import "./defaults";
 
 body {
   /* background-color: #ff875c; */
@@ -92,9 +76,19 @@ button:hover {
   right: 40px;
 }
 
-.configuration {
-  select {
+.funnel-step-container {
+  select,
+  input {
     padding: 1rem;
+    font-size: 14px;
+    margin-bottom: 1rem;
+  }
+
+  input {
+    width: calc(100% - calc(2rem + 2px));
+  }
+  select {
+    width: 100%;
   }
 }
 
@@ -108,15 +102,6 @@ button:hover {
 
 .joint-logo {
   width: 400px;
-}
-
-.funnel-step-container {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  margin: 1rem;
-  border: 2px solid $white;
-  border-radius: 4px;
 }
 
 .menu {

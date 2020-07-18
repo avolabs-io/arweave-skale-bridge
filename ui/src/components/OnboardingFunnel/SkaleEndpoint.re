@@ -58,6 +58,7 @@ module EditSkaleEndpoint = {
           typeof="text"
           id="newSkaleEndpoint"
           name="newSkaleEndpoint"
+          placeholder="or input a new endpoint"
           onChange={event => {
             let value = ReactEvent.Form.target(event)##value;
             setNewSkaleEndpoint(_ => value);
@@ -102,7 +103,7 @@ module EndpointDropDown2 = {
         ),
       );
 
-    <div className="configuration">
+    <div className="funnel-step-container">
       <h3> "Select the desired skale endpoint"->React.string </h3>
       <div>
         {switch (skaleEndpointsQueryResult) {
@@ -183,7 +184,7 @@ let make = (~moveToNextStep, ~moveToPrevStep) => {
       ),
     );
   <div className="funnel-step-container">
-    <h2> "Please input a skale endpoint"->React.string </h2>
+    <h2> "Please select or input a skale endpoint"->React.string </h2>
     {switch (skaleEndpointsQueryResult) {
      | {loading: true, data: None} => React.null
      | {loading, data: Some(data), error} =>
@@ -206,7 +207,6 @@ let make = (~moveToNextStep, ~moveToPrevStep) => {
        <p> "Error loading existing endpoints."->React.string </p>
      }}
     <EditSkaleEndpoint />
-    <button onClick=moveToNextStep> "Next"->React.string </button>
-    <button onClick=moveToPrevStep> "Prev"->React.string </button>
+    <NavigationButtons moveToNextStep moveToPrevStep />
   </div>;
 };

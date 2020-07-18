@@ -6,7 +6,9 @@ import * as Login from "./components/Login.bs.js";
 import * as React from "react";
 import * as Config from "./components/Config.bs.js";
 import * as Router from "./Router.bs.js";
+import * as Profile from "./components/Profile.bs.js";
 import * as NotFound from "./components/NotFound.bs.js";
+import * as Dashboard from "./components/Dashboard.bs.js";
 import * as Onboarding from "./components/Onboarding.bs.js";
 import * as GqlExamples from "./gql-exampls--reference-only/GqlExamples.bs.js";
 
@@ -38,15 +40,25 @@ function App(Props) {
                 children: React.createElement(Config.make, {})
               });
           break;
-      case /* CreateBridge */2 :
+      case /* About */2 :
+          tmp = React.createElement(About.make, {});
+          break;
+      case /* CreateBridge */3 :
           tmp = React.createElement(App$AuthenticatedRoute, {
                 children: React.createElement(Onboarding.make, {})
               });
           break;
-      case /* About */3 :
-          tmp = React.createElement(About.make, {});
+      case /* Profile */4 :
+          tmp = React.createElement(App$AuthenticatedRoute, {
+                children: React.createElement(Profile.make, {})
+              });
           break;
-      case /* GqlExamplesPage */4 :
+      case /* Dashboard */5 :
+          tmp = React.createElement(App$AuthenticatedRoute, {
+                children: React.createElement(Dashboard.make, {})
+              });
+          break;
+      case /* GqlExamplesPage */6 :
           tmp = React.createElement(GqlExamples.make, {});
           break;
       

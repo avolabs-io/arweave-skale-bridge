@@ -34,6 +34,17 @@ let make = () => {
                         "Create bridge"->React.string
                       </a>
                     </li>
+                    <li>
+                      <a href="/dashboard"> "Dashboard"->React.string </a>
+                    </li>
+                    <li>
+                      <a href="/profile">
+                        <span className="menu-item-with-icon">
+                          <span> "Profile "->React.string </span>
+                          <img src="/assets/icons/profile.svg" />
+                        </span>
+                      </a>
+                    </li>
                     <hr />
                     <li>
                       <span onClick=onLogout>
