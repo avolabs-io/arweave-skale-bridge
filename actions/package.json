@@ -10,7 +10,7 @@
     "re:clean": "bsb -clean-world",
     "start": "node ./src/index.js",
     "watch": "nodemon ./src/index.js",
-    "update-schema": "npx get-graphql-schema http://localhost:8080/v1/graphql -h 'x-hasura-admin-secret=testing' -j > ../ui/graphql_schema.json"
+    "update-schema": "npx get-graphql-schema http://localhost:8080/v1/graphql -h 'x-hasura-admin-secret=testing' -j > graphql_schema.json"
   },
   "devDependencies": {
     "@reasonml-community/graphql-ppx": "^1.0.0-beta.18",

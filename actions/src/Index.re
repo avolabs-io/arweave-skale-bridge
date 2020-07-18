@@ -6,9 +6,10 @@ Dotenv.config();
 
 // TODO: work out why this query errors?
 // mutation CreateWallet($privKey: jsonb!, $pubKey: String!, $userId: String!) {
+// mutation CreateWallet($privKey: jsonb!, $pubKey: String!, $userId: String!) {
 module AddArweaveWallet = [%graphql
   {|
-  mutation CreateWallet($privKey: jsonb!, $pubKey: String!, $userId: String!) {
+  mutation CreateWallet($pubKey: String!, $userId: String!, $privKey: jsonb!) {
     insert_arweave_key_one(object: {priv_key: $privKey, pub_key: $pubKey, user_id: $userId}) {
       user_id
     }
@@ -63,7 +64,8 @@ module Arweave = {
                     "random value to make it accept this"
                     ++ Js.Math.random_int(0, 10000000)->string_of_int,
                 }
-                ->Arweave.jwk_encode,
+                ->Arweave.jwk_encode
+                ->Obj.magic,
               // jwk->Arweave.jwk_encode,
               pubKey,
               userId: body.input.userId,
