@@ -14,18 +14,9 @@ module AddArweaveWallet = [%graphql
     }
   }
 |}
-  // mutation CreateWallet($privKeyString: String!, $pubKey: String!, $userId: String!) {
-  //   insert_arweave_key_one(object: {priv_key_string: $privKeyString, pub_key: $pubKey, user_id: $userId}) {
-  //     user_id
-  //   }
-  // }
-  //   insert_arweave_key(objects: {priv_key_string: $privKeyString, pub_key: $pubKey, user_id: $userId}) {
-  //     affected_rows
-  //   }
-  // }
 ];
 
-module StartCron = {
+module Arweave = {
   [@decco.decode]
   type userIdObj = {userId: string};
   [@decco.decode]
@@ -94,5 +85,5 @@ module StartCron = {
 let app =
   Serbet.application(
     ~port=port->int_of_string_opt |||| 9898,
-    [StartCron.createArweaveWallet],
+    [Arweave.createArweaveWallet],
   );
