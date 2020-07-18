@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."arweave_key" ADD COLUMN "priv_key" jsonb NOT NULL UNIQUE;
+  type: run_sql

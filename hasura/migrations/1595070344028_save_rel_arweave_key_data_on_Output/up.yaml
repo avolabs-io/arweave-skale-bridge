@@ -1,0 +1,27 @@
+- args:
+    enums: []
+    input_objects:
+    - description: null
+      fields:
+      - description: null
+        name: userId
+        type: String!
+      name: Input
+    objects:
+    - description: null
+      fields:
+      - arguments: null
+        description: null
+        name: address
+        type: String!
+      name: Output
+      relationships:
+      - field_mapping:
+          address: pub_key
+        name: arweave_key_data
+        remote_table:
+          name: arweave_key
+          schema: public
+        type: object
+    scalars: []
+  type: set_custom_types
