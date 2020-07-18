@@ -108,19 +108,22 @@ module UserProfileDataLoader = {
 let make = (~children) => {
   let authObject = OneGraph.initialize({appId: appId});
   let isLoggedIn = RootProvider.useIsLoggedIn();
+  let isLoading = RootProvider.useIsLoading();
+  let setLoading = RootProvider.useSetLoading();
+  let hasFetched = RootProvider.useHasFetchedLoginState();
+  let setHasFetched = RootProvider.useSetHasFetchedLoginState();
   let performLogin = RootProvider.useLogin();
-  let (isLoadingAuth, setIsLoadingAuth) = React.useState(_ => false);
-  let isLoadingData = !isLoggedIn && isLoadingAuth;
+  // let (hasFetched, setHasFetched) = React.useState(_ => false); // This should probably be in RootProvider
 
   let recordLogin = () => {
     Js.Promise.then_(
       loginStatus => {
         (
           if (loginStatus) {
-            setIsLoadingAuth(_ => false);
+            setHasFetched();
             performLogin(authObject.authHeaders(.));
           } else {
-            ();
+            setHasFetched();
           }
         )
         ->async
@@ -141,26 +144,30 @@ let make = (~children) => {
 
   // TODO: move more of this logic to the RootProvider.
   let onClick = _ => {
-    setIsLoadingAuth(_ => true);
+    setLoading();
     Js.Promise.then_(_ => {recordLogin()}, authObject.login(. "github"))
     ->ignore;
     ();
   };
 
   <div className="login">
-    {if (isLoggedIn) {
-       <UserProfileDataLoader> children </UserProfileDataLoader>;
-     } else if (isLoadingData) {
+    {if (isLoading) {
        <div className="loader-container">
          <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
          <h3> "Logging in..."->React.string </h3>
        </div>;
+     } else if (!hasFetched) {
+       <div className="loader-container">
+         <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
+       </div>;
+     } else if (isLoggedIn) {
+       <UserProfileDataLoader> children </UserProfileDataLoader>;
      } else {
        <div className="login-container">
          <img src="./assets/skale-arweave.svg" className="joint-logo" />
          <button onClick className="login-button">
            "LOGIN WITH GITHUB"->React.string
-           <img src="./assets/github.svg" className="gh-icon" />
+           <img src="./assets/icons/github.svg" className="gh-icon" />
          </button>
        </div>;
      }}

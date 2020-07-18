@@ -41,6 +41,11 @@ body {
   transform: translate(-50%, -50%); }
 
 button {
+  background-color: transparent;
+  border: none;
+  outline: none; }
+
+.login-button {
   background-color: #121925;
   color: #fff;
   border: none;
@@ -52,12 +57,16 @@ button {
 button:hover {
   opacity: 0.6; }
 
-button > img {
+.login-button > img {
   height: 20px;
   margin: 0 4px;
   transform: translateY(3px); }
 
 .logout {
+  position: absolute;
+  right: 40px; }
+
+.menu {
   position: absolute;
   right: 40px; }
 
@@ -73,3 +82,61 @@ button > img {
 
 .joint-logo {
   width: 400px; }
+
+.funnel-step-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 1rem;
+  border: 2px solid #fff;
+  border-radius: 4px; }
+
+.menu {
+  background-color: #121925;
+  border-radius: 3px; }
+  .menu .menu-inner {
+    border-radius: 3px;
+    border: 1px solid #fff;
+    padding: 0.2rem;
+    margin: 0.2rem;
+    font-size: 16px; }
+    .menu .menu-inner button {
+      display: block;
+      margin-left: auto; }
+      .menu .menu-inner button img {
+        height: 24px; }
+    .menu .menu-inner ul {
+      min-width: 140px;
+      padding: 1rem 0.4rem 0.4rem 0.4rem;
+      list-style-type: none;
+      margin: 0;
+      text-decoration: none;
+      text-transform: uppercase; }
+      .menu .menu-inner ul :hover {
+        opacity: 0.8; }
+    .menu .menu-inner .menu-item-with-icon {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between; }
+      .menu .menu-inner .menu-item-with-icon img {
+        display: block;
+        height: 16px; }
+
+a {
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  color: #fff; }
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #333;
+  background-color: #fff; }
+
+#about {
+  font-size: 2rem; }
+  #about h1 {
+    margin: 0; }
+  #about p {
+    color: #a3b4d8; }

@@ -13,6 +13,9 @@ Load data from the skale chain via the [RPC snapshot endpoint](https://github.co
 Start the backend via docker-compose:
 `make start-dev`
 
+When hasura is in a bad state :)
+`make hard-restart-dev`
+
 ### UI
 
 start ui

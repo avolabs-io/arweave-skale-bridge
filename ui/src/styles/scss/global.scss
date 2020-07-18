@@ -56,11 +56,13 @@ body {
   transform: translate(-50%, -50%);
 }
 
-// .login-button {
-//   background-color: transparent;
-//   border: none;
-// }
 button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+.login-button {
   background-color: $dark-color;
   color: $white;
   border: none;
@@ -74,13 +76,18 @@ button:hover {
   opacity: 0.6;
 }
 
-button > img {
+.login-button > img {
   height: 20px;
   margin: 0 4px;
   transform: translateY(3px);
 }
 
 .logout {
+  position: absolute;
+  right: 40px;
+}
+
+.menu {
   position: absolute;
   right: 40px;
 }
@@ -101,4 +108,77 @@ button > img {
 
 .joint-logo {
   width: 400px;
+}
+
+.funnel-step-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 1rem;
+  border: 2px solid $white;
+  border-radius: 4px;
+}
+
+.menu {
+  // background-color: #ffffff55;
+  background-color: $dark-color;
+  border-radius: 3px;
+  .menu-inner {
+    border-radius: 3px;
+    border: 1px solid $white;
+    padding: 0.2rem;
+    margin: 0.2rem;
+    font-size: 16px;
+    button {
+      display: block;
+      margin-left: auto;
+      img {
+        height: 24px;
+      }
+    }
+    ul {
+      min-width: 140px;
+      padding: 1rem 0.4rem 0.4rem 0.4rem;
+      list-style-type: none;
+      margin: 0;
+      text-decoration: none;
+      text-transform: uppercase;
+      & :hover {
+        opacity: 0.8;
+      }
+    }
+    .menu-item-with-icon {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      img {
+        display: block;
+        height: 16px;
+      }
+    }
+  }
+}
+
+a {
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  color: $white;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #333;
+  background-color: $white;
+}
+
+#about {
+  font-size: 2rem;
+  h1 {
+    margin: 0;
+  }
+  p {
+    color: lighten($primary-blue, 20%);
+  }
 }
