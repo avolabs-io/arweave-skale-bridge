@@ -108,6 +108,8 @@ module UserProfileDataLoader = {
 let make = (~children) => {
   let authObject = OneGraph.initialize({appId: appId});
   let isLoggedIn = RootProvider.useIsLoggedIn();
+  let isLoading = RootProvider.useIsLoading();
+  let setLoading = RootProvider.useSetLoading();
   let hasFetched = RootProvider.useHasFetchedLoginState();
   let setHasFetched = RootProvider.useSetHasFetchedLoginState();
   let performLogin = RootProvider.useLogin();
@@ -142,16 +144,21 @@ let make = (~children) => {
 
   // TODO: move more of this logic to the RootProvider.
   let onClick = _ => {
+    setLoading();
     Js.Promise.then_(_ => {recordLogin()}, authObject.login(. "github"))
     ->ignore;
     ();
   };
 
   <div className="login">
-    {if (!hasFetched) {
+    {if (isLoading) {
        <div className="loader-container">
          <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
          <h3> "Logging in..."->React.string </h3>
+       </div>;
+     } else if (!hasFetched) {
+       <div className="loader-container">
+         <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
        </div>;
      } else if (isLoggedIn) {
        <UserProfileDataLoader> children </UserProfileDataLoader>;

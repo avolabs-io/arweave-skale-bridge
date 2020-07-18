@@ -120,33 +120,41 @@ button:hover {
 }
 
 .menu {
-  background-color: #ffffff33;
-  padding: 0.3rem;
-  font-size: 16px;
-  button {
-    display: block;
-    margin-left: auto;
-    img {
-      height: 24px;
-    }
-  }
-  ul {
-    padding: 1rem;
-    list-style-type: none;
-    margin: 0;
-    text-decoration: none;
-    text-transform: uppercase;
-    & :hover {
-      opacity: 0.8;
-    }
-  }
-  .menu-item-with-icon {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    img {
+  // background-color: #ffffff55;
+  background-color: $dark-color;
+  border-radius: 3px;
+  .menu-inner {
+    border-radius: 3px;
+    border: 1px solid $white;
+    padding: 0.2rem;
+    margin: 0.2rem;
+    font-size: 16px;
+    button {
       display: block;
-      height: 16px;
+      margin-left: auto;
+      img {
+        height: 24px;
+      }
+    }
+    ul {
+      min-width: 140px;
+      padding: 1rem 0.4rem 0.4rem 0.4rem;
+      list-style-type: none;
+      margin: 0;
+      text-decoration: none;
+      text-transform: uppercase;
+      & :hover {
+        opacity: 0.8;
+      }
+    }
+    .menu-item-with-icon {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      img {
+        display: block;
+        height: 16px;
+      }
     }
   }
 }

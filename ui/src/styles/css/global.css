@@ -92,29 +92,35 @@ button:hover {
   border-radius: 4px; }
 
 .menu {
-  background-color: #ffffff33;
-  padding: 0.3rem;
-  font-size: 16px; }
-  .menu button {
-    display: block;
-    margin-left: auto; }
-    .menu button img {
-      height: 24px; }
-  .menu ul {
-    padding: 1rem;
-    list-style-type: none;
-    margin: 0;
-    text-decoration: none;
-    text-transform: uppercase; }
-    .menu ul :hover {
-      opacity: 0.8; }
-  .menu .menu-item-with-icon {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between; }
-    .menu .menu-item-with-icon img {
+  background-color: #121925;
+  border-radius: 3px; }
+  .menu .menu-inner {
+    border-radius: 3px;
+    border: 1px solid #fff;
+    padding: 0.2rem;
+    margin: 0.2rem;
+    font-size: 16px; }
+    .menu .menu-inner button {
       display: block;
-      height: 16px; }
+      margin-left: auto; }
+      .menu .menu-inner button img {
+        height: 24px; }
+    .menu .menu-inner ul {
+      min-width: 140px;
+      padding: 1rem 0.4rem 0.4rem 0.4rem;
+      list-style-type: none;
+      margin: 0;
+      text-decoration: none;
+      text-transform: uppercase; }
+      .menu .menu-inner ul :hover {
+        opacity: 0.8; }
+    .menu .menu-inner .menu-item-with-icon {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between; }
+      .menu .menu-inner .menu-item-with-icon img {
+        display: block;
+        height: 16px; }
 
 a {
   font-family: "Nunito", sans-serif;
