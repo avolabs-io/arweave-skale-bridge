@@ -14,7 +14,7 @@ let make = () => {
 
   if (isLoggedIn) {
     <button onClick className="logout">
-      <img src="./assets/logout.svg" />
+      <img src="./assets/icons/logout.svg" />
     </button>;
   } else {
     <span />;

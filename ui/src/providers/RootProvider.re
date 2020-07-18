@@ -21,24 +21,33 @@ module MeQuery = [%graphql
 type userDetailsObj = MeQuery.t_user_github;
 type rootContextType = {
   isLoggedIn: bool,
+  hasFetchedLoginState: bool,
   userDetails: option(userDetailsObj),
   authHeader: option(authHeader),
 };
 type rootActions =
   | LogOut
+  | HasCompletedFetching
   | Login(authHeader)
   | LoadDetails(userDetailsObj);
 
-let defaultContext = {isLoggedIn: false, userDetails: None, authHeader: None};
+let defaultContext = {
+  isLoggedIn: false,
+  hasFetchedLoginState: false,
+  userDetails: None,
+  authHeader: None,
+};
 
 let reducer = (prevState, action) =>
   switch (action) {
-  | LogOut => defaultContext
+  | LogOut => {...defaultContext, hasFetchedLoginState: true}
   | Login(authHeader) => {
       ...prevState,
       isLoggedIn: true,
+      hasFetchedLoginState: true,
       authHeader: Some(authHeader),
     }
+  | HasCompletedFetching => {...prevState, hasFetchedLoginState: true}
   | LoadDetails(userDetails) => {
       ...prevState,
       userDetails: Some(userDetails),
@@ -131,10 +140,23 @@ let useLogin = () => {
   };
 };
 
+let useSetHasFetchedLoginState = () => {
+  let (_, dispatch) = React.useContext(RootContext.context);
+  () => {
+    dispatch(HasCompletedFetching);
+  };
+};
+
 let useIsLoggedIn: unit => bool =
   () => {
     let (state, _) = React.useContext(RootContext.context);
     state.isLoggedIn;
+  };
+
+let useHasFetchedLoginState: unit => bool =
+  () => {
+    let (state, _) = React.useContext(RootContext.context);
+    state.hasFetchedLoginState;
   };
 
 let useCurrentUserDetails: unit => option(userDetailsObj) =

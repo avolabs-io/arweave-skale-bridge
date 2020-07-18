@@ -7,13 +7,17 @@ module AuthenticatedRoute = {
 let make = () => {
   let route = Router.useRouter();
   <div className="app">
-    <Logout />
+    <Menu />
+    // <Logout />
     {switch (route) {
-     | Some(Config) => <AuthenticatedRoute> <Config /> </AuthenticatedRoute>
      | Some(Main) =>
        <AuthenticatedRoute>
          <p> "Home page"->React.string </p>
+         <a href="/create-bridge"> "Create Bridge"->React.string </a>
        </AuthenticatedRoute>
+     | Some(CreateBridge) =>
+       <AuthenticatedRoute> <Onboarding /> </AuthenticatedRoute>
+     | Some(Config) => <AuthenticatedRoute> <Config /> </AuthenticatedRoute>
      | Some(About) => <About />
      | Some(GqlExamplesPage) => <GqlExamples />
      | None => <NotFound />
