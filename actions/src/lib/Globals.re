@@ -1,5 +1,6 @@
 include Belt;
 include Async;
+module Prometo = Yawaramin__Prometo;
 
 module AsyncWrap = {
   let let_ = mapAsync;

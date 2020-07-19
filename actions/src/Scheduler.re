@@ -15,34 +15,6 @@ open Globals;
 type apolloQueryResult('a) =
   ApolloClient__ApolloClient.ApolloQueryResult.t('a);
 
-// module TESTING = [%graphql
-//   {|
-// query MyQuery {
-//   bridge_data {
-//     active
-//     arweave_endpoint_id
-//     contentType
-//     id
-//     label
-//     metaData
-//     next_scheduled_sync
-//     skale_endpoint_id
-//     userId
-//     frequency_setting {
-//       frequency
-//     }
-//     bridge_sync_rel_aggregate(where: {}) {
-//       aggregate {
-//         max {
-//           index
-//         }
-//       }
-//     }
-//   }
-// }
-
-// |}
-// ];
 //// QUERIES /////
 module GetNextScheduledSyncs = [%graphql
   {|
@@ -69,7 +41,7 @@ query GetItemsReadyForSync ($endTime: Int!) {
     }
     skale_endpoint_id
     userId
-    bridge_sync_rel_aggregate(where: {}) {
+    bridge_sync_rel_aggregate {
       aggregate {
         max {
           index
@@ -80,14 +52,6 @@ query GetItemsReadyForSync ($endTime: Int!) {
 }
 |}
 ];
-/*
- bridge_sync_rel_aggregate(where: {}) {
-   aggregate {
-     max {
-       index
-     }
-   }
- } */
 
 //// MUTATIONS /////
 module AddSyncItem = [%graphql
@@ -111,23 +75,64 @@ mutation ScheduleNextSyncTime($id: Int!, $frequencyDurationSeconds: Int!) {
 |}
 ];
 
-let addSyncItem = (~bridgeId, ~index, ~startTime) => {
+let handleMutateErrorPromise = (promise, ~onError) => {
+  promise
+  ->Prometo.fromPromise
+  ->Prometo.handle(
+      ~f=(
+           result:
+             Pervasives.result(
+               ApolloClient__ApolloClient.FetchResult.t(_),
+               [> Globals.Prometo.error],
+             ),
+         ) => {
+      switch (result) {
+      | Ok(mutationResult) =>
+        switch (mutationResult) {
+        | {data: Some(data), errors: None} => Ok(data)
+        | {errors: Some(error)} =>
+          onError();
+          Error(`Prometo_error(error->Obj.magic));
+        | _ =>
+          onError();
+          Error(`Prometo_error("unknownError"->Obj.magic));
+        }
+      | Error(a) =>
+        onError();
+        Error(a);
+      }
+    });
+};
+
+let addSyncItem = (~onError, ~bridgeId, ~index, ~startTime) => {
   Client.instance
   ->ApolloClient.mutate(
       ~mutation=(module AddSyncItem),
       {bridgeId, index, startTime},
     )
-  ->ignore;
-  // TODO: id of bridgeSyncItem returned, so can be passed on to uploadChunkToArweave function
+  ->handleMutateErrorPromise(~onError);
 };
 
-let updateSyncTime = (id, frequencyDurationSeconds) => {
+let updateSyncTime = (~onError, id, frequencyDurationSeconds) => {
   Client.instance
   ->ApolloClient.mutate(
       ~mutation=(module UpdateNextSync),
       {id, frequencyDurationSeconds},
     )
-  ->ignore;
+  ->handleMutateErrorPromise(~onError);
+};
+
+let getMaxIndexSyncFromAgregate =
+    (
+      maxAgregate:
+        option(
+          GetNextScheduledSyncs.t_bridge_data_bridge_sync_rel_aggregate_aggregate,
+        ),
+    ) => {
+  maxAgregate
+  ->Option.flatMap(obj => {obj.max})
+  ->Option.flatMap(max => {max.index})
+  ->Option.getWithDefault(0);
 };
 
 // for every item.
@@ -151,14 +156,45 @@ let processBridges = updateInterval => {
         switch (result) {
         | {data: Some({bridge_data})} =>
           bridge_data
-          ->Array.map(({id, frequency_duration_seconds}) => {
-              addSyncItem(
-                ~bridgeId=id,
-                ~index=1 + 1,
-                ~startTime=currentTimestamp,
-              );
-              updateSyncTime(id, frequency_duration_seconds);
-              Upload.uploadChunkToArweave();
+          ->Array.map(
+              (
+                {
+                  id,
+                  frequency_duration_seconds,
+                  bridge_sync_rel_aggregate: {aggregate: maxValue},
+                  contentType,
+                  skale_endpoint,
+                },
+              ) => {
+              // TODO: this is temporary code. Will make update hasura so that the scale endpoint isn't an `optional`
+              let skaleEndpointUri =
+                skale_endpoint->Option.mapWithDefault(
+                  "THIS SHOULD NEVER BE NULL - UPDATE HASURA ASAP", endpoint =>
+                  endpoint.uri
+                );
+
+              updateSyncTime(
+                ~onError=_ => Js.log("error"),
+                id,
+                frequency_duration_seconds,
+              )
+              ->Prometo.flatMap(~f=_ => {
+                  addSyncItem(
+                    ~onError=_ => Js.log("error"),
+                    ~bridgeId=id,
+                    ~index=maxValue->getMaxIndexSyncFromAgregate + 1,
+                    ~startTime=currentTimestamp,
+                  )
+                })
+              ->Prometo.flatMap(~f=result => {
+                  Skale.processDataFetching(
+                    ~onError=_ => Js.log("Error fetching skale data"),
+                    ~typeOfDataFetch=contentType,
+                    ~endpoint=skaleEndpointUri,
+                  )
+                })
+              ->Prometo.flatMap(~f=result => {Upload.uploadChunkToArweave(~protocol="http", ~port=4646, ~host="Arweave test port", ~onError=(_) => Js.log("error uploading to arweave"))})
+              ->ignore;
             })
           ->ignore
         | _ => Js.Exn.raiseError("Error: failed to query")
