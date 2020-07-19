@@ -4,68 +4,54 @@ open Globals;
 Dotenv.config();
 [@bs.val] external port: string = "process.env.PORT";
 
-// let apolloClient = Client.instance;
-
-module PeopleQuery = [%graphql
+module AddArweaveWallet = [%graphql
   {|
-  query PeopleQuery {
-    people: allPersons {
-      id
-      name
+  mutation CreateWallet($pubKey: String!, $userId: String!, $privKey: json!) {
+    insert_arweave_key_one(object: {priv_key: $privKey, pub_key: $pubKey, user_id: $userId}) {
+      user_id
     }
   }
 |}
 ];
 
-module StartCron = {
+module Arweave = {
   [@decco.decode]
-  type body_in = unit;
+  type userIdObj = {userId: string};
+  [@decco.decode]
+  type body_in = {input: userIdObj};
   [@decco.encode]
-  type body_out = unit;
-
-  let endpoint =
+  type body_out = {address: string};
+  // TODO: add better security to this endpoint.
+  let createArweaveWallet =
     Serbet.jsonEndpoint({
       verb: POST,
-      path: "/startWatcher",
+      path: "/createArweaveWallet",
       body_in_decode,
       body_out_encode,
-      handler: (_body, _req) => {
+      handler: (body, _req) => {
+        let instance = Arweave.defaultInstance;
+        let%Async jwk = instance->Arweave.generateWallet();
+
+        let%Async pubKey = instance->Arweave.getPublicKey(jwk);
+
         Client.instance
-        ->ApolloClient.query(~query=(module PeopleQuery), ())
-        ->Js.Promise.then_(
-            (result: ApolloClient__ApolloClient.ApolloQueryResult.t(_)) =>
-              switch (result) {
-              | {data: Some({PeopleQuery.people})} =>
-                Js.Promise.resolve(Js.log2("Data: ", people))
-              | _ => Js.Exn.raiseError("Error: no people!")
-              },
-            _,
+        ->ApolloClient.mutate(
+            ~mutation=(module AddArweaveWallet),
+            {
+              privKey: jwk->Arweave.jwk_encode,
+              pubKey,
+              userId: body.input.userId,
+            },
           )
+        ->Js.Promise.then_(_result => {address: pubKey}->async, _)
         ->Js.Promise.catch(
-            eeyore => Js.Promise.resolve(Js.log2("Error: ", eeyore)),
+            error => {
+              Js.log2("error", error);
+
+              {address: "ERROR"}->async;
+            },
             _,
           );
-      },
-    });
-
-  let testEndpoint =
-    Serbet.jsonEndpoint({
-      verb: POST,
-      path: "/test-function",
-      body_in_decode,
-      body_out_encode,
-      handler: (_body, _req) => {
-        Js.log("logging something");
-        let%Async result =
-          Client.instance->ApolloClient.query(
-            ~query=(module PeopleQuery),
-            (),
-          );
-        switch (result) {
-        | {data: Some({PeopleQuery.people})} =>
-          Js.Promise.resolve(Js.log2("Data: ", people))
-        | _ => Js.Exn.raiseError("Error: no people!")
-        };
       },
     });
 };
@@ -73,5 +59,5 @@ module StartCron = {
 let app =
   Serbet.application(
     ~port=port->int_of_string_opt |||| 9898,
-    [StartCron.endpoint, StartCron.testEndpoint],
+    [Arweave.createArweaveWallet],
   );

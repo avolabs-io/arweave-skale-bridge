@@ -1,7 +1,0 @@
-- args:
-    name: myrelationship
-    new_name: hjh
-    table:
-      name: aaaxyz
-      schema: public
-  type: rename_relationship

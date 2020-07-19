@@ -1,0 +1,33 @@
+- args:
+    enums: []
+    input_objects:
+    - description: null
+      fields:
+      - description: null
+        name: userId
+        type: String!
+      name: Input
+    objects:
+    - description: null
+      fields:
+      - description: null
+        name: address
+        type: String!
+      name: Output
+    scalars: []
+  type: set_custom_types
+- args:
+    comment: null
+    definition:
+      arguments:
+      - description: null
+        name: arg1
+        type: Input!
+      forward_client_headers: false
+      handler: http://localhost:9898
+      headers: []
+      kind: synchronous
+      output_type: Output
+      type: mutation
+    name: createArweaveWallet
+  type: create_action

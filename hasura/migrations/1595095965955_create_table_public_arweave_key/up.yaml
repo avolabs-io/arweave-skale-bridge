@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "public"."arweave_key"("user_id" text NOT NULL, "pub_key" text
+      NOT NULL, PRIMARY KEY ("pub_key") , UNIQUE ("user_id"), UNIQUE ("pub_key"));
+  type: run_sql
+- args:
+    name: arweave_key
+    schema: public
+  type: add_existing_table_or_view
