@@ -1,0 +1,16 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_sync" ALTER COLUMN "start_time" TYPE timestamp
+      with time zone;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_sync" ALTER COLUMN "start_time" DROP NOT NULL;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."bridge_sync" rename column "start_time" to "start_time_deprecated";
+  type: run_sql

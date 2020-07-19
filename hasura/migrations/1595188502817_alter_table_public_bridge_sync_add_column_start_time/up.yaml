@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_sync" ADD COLUMN "start_time" integer NOT NULL;
+  type: run_sql

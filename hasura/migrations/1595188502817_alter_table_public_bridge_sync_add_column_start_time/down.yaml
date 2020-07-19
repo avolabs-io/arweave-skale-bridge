@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_sync" DROP COLUMN "start_time";
+  type: run_sql

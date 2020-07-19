@@ -1,6 +1,10 @@
 include Belt;
 include Async;
 
+module AsyncWrap = {
+  let let_ = mapAsync;
+};
+
 let oMap = Belt.Option.map;
 let (<$>) = oMap;
 let oFlatMap = Belt.Option.flatMap;

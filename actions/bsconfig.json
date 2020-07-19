@@ -40,7 +40,7 @@
     "bs-fetch",
     "bs-cron",
     "@reasonml-community/graphql-ppx",
-    // "@yawaramin/prometo",
+    "@yawaramin/prometo",
     // "reason-promise",
     "reason-react" // This is needed by apollo probably... Don't use in code
   ]

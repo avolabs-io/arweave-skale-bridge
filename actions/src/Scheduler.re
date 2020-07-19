@@ -12,12 +12,42 @@
 open BsCron;
 open Globals;
 
+type apolloQueryResult('a) =
+  ApolloClient__ApolloClient.ApolloQueryResult.t('a);
+
+// module TESTING = [%graphql
+//   {|
+// query MyQuery {
+//   bridge_data {
+//     active
+//     arweave_endpoint_id
+//     contentType
+//     id
+//     label
+//     metaData
+//     next_scheduled_sync
+//     skale_endpoint_id
+//     userId
+//     frequency_setting {
+//       frequency
+//     }
+//     bridge_sync_rel_aggregate(where: {}) {
+//       aggregate {
+//         max {
+//           index
+//         }
+//       }
+//     }
+//   }
+// }
+
+// |}
+// ];
 //// QUERIES /////
 module GetNextScheduledSyncs = [%graphql
   {|
-query getItemsReadyForSync ($endTime: Int!) {
+query GetItemsReadyForSync ($endTime: Int!) {
   bridge_data(where: {next_scheduled_sync: { _lt: $endTime}, active: {_eq: true}}) {
-    active
     arweave_endpoint_rel {
       id
       user_id
@@ -32,8 +62,6 @@ query getItemsReadyForSync ($endTime: Int!) {
       frequency
     }
     id
-    label
-    metaData
     next_scheduled_sync
     skale_endpoint {
       uri
@@ -41,16 +69,31 @@ query getItemsReadyForSync ($endTime: Int!) {
     }
     skale_endpoint_id
     userId
+    bridge_sync_rel_aggregate(where: {}) {
+      aggregate {
+        max {
+          index
+        }
+      }
+    }
   }
 }
 |}
 ];
+/*
+ bridge_sync_rel_aggregate(where: {}) {
+   aggregate {
+     max {
+       index
+     }
+   }
+ } */
 
 //// MUTATIONS /////
 module AddSyncItem = [%graphql
   {|
   mutation InsertBridgeSyncItem($bridgeId: Int!, $index: Int!, $startTime: Int!) {
-    insert_bridge_sync_one(object: {Info: "", bridge_id: $bridgeId, end_time: "", index: $index, start_time: $startTime, status: "Initiated"}) {
+    insert_bridge_sync_one(object: {Info: "", bridge_id: $bridgeId, index: $index, start_time: $startTime, status: "Initiated"}) {
       id
     }
   }
@@ -68,7 +111,7 @@ mutation ScheduleNextSyncTime($id: Int!, $frequencyDurationSeconds: Int!) {
 |}
 ];
 
-let addSyncItem = (bridgeId, index, startTime) => {
+let addSyncItem = (~bridgeId, ~index, ~startTime) => {
   Client.instance
   ->ApolloClient.mutate(
       ~mutation=(module AddSyncItem),
@@ -91,46 +134,56 @@ let updateSyncTime = (id, frequencyDurationSeconds) => {
 // create a sync Item In the table.
 // mutation to update when next sync should be (based on frequency). (does this change if current sync fails.)
 // call uploadChunkToArweave
-let processBridges = () => {
+let processBridges = updateInterval => {
   let currentTimestamp = Js.Math.floor_int(Js.Date.now() /. 1000.);
-  let endTime = currentTimestamp;
+  // NOTE: Here we take the end time to be halfway between this interval and the next.
+  //       This means that it processes any future items that are closer to this interval than the next interval.
+  //       The idea is that this will prevent 'drift', where you'll have an off-by-one interval.
+  let endTime = currentTimestamp + updateInterval / 2;
+
   Client.instance
   ->ApolloClient.query(
       ~query=(module GetNextScheduledSyncs),
       {endTime: endTime},
     )
-  ->Js.Promise.then_(
-      (result: ApolloClient__ApolloClient.ApolloQueryResult.t(_)) =>
-        GetNextScheduledSyncs.(
-          switch (result) {
-          | {data: Some({bridge_data})} =>
-            bridge_data
-            ->Array.map(({id, frequency_duration_seconds}) => {
-                addSyncItem(id, 1, currentTimestamp);
-                updateSyncTime(id, frequency_duration_seconds);
-                Upload.uploadChunkToArweave();
-              })
-            ->ignore;
-            Js.Promise.resolve(Js.log2("Data: ", bridge_data));
-          | _ => Js.Exn.raiseError("Error: no people!")
-          }
-        ),
-      _,
+  ->mapAsync((result: apolloQueryResult(_)) =>
+      GetNextScheduledSyncs.(
+        switch (result) {
+        | {data: Some({bridge_data})} =>
+          bridge_data
+          ->Array.map(({id, frequency_duration_seconds}) => {
+              addSyncItem(
+                ~bridgeId=id,
+                ~index=1 + 1,
+                ~startTime=currentTimestamp,
+              );
+              updateSyncTime(id, frequency_duration_seconds);
+              Upload.uploadChunkToArweave();
+            })
+          ->ignore
+        | _ => Js.Exn.raiseError("Error: failed to query")
+        }
+      )
     )
-  ->Js.Promise.catch(
-      eeyore => Js.Promise.resolve(Js.log2("Error: ", eeyore)),
-      _,
-    )
+  ->catchAsync(error => Js.Promise.resolve(Js.log2("Error: ", error)))
   ->ignore;
 };
 
-let job =
-  CronJob.make(
-    `CronString("* * * * * *"), // every second
-    // `CronString("* * * * *"), // every minute
-    //`CronString("* * * *"), // every hour
-    _ => {Js.log("every hour")},
-    (),
-  );
+//// NOTE: only kept for reference if we ever plan to move back to using cron jobs.
+// let job =
+//   CronJob.make(
+//     `CronString("* * * * * *"), // every second
+//     // `CronString("* * * * *"), // every minute
+//     //`CronString("* * * *"), // every hour
+//     _ => {Js.log("every hour")},
+//     (),
+//   );
 
-let startScheduler = () => start(job);
+let startScheduler = updateInterval =>
+  Js.Global.setInterval(
+    () => {
+      Js.log("processing the bridges");
+      processBridges(updateInterval);
+    },
+    updateInterval,
+  );
