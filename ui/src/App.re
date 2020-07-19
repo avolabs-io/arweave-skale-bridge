@@ -15,7 +15,7 @@ let make = () => {
      | Some(Profile) => <Login> <Profile /> </Login>
      | Some(Dashboard) => <Login> <Dashboard /> </Login>
      | Some(Config) => <Login> <Config /> </Login>
-     | Some(About) => <About />
+     | Some(About) => <Login loginProtected=false> <About /> </Login>
      | Some(Bridge(_id)) =>
        <Login>
          <p>

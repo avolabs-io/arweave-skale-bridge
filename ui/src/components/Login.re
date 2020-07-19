@@ -105,7 +105,7 @@ module UserProfileDataLoader = {
 };
 
 [@react.component]
-let make = (~children) => {
+let make = (~children, ~loginProtected=true) => {
   let authObject = OneGraph.initialize({appId: appId});
   let isLoggedIn = RootProvider.useIsLoggedIn();
   let isLoading = RootProvider.useIsLoading();
@@ -151,7 +151,9 @@ let make = (~children) => {
   };
 
   <div className="login">
-    {if (isLoading) {
+    {if (!loginProtected) {
+       children;
+     } else if (isLoading) {
        <div className="loader-container">
          <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
          <h3> "Logging in..."->React.string </h3>
