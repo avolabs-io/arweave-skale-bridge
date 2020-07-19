@@ -1,6 +1,0 @@
-- args:
-    relationship: arweave_key
-    table:
-      name: bridge_data
-      schema: public
-  type: drop_relationship

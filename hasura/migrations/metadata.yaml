@@ -18,14 +18,14 @@ tables:
           name: arweave_endpoint
         column_mapping:
           arweave_endpoint_id: id
-  - name: arweave_key
+  - name: frequency_setting
     using:
       manual_configuration:
         remote_table:
           schema: public
-          name: arweave_key
+          name: frequency_options
         column_mapping:
-          userId: user_id
+          frequency: frequency
   - name: skale_endpoint
     using:
       manual_configuration:
@@ -65,6 +65,9 @@ tables:
           status: sync_status
 - table:
     schema: public
+    name: frequency_options
+- table:
+    schema: public
     name: skale_endpoint
 - table:
     schema: public
@@ -79,3 +82,32 @@ remote_schemas:
     url: https://serve.onegraph.com/graphql?app_id=80d287f5-a514-46ca-a17a-caa263b8e2cb
     timeout_seconds: 60
     forward_client_headers: true
+actions:
+- name: createArweaveWallet
+  definition:
+    handler: http://hasura-actions:9898/createArweaveWallet
+    output_type: Output
+    arguments:
+    - name: userId
+      type: String!
+    type: mutation
+    kind: synchronous
+custom_types:
+  input_objects:
+  - name: Input
+    fields:
+    - name: userId
+      type: String!
+  objects:
+  - name: Output
+    fields:
+    - name: address
+      type: String!
+    relationships:
+    - remote_table:
+        schema: public
+        name: arweave_key
+      name: arweave_key_data
+      type: object
+      field_mapping:
+        address: pub_key

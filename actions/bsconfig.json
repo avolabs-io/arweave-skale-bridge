@@ -38,6 +38,7 @@
     "decco",
     "serbet",
     "bs-fetch",
+    "bs-cron",
     "@reasonml-community/graphql-ppx",
     // "@yawaramin/prometo",
     // "reason-promise",

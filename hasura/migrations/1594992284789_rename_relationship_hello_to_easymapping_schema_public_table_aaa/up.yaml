@@ -1,7 +1,0 @@
-- args:
-    name: hello
-    new_name: easymapping
-    table:
-      name: aaa
-      schema: public
-  type: rename_relationship

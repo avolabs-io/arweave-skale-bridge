@@ -1,0 +1,13 @@
+- args:
+    name: frequency_setting
+    table:
+      name: bridge_data
+      schema: public
+    using:
+      manual_configuration:
+        column_mapping:
+          frequency: frequency
+        remote_table:
+          name: frequency_options
+          schema: public
+  type: create_object_relationship

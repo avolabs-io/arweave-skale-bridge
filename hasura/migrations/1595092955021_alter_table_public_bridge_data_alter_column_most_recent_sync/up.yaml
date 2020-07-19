@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."bridge_data" rename column "most_recent_sync" to "next_scheduled_sync";
+  type: run_sql
