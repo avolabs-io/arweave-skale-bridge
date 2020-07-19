@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."arweave_endpoint" ALTER COLUMN "uri" DROP NOT NULL;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."arweave_endpoint" rename column "uri" to "uri_deprecated";
+  type: run_sql

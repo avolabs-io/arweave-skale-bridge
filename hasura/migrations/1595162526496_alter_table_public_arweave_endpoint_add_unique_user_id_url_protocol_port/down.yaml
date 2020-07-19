@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."arweave_endpoint" drop constraint "arweave_endpoint_user_id_url_protocol_port_key";
+  type: run_sql

@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."arweave_endpoint" DROP COLUMN "protocol";
+  type: run_sql

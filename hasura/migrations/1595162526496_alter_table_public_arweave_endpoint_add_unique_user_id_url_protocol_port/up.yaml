@@ -1,0 +1,6 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."arweave_endpoint" add constraint "arweave_endpoint_user_id_url_protocol_port_key"
+      unique ("user_id", "url", "protocol", "port");
+  type: run_sql
