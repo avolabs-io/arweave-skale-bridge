@@ -1,0 +1,10 @@
+- args:
+    cascade: true
+    read_only: false
+    sql: |-
+      insert into frequency_options (frequency) values
+        ('2hours'),
+        ('6hours'),
+        ('12hours'),
+        ('daily');
+  type: run_sql

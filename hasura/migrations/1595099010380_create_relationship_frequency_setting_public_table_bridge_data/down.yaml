@@ -1,0 +1,6 @@
+- args:
+    relationship: frequency_setting
+    table:
+      name: bridge_data
+      schema: public
+  type: drop_relationship
