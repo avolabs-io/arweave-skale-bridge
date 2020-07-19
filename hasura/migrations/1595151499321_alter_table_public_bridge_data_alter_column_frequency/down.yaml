@@ -1,0 +1,6 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."bridge_data" rename column "frequency_deprecated" to
+      "frequency";
+  type: run_sql
