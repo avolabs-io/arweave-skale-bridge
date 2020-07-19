@@ -1,0 +1,7 @@
+- args:
+    name: arweave_endpoint
+    new_name: arweave_endpoint_rel
+    table:
+      name: bridge_data
+      schema: public
+  type: rename_relationship
