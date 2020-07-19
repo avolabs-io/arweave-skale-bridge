@@ -28,10 +28,9 @@ module CreateArweaveEndpoint = {
     </div>;
   };
 };
-
 [@react.component]
 let make = () => {
-  let (onboardingStep, setOnboardingStep) = React.useState(_ => Frequency); //TODO remember to change this back to Overview
+  let (onboardingStep, setOnboardingStep) = React.useState(_ => Overview); //TODO remember to change this back to Overview
 
   switch (onboardingStep) {
   | Overview =>
