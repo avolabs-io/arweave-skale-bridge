@@ -1,6 +1,8 @@
 open Serbet.Endpoint;
 open Globals;
 
+Scheduler.startScheduler();
+
 Dotenv.config();
 [@bs.val] external port: string = "process.env.PORT";
 

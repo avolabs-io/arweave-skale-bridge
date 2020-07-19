@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "public"."frequency_options"("frequency" text NOT NULL, PRIMARY
+      KEY ("frequency") , UNIQUE ("frequency"));
+  type: run_sql
+- args:
+    name: frequency_options
+    schema: public
+  type: add_existing_table_or_view
