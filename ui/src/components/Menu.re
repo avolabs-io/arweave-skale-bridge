@@ -1,3 +1,5 @@
+open Router;
+
 Dotenv.config();
 [@bs.val] external appId: string = "process.env.REACT_APP_LOGIN_APP_ID";
 
@@ -25,14 +27,25 @@ let make = () => {
       </button>
       {menuOpen
          ? <ul>
-             <li> <a href="/"> "Home"->React.string </a> </li>
-             <li> <a href="/about"> "About"->React.string </a> </li>
+             <li> <Link route=Main> "Home"->React.string </Link> </li>
+             <li> <Link route=About> "About"->React.string </Link> </li>
              {isLoggedIn
                 ? <>
                     <li>
-                      <a href="/create-bridge">
+                      <Link route=CreateBridge>
                         "Create bridge"->React.string
-                      </a>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link route=Dashboard> "Dashboard"->React.string </Link>
+                    </li>
+                    <li>
+                      <Link route=Profile>
+                        <span className="menu-item-with-icon">
+                          <span> "Profile "->React.string </span>
+                          <img src="/assets/icons/profile.svg" />
+                        </span>
+                      </Link>
                     </li>
                     <hr />
                     <li>
@@ -47,12 +60,12 @@ let make = () => {
                 : <>
                     <hr />
                     <li>
-                      <a href="/">
+                      <Link route=Main>
                         <span className="menu-item-with-icon">
                           <span> "Login "->React.string </span>
                           <img src="/assets/icons/github-white.svg" />
                         </span>
-                      </a>
+                      </Link>
                     </li>
                   </>}
            </ul>

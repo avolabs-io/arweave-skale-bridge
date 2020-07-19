@@ -1,0 +1,6 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_data" ADD COLUMN "frequency_duration_seconds"
+      integer NOT NULL;
+  type: run_sql

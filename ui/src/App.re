@@ -1,24 +1,28 @@
-module AuthenticatedRoute = {
-  [@react.component]
-  let make = (~children) => <Login> children </Login>;
-};
+open Router;
 
 [@react.component]
 let make = () => {
-  let route = Router.useRouter();
+  let route = useRouter();
   <div className="app">
     <Menu />
-    // <Logout />
     {switch (route) {
      | Some(Main) =>
-       <AuthenticatedRoute>
+       <Login>
          <p> "Home page"->React.string </p>
-         <a href="/create-bridge"> "Create Bridge"->React.string </a>
-       </AuthenticatedRoute>
-     | Some(CreateBridge) =>
-       <AuthenticatedRoute> <Onboarding /> </AuthenticatedRoute>
-     | Some(Config) => <AuthenticatedRoute> <Config /> </AuthenticatedRoute>
-     | Some(About) => <About />
+         <Link route=CreateBridge> "Create Bridge"->React.string </Link>
+       </Login>
+     | Some(CreateBridge) => <Login> <Onboarding /> </Login>
+     | Some(Profile) => <Login> <Profile /> </Login>
+     | Some(Dashboard) => <Login> <Dashboard /> </Login>
+     | Some(Config) => <Login> <Config /> </Login>
+     | Some(About) => <Login loginProtected=false> <About /> </Login>
+     | Some(Bridge(_id)) =>
+       <Login>
+         <p>
+           "TODO - show a page that allows the user to edit their bridge"
+           ->React.string
+         </p>
+       </Login>
      | Some(GqlExamplesPage) => <GqlExamples />
      | None => <NotFound />
      }}

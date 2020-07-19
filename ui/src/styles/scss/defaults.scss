@@ -1,0 +1,26 @@
+/* 
+
+Color palette v0
+-----------------
+dark blue: #5B7ABA
+dark blue gradient: linear-gradient(
+    to right,
+    #2a5298,
+    #1e3c72
+  );
+*/
+
+$dark-color: #121925;
+$primary-blue: #5b7aba;
+$white: #fff;
+$blue-gradient-light: #2a5298;
+$blue-gradient-dark: #1e3c72;
+
+/* 
+
+Mobile Sizes
+-----------------
+
+*/
+
+$breakpoint-tablet: 768px;

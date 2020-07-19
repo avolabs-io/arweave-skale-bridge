@@ -1,0 +1,59 @@
+@import "./defaults";
+
+.funnel-step-container {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  margin: 1rem;
+  border: 2px solid $white;
+  border-radius: 4px;
+  @media (min-width: $breakpoint-tablet) {
+    min-width: 300px;
+  }
+  h2 {
+    font-family: "Nunito", sans-serif;
+    font-weight: bold;
+    color: $white;
+    margin-top: 0;
+  }
+  .prev-next-container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    button {
+      color: $white;
+      padding: 0.2rem;
+      text-transform: uppercase;
+      font-family: "Nunito", sans-serif;
+      font-weight: bold;
+      font-size: 12px;
+      background-color: $dark-color;
+      border-radius: 5px;
+    }
+  }
+}
+
+.overview {
+  h4 {
+    color: $white;
+    margin: 5px 0;
+  }
+
+  p {
+    color: lighten($primary-blue, 10%);
+    margin: 2px 0;
+  }
+}
+
+.full-width-button {
+  color: $white;
+  width: 100%;
+  margin: 2rem 0 0 0;
+  padding: 0.4rem;
+  text-transform: uppercase;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: $dark-color;
+  border-radius: 5px;
+}

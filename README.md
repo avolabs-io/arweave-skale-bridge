@@ -22,6 +22,10 @@ start ui
 
 `cd ui && yarn dev`
 
+build scss (needed when creating a new scss file)
+
+`cd ui && yarn scss`
+
 build ui
 
 `cd ui && yarn build`
