@@ -1,3 +1,5 @@
+open Globals;
+
 module GetSkaleDataTypesQuery = [%graphql
   {|
   query DataTypesQuery {
@@ -10,10 +12,8 @@ module GetSkaleDataTypesQuery = [%graphql
 
 module DataTypeSelect = {
   [@react.component]
-  let make = () => {
+  let make = (~setSkaleDataType, ~skaleDataTypeInput) => {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
-    let (selectedSkaleDataType, setSelectedSkaleDataType) =
-      React.useState(() => "");
 
     let skaleDataTypeQueryResult =
       GetSkaleDataTypesQuery.use(
@@ -43,10 +43,10 @@ module DataTypeSelect = {
              <select
                name="skaleDataType"
                id="skaleDataType"
-               value=selectedSkaleDataType
+               value={skaleDataTypeInput->Option.getWithDefault("")}
                onChange={event => {
                  let value = ReactEvent.Form.target(event)##value;
-                 setSelectedSkaleDataType(_ => value);
+                 setSkaleDataType(_ => Some(value));
                }}>
                {data.skale_data_type_enum
                 ->Belt.Array.map(dataType =>
@@ -66,15 +66,14 @@ module DataTypeSelect = {
 };
 
 [@react.component]
-let make = (~moveToNextStep, ~moveToPrevStep) => {
-  let (_frequencyRadio, _setFrequencyRadio) = React.useState(_ => "hourly");
-
+let make =
+    (~moveToNextStep, ~moveToPrevStep, ~setSkaleDataType, ~skaleDataTypeInput) => {
   <div className="funnel-step-container">
     <h2> "Skale Data"->React.string </h2>
     <h4>
       "Please select the type of data you would like to backup"->React.string
     </h4>
-    <div> <DataTypeSelect /> </div>
+    <div> <DataTypeSelect setSkaleDataType skaleDataTypeInput /> </div>
     <NavigationButtons moveToNextStep moveToPrevStep />
   </div>;
 };
