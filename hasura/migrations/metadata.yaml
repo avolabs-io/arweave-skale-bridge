@@ -10,7 +10,7 @@ tables:
     schema: public
     name: bridge_data
   object_relationships:
-  - name: arweave_endpoint_rel
+  - name: arweave_endpoint
     using:
       manual_configuration:
         remote_table:

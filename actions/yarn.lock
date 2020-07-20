@@ -74,6 +74,11 @@
   dependencies:
     tslib "^1.9.3"
 
+"@yawaramin/prometo@^0.11.0":
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@yawaramin/prometo/-/prometo-0.11.0.tgz#eb79931a3d1bd8ad8c328040ee3b6934da1d2370"
+  integrity sha512-S7O8zsjRCDTF3PsugPIxgHqxi3WrSpnZ1QmdHNpgqKmETHT2iL/4fVpn1DdxgAhSGMgPCPjWgnrJNI4n1XsCGw==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"

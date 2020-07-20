@@ -1,10 +1,14 @@
 open Serbet.Endpoint;
 open Globals;
 
-Scheduler.startScheduler();
-
 Dotenv.config();
 [@bs.val] external port: string = "process.env.PORT";
+[@bs.val]
+external processLoopTime: string = "process.env.PROCESS_LOOP_INTERVAL";
+
+Scheduler.startScheduler(
+  processLoopTime->int_of_string_opt->Option.getWithDefault(120) /*use a default of 2 min*/,
+);
 
 module AddArweaveWallet = [%graphql
   {|
@@ -23,7 +27,6 @@ module Arweave = {
   type body_in = {input: userIdObj};
   [@decco.encode]
   type body_out = {address: string};
-  // TODO: add better security to this endpoint.
   let createArweaveWallet =
     Serbet.jsonEndpoint({
       verb: POST,
@@ -33,7 +36,6 @@ module Arweave = {
       handler: (body, _req) => {
         let instance = Arweave.defaultInstance;
         let%Async jwk = instance->Arweave.generateWallet();
-
         let%Async pubKey = instance->Arweave.getPublicKey(jwk);
 
         Client.instance
@@ -45,15 +47,17 @@ module Arweave = {
               userId: body.input.userId,
             },
           )
-        ->Js.Promise.then_(_result => {address: pubKey}->async, _)
-        ->Js.Promise.catch(
-            error => {
-              Js.log2("error", error);
+        ->mapAsync(result =>
+            switch (result) {
+            | {data: Some(_), errors: None} => {address: pubKey}
+            | {errors: _} => {address: "ERROR saving public key"}
+            }
+          )
+        ->catchAsync(error => {
+            Js.log2("error setting the public key", error);
 
-              {address: "ERROR"}->async;
-            },
-            _,
-          );
+            {address: "ERROR"}->async;
+          });
       },
     });
 };

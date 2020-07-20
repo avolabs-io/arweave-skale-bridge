@@ -24,6 +24,7 @@
     "@apollo/client": "^3.0.0-rc.6",
     "@apollo/link-ws": "^2.0.0-beta.3",
     "@jeddeloh/reason-apollo-client": "^0.0.1-alpha.4",
+    "@yawaramin/prometo": "^0.11.0",
     "arweave": "^1.8.0",
     "bs-cron": "^1.1.0",
     "bs-express": "^1.0.1",
