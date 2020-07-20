@@ -1,4 +1,17 @@
-# Skale Arweave bridge
+# Bridge - Persist data from Skale to Arweave [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Persisting%20my%20Skale%20node%20date%20easily%20to%20Arweave%20using%20Bridge.%20Scalability%20is%20here.&url=https://github.com/avolabs-io/arweave-skale-bridge&hashtags=skale,arweave,persist)
+
+<img src="https://github.com/avolabs-io/arweave-skale-bridge/blob/master/ui/public/assets/preview.png"  alt="Preview image"/>
+
+Need info? Join the Skale [Discord](https://discord.gg/vvutwjb)
+| or [Create an issue](https://github.com/avolabs-io/arweave-skale-bridge/issues/new)
+| Built with <3 by [Avo Labs](https://avolabs.io)
+
+[![GitHub issues](https://img.shields.io/github/issues-raw/avolabs-io/arweave-skale-bridge?style=flat)](https://github.com/avolabs-io/arweave-skale-bridge/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/avolabs-io/arweave-skale-bridge)](https://github.com/avolabs-io/arweave-skale-bridge/pulls)
+[![License](https://img.shields.io/github/license/avolabs-io/arweave-skale-bridge.svg)](license.txt)
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+
+## Skale Arweave bridge
 
 A repo that Skale node maintainers can use to push and backup specific node data on Arweave
 
