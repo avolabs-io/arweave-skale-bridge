@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."frequency_options" rename column "label" to "frequency";
+  type: run_sql

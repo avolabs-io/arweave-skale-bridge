@@ -1,7 +1,7 @@
 {
-  "name": "examples",
+  "name": "skale-arweave-bridge",
   "version": "0.0.0",
-  "description": "Examples for reason-apollo-client",
+  "description": "Skale Arweave Bridge",
   "private": true,
   "scripts": {
     "dev": "run-p re:watch terminal-start scss-dev",
@@ -30,6 +30,7 @@
     "@apollo/link-ws": "^2.0.0-beta.3",
     "@jeddeloh/reason-apollo-client": "^0.0.1-alpha.3",
     "@yawaramin/prometo": "0.11.0",
+    "arweave": "^1.8.0",
     "bs-log": "^1.2.0",
     "graphql": "^14.0.0",
     "onegraph-auth": "^2.2.4",

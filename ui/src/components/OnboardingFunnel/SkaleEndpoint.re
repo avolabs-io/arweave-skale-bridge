@@ -1,3 +1,5 @@
+[%raw "require('../../styles/css/radio-select.css')"];
+[%raw "require('../../styles/css/create-stream.css')"];
 open Globals;
 
 // TODO: enforce that the "user <-> uri" combination is unique. https://github.com/hasura/graphql-engine/issues/2200
@@ -54,19 +56,22 @@ module EditSkaleEndpoint = {
     switch (result) {
     | {called: false} =>
       <form onSubmit>
-        <input
-          typeof="text"
-          id="newSkaleEndpoint"
-          name="newSkaleEndpoint"
-          placeholder="or input a new endpoint"
-          onChange={event => {
-            let value = ReactEvent.Form.target(event)##value;
-            setNewSkaleEndpoint(_ => value);
-          }}
-          value=newSkaleEndpoint
-        />
-        // "Not called... "->React.string
-        <button onClick=onSubmit> "Add Skale Endpoint"->React.string </button>
+        <div className="input-with-button">
+          <input
+            typeof="text"
+            id="newSkaleEndpoint"
+            name="newSkaleEndpoint"
+            placeholder="Add new endpoint"
+            onChange={event => {
+              let value = ReactEvent.Form.target(event)##value;
+              setNewSkaleEndpoint(_ => value);
+            }}
+            value=newSkaleEndpoint
+          />
+          <button onClick=onSubmit className="input-add-button">
+            "+"->React.string
+          </button>
+        </div>
       </form>
     | {loading: true} => "Loading..."->React.string
     | {data: _, error: None} =>
@@ -86,7 +91,7 @@ module EditSkaleEndpoint = {
   };
 };
 
-module EndpointDropDown2 = {
+module SkaleEndpointDropDown = {
   [@react.component]
   let make = () => {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
@@ -103,8 +108,7 @@ module EndpointDropDown2 = {
         ),
       );
 
-    <div className="funnel-step-container">
-      <h3> "Select the desired skale endpoint"->React.string </h3>
+    <div className="radio-box-container">
       <div>
         {switch (skaleEndpointsQueryResult) {
          | {loading: true, data: None} => <p> "Loading"->React.string </p>
@@ -122,52 +126,53 @@ module EndpointDropDown2 = {
                 }}
              </dialog>
              // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
-             <select
-               name="skaleEndpoint"
-               id="skaleEndpoint"
-               value=selectedSkaleEndpoint
-               onChange={event => {
-                 let value = ReactEvent.Form.target(event)##value;
-                 setSelectedSkaleEndpoint(_ => value);
-               }}>
-               {data.skale_endpoint
-                ->Belt.Array.map(endpoint =>
-                    <option value={endpoint.uri}>
-                      endpoint.uri->React.string
-                    </option>
-                  )
-                ->React.array}
-             </select>
+             //  <select
+             //    name="skaleEndpoint"
+             //    id="skaleEndpoint"
+             //    value=selectedSkaleEndpoint
+             //    onChange={event => {
+             //      let value = ReactEvent.Form.target(event)##value;
+             //      setSelectedSkaleEndpoint(_ => value);
+             //    }}>
+             //    {data.skale_endpoint
+             //     ->Belt.Array.map(endpoint =>
+             //         <option value={endpoint.uri}>
+             //           endpoint.uri->React.string
+             //         </option>
+             //       )
+             //     ->React.array}
+             //  </select>
+             <div>
+               <ul>
+                 {data.skale_endpoint
+                  ->Belt.Array.map(endpoint =>
+                      <li>
+                        <input
+                          type_="radio"
+                          id={endpoint.id->string_of_int ++ "-option"}
+                          name="selector"
+                          value={endpoint.uri}
+                          onChange={event => {
+                            let value = ReactEvent.Form.target(event)##value;
+                            setSelectedSkaleEndpoint(_ => value);
+                          }}
+                        />
+                        <label
+                          htmlFor={endpoint.id->string_of_int ++ "-option"}>
+                          endpoint.uri->React.string
+                        </label>
+                        <div className="check" />
+                      </li>
+                    )
+                  ->React.array}
+               </ul>
+             </div>
            </>
          | {loading: false, data: None} =>
            <p> "Error loading data"->React.string </p>
          }}
       </div>
     </div>;
-  };
-};
-
-module SkaleEndpointDropdown = {
-  [@react.component]
-  let make =
-      (~skaleEndpoints: array(GetUserSkaleEndpointsQuery.t_skale_endpoint)) => {
-    <select
-      name="skaleEndpoint"
-      id="skaleEndpoint"
-      value="some value" //selectedSkaleEndpoint
-      onChange={event => {
-        let value = ReactEvent.Form.target(event)##value;
-        Js.log(value);
-        ();
-      }}>
-      //  setSelectedSkaleEndpoint(_ => value);
-
-        {skaleEndpoints
-         ->Belt.Array.map(endpoint =>
-             <option value={endpoint.uri}> endpoint.uri->React.string </option>
-           )
-         ->React.array}
-      </select>;
   };
 };
 
@@ -184,7 +189,8 @@ let make = (~moveToNextStep, ~moveToPrevStep) => {
       ),
     );
   <div className="funnel-step-container">
-    <h2> "Please select or input a skale endpoint"->React.string </h2>
+    <h2> "Skale Endpoint"->React.string </h2>
+    <h4> "Please select or input a new skale endpoint"->React.string </h4>
     {switch (skaleEndpointsQueryResult) {
      | {loading: true, data: None} => React.null
      | {loading, data: Some(data), error} =>
@@ -199,7 +205,7 @@ let make = (~moveToNextStep, ~moveToPrevStep) => {
           }}
          {switch (data.skale_endpoint) {
           | [||] => React.null
-          | skaleEndpoints => <SkaleEndpointDropdown skaleEndpoints />
+          | _ => <SkaleEndpointDropDown />
           }}
          // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
        </>

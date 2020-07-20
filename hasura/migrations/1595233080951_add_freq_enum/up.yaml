@@ -1,0 +1,7 @@
+- args:
+    cascade: true
+    read_only: false
+    sql: |-
+      INSERT INTO "frequency_options" (label, frequency_in_seconds) VALUES
+      ('Hourly', 3600), ('Daily', 86400 ), ('Weekly',604800), ('Monthly',2628000 );
+  type: run_sql

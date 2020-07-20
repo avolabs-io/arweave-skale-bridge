@@ -1,0 +1,6 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE ONLY "public"."bridge_data" ALTER COLUMN "active" SET DEFAULT
+      True;
+  type: run_sql

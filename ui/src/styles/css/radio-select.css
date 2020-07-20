@@ -15,7 +15,7 @@ Mobile Sizes
 -----------------
 
 */
-.frequency .container {
+.radio-box-container .container {
   display: block;
   position: relative;
   margin: 0px auto;
@@ -23,28 +23,30 @@ Mobile Sizes
   height: auto;
   padding: 20px; }
 
-.frequency h2 {
-  color: #aaaaaa; }
+.radio-box-container h2 {
+  color: #5b7aba; }
 
-.frequency .container ul {
+.radio-box-container .container ul {
   list-style: none;
+  list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: auto; }
 
-.frequency ul li {
-  color: #aaaaaa;
+.radio-box-container ul li {
+  color: #5b7aba;
   display: block;
   position: relative;
   float: left;
+  transform: translateX(-2rem);
   width: 100%;
   height: 80px; }
 
-.frequency ul li input[type="radio"] {
+.radio-box-container ul li input[type="radio"] {
   position: absolute;
   visibility: hidden; }
 
-.frequency ul li label {
+.radio-box-container ul li label {
   display: block;
   position: relative;
   font-weight: 300;
@@ -56,13 +58,13 @@ Mobile Sizes
   cursor: pointer;
   -webkit-transition: all 0.25s linear; }
 
-.frequency ul li:hover label {
+.radio-box-container ul li:hover label {
   color: #ffffff; }
 
-.frequency ul li .check {
+.radio-box-container ul li .check {
   display: block;
   position: absolute;
-  border: 5px solid #aaaaaa;
+  border: 5px solid #5b7aba;
   border-radius: 100%;
   height: 25px;
   width: 25px;
@@ -72,10 +74,10 @@ Mobile Sizes
   transition: border 0.25s linear;
   -webkit-transition: border 0.25s linear; }
 
-.frequency ul li:hover .check {
+.radio-box-container ul li:hover .check {
   border: 5px solid #ffffff; }
 
-.frequency ul li .check::before {
+.radio-box-container ul li .check::before {
   display: block;
   position: absolute;
   content: "";
@@ -88,11 +90,11 @@ Mobile Sizes
   transition: background 0.25s linear;
   -webkit-transition: background 0.25s linear; }
 
-.frequency input[type="radio"]:checked ~ .check {
+.radio-box-container input[type="radio"]:checked ~ .check {
   border: 3px solid #fff; }
 
-.frequency input[type="radio"]:checked ~ .check::before {
+.radio-box-container input[type="radio"]:checked ~ .check::before {
   background: #fff; }
 
-.frequency input[type="radio"]:checked ~ label {
+.radio-box-container input[type="radio"]:checked ~ label {
   color: #fff; }
