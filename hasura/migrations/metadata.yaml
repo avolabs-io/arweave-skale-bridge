@@ -68,6 +68,9 @@ tables:
     name: frequency_options
 - table:
     schema: public
+    name: skale_data_type_enum
+- table:
+    schema: public
     name: skale_endpoint
 - table:
     schema: public

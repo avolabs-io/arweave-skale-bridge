@@ -1,10 +1,8 @@
 module GetSkaleDataTypesQuery = [%graphql
   {|
-  query EndpointQuery($userId: String!) {
-    skale_endpoint (where: {user_id: {_eq: $userId}}){
-      uri
-      user_id
-      id
+  query DataTypesQuery {
+    skale_data_type_enum{
+      data_type
     }
   }
 |}
@@ -21,10 +19,7 @@ module DataTypeSelect = {
       GetSkaleDataTypesQuery.use(
         ~fetchPolicy=CacheAndNetwork,
         ~errorPolicy=All,
-        GetSkaleDataTypesQuery.makeVariables(
-          ~userId=usersIdDetails.login,
-          (),
-        ),
+        GetSkaleDataTypesQuery.makeVariables(),
       );
 
     <div>
@@ -53,10 +48,10 @@ module DataTypeSelect = {
                  let value = ReactEvent.Form.target(event)##value;
                  setSelectedSkaleDataType(_ => value);
                }}>
-               {data.skale_endpoint
-                ->Belt.Array.map(endpoint =>
-                    <option value={endpoint.uri}>
-                      endpoint.uri->React.string
+               {data.skale_data_type_enum
+                ->Belt.Array.map(dataType =>
+                    <option value={dataType.data_type}>
+                      dataType.data_type->React.string
                     </option>
                   )
                 ->React.array}

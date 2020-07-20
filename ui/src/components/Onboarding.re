@@ -20,18 +20,10 @@ module GeneratingArweaveWallet = {
   };
 };
 
-module CreateArweaveEndpoint = {
-  [@react.component]
-  let make = (~moveToNextStep, ~moveToPrevStep) => {
-    <div className="funnel-step-container">
-      "step 3"->React.string
-      <NavigationButtons moveToNextStep moveToPrevStep />
-    </div>;
-  };
-};
 [@react.component]
 let make = () => {
-  let (onboardingStep, setOnboardingStep) = React.useState(_ => Overview); //TODO remember to change this back to Overview
+  let (onboardingStep, setOnboardingStep) =
+    React.useState(_ => ArweaveEndpoint); //TODO remember to change this back to Overview
 
   switch (onboardingStep) {
   | Overview =>
@@ -52,7 +44,7 @@ let make = () => {
       moveToPrevStep={_ => setOnboardingStep(_ => SkaleEndpoint)}
     />
   | ArweaveEndpoint =>
-    <CreateArweaveEndpoint
+    <ArweaveEndpoint
       moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
       moveToPrevStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
     />
