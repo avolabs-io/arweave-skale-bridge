@@ -31,22 +31,24 @@ Dotenv.config();
    }
  }
  */
-module GetUserSkaleEndpointsQuery = [%graphql
+
+module GetUserBridgesQuery = [%graphql
   {|
-  query EndpointQuery($userId: String!) {
-    skale_endpoint (where: {user_id: {_eq: $userId}}){
-      uri
-      user_id
+  query BridgesQuery($userId: String!) {
+    bridge_data (where: {userId: {_eq: $userId}}){
       id
     }
   }
 |}
 ];
+// contentType
+// userId
+
 let useGetSkaleEndpointsQueryResult = userId =>
-  GetUserSkaleEndpointsQuery.use(
+  GetUserBridgesQuery.use(
     ~fetchPolicy=CacheAndNetwork,
     ~errorPolicy=All,
-    GetUserSkaleEndpointsQuery.makeVariables(~userId, ()),
+    GetUserBridgesQuery.makeVariables(~userId, ()),
   );
 
 module HasLoadedUsersBridgeData = {
@@ -59,7 +61,7 @@ module HasLoadedUsersBridgeData = {
     | {loading: true, data: None} =>
       <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
     | {loading: _, data: Some(data), error: _} =>
-      switch (data.skale_endpoint) {
+      switch (data.bridge_data) {
       | [||] => <Onboarding />
       | _ => <> children </>
       }

@@ -37,6 +37,9 @@
     "@yawaramin/prometo",
     "reason-promise",
     "reason-react",
-    "bs-log"
+    "bs-log",
+    "bs-css",
+    "bs-css-emotion",
+    "re-classnames"
   ]
 }

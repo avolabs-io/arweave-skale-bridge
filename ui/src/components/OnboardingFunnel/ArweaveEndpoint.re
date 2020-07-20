@@ -4,11 +4,13 @@ open Globals;
 //       I had no luck first time I tried.
 module AddArweaveEndpointMutation = [%graphql
   {|
-    mutation addArweaveEndpoint($url: String!, $userId: String!) {
-      insert_arweave_endpoint_one(object: {url: $url, user_id: $userId}) {
+    mutation addArweaveEndpoint($url: String!, $protocol: String!, $port: Int!, $userId: String!) {
+      insert_arweave_endpoint_one(object: {url: $url, user_id: $userId, protocol: $protocol, port: $port}) {
         id
         url
         user_id
+            protocol
+    port
       }
     }
   |}
@@ -21,6 +23,8 @@ module GetUserArweaveEndpointsQuery = [%graphql
       url
       user_id
       id
+      protocol
+      port
     }
   }
 |}
@@ -33,6 +37,9 @@ module EditArweaveEndpoint = {
     let (mutate, result) = AddArweaveEndpointMutation.use();
     let (newArweaveEndpoint, setNewArweaveEndpoint) =
       React.useState(() => "");
+    let (newArweaveProtocol, setNewArweaveProtocol) =
+      React.useState(() => "https");
+    let (newArweavePort, setNewArweavePort) = React.useState(() => None);
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
 
     let onSubmit = _ =>
@@ -47,6 +54,8 @@ module EditArweaveEndpoint = {
         |],
         AddArweaveEndpointMutation.makeVariables(
           ~url=newArweaveEndpoint,
+          ~protocol=newArweaveProtocol,
+          ~port=newArweavePort->Option.getWithDefault(80) /* For now just have the default port be 80... */,
           ~userId=usersIdDetails.login,
           (),
         ),
@@ -55,17 +64,44 @@ module EditArweaveEndpoint = {
     switch (result) {
     | {called: false} =>
       <form onSubmit>
-        <div className="input-with-button">
+        <div
+          className=Cn.(
+            "input-with-button"
+            + Css.(style([display(`flex), justifyContent(`spaceBetween)]))
+          )>
+          <select
+            name="skaleEndpoint"
+            id="skaleEndpoint"
+            value=newArweaveProtocol
+            className=Css.(style([maxWidth(`percent(15.))]))
+            onChange={event => {
+              let value = ReactEvent.Form.target(event)##value;
+              setNewArweaveProtocol(_ => value);
+            }}>
+            <option value="https"> "https"->React.string </option>
+            <option value="http"> "http"->React.string </option>
+          </select>
           <input
             typeof="text"
             id="newArweaveEndpoint"
             name="newArweaveEndpoint"
-            placeholder="Add new endpoint"
+            placeholder="Add new host"
             onChange={event => {
               let value = ReactEvent.Form.target(event)##value;
               setNewArweaveEndpoint(_ => value);
             }}
-            value=newArweaveEndpoint
+          />
+          <input
+            typeof="number"
+            id="newArweavePort"
+            name="newArweavePort"
+            value={newArweavePort->Option.mapWithDefault("", string_of_int)}
+            placeholder="Port"
+            onChange={event => {
+              let value = ReactEvent.Form.target(event)##value;
+              setNewArweavePort(_ => value->int_of_string_opt);
+            }}
+            className=Css.(style([maxWidth(`percent(25.))]))
           />
           <button onClick=onSubmit className="input-add-button">
             "+"->React.string
@@ -92,10 +128,8 @@ module EditArweaveEndpoint = {
 
 module ArweaveEndpointDropdown = {
   [@react.component]
-  let make = () => {
+  let make = (~arveaweEndpointInput, ~setArweaveEndpointInput) => {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
-    let (selectedArweaveEndpoint, setSelectedArweaveEndpoint) =
-      React.useState(() => "");
 
     let arweaveEndpointsQueryResult =
       GetUserArweaveEndpointsQuery.use(
@@ -145,21 +179,30 @@ module ArweaveEndpointDropdown = {
              <div>
                <ul>
                  {data.arweave_endpoint
-                  ->Belt.Array.map(endpoint =>
-                      <li>
+                  ->Belt.Array.map(({id, url, port, protocol}) =>
+                      <li
+                        onChange={_event => {
+                          setArweaveEndpointInput(_ => Some(id))
+                        }}>
                         <input
                           type_="radio"
-                          id={endpoint.id->string_of_int ++ "-option"}
+                          id={id->string_of_int ++ "-option"}
                           name="selector"
-                          value={endpoint.url}
-                          onChange={event => {
-                            let value = ReactEvent.Form.target(event)##value;
-                            setSelectedArweaveEndpoint(_ => value);
-                          }}
+                          value=url
+                          checked={
+                            id
+                            == arveaweEndpointInput->Option.getWithDefault(-1)
+                          }
                         />
-                        <label
-                          htmlFor={endpoint.id->string_of_int ++ "-option"}>
-                          endpoint.url->React.string
+                        <label htmlFor={id->string_of_int ++ "-option"}>
+                          {(
+                             protocol
+                             ++ "://"
+                             ++ url
+                             ++ ":"
+                             ++ port->string_of_int
+                           )
+                           ->React.string}
                         </label>
                         <div className="check" />
                       </li>
@@ -177,7 +220,13 @@ module ArweaveEndpointDropdown = {
 };
 
 [@react.component]
-let make = (~moveToNextStep, ~moveToPrevStep) => {
+let make =
+    (
+      ~moveToNextStep,
+      ~moveToPrevStep,
+      ~arveaweEndpointInput,
+      ~setArweaveEndpointInput,
+    ) => {
   let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
   let arweaveEndpointsQueryResult =
     GetUserArweaveEndpointsQuery.use(
@@ -204,7 +253,11 @@ let make = (~moveToNextStep, ~moveToPrevStep) => {
           }}
          {switch (data.arweave_endpoint) {
           | [||] => React.null
-          | _ => <ArweaveEndpointDropdown />
+          | _ =>
+            <ArweaveEndpointDropdown
+              arveaweEndpointInput
+              setArweaveEndpointInput
+            />
           }}
          // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
        </>

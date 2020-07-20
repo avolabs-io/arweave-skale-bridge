@@ -93,7 +93,7 @@ module EditSkaleEndpoint = {
 
 module SkaleEndpointDropDown = {
   [@react.component]
-  let make = () => {
+  let make = (~setSkaleEndpointInput) => {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
     let (selectedSkaleEndpoint, setSelectedSkaleEndpoint) =
       React.useState(() => "");
@@ -146,7 +146,7 @@ module SkaleEndpointDropDown = {
                <ul>
                  {data.skale_endpoint
                   ->Belt.Array.map(endpoint =>
-                      <li>
+                      <li key={endpoint.id->string_of_int}>
                         <input
                           type_="radio"
                           id={endpoint.id->string_of_int ++ "-option"}
@@ -155,6 +155,7 @@ module SkaleEndpointDropDown = {
                           onChange={event => {
                             let value = ReactEvent.Form.target(event)##value;
                             setSelectedSkaleEndpoint(_ => value);
+                            setSkaleEndpointInput(_ => Some(endpoint.id));
                           }}
                         />
                         <label
@@ -177,7 +178,7 @@ module SkaleEndpointDropDown = {
 };
 
 [@react.component]
-let make = (~moveToNextStep, ~moveToPrevStep) => {
+let make = (~moveToNextStep, ~moveToPrevStep, ~setSkaleEndpointInput) => {
   let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
   let skaleEndpointsQueryResult =
     GetUserSkaleEndpointsQuery.use(
@@ -205,7 +206,7 @@ let make = (~moveToNextStep, ~moveToPrevStep) => {
           }}
          {switch (data.skale_endpoint) {
           | [||] => React.null
-          | _ => <SkaleEndpointDropDown />
+          | _ => <SkaleEndpointDropDown setSkaleEndpointInput />
           }}
          // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
        </>
