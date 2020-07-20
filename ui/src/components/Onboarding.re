@@ -3,10 +3,9 @@
 type onboardingSteps =
   | Overview
   | SkaleEndpoint
-  | ArweaveEndpoint
-  | GenerateArweaveWallet
   | SkaleDataTypeToStore
   | Frequency
+  | ArweaveEndpoint
   | TopupArweaveWallet
   | OnboardingComplete;
 
@@ -22,40 +21,35 @@ module GeneratingArweaveWallet = {
 
 [@react.component]
 let make = () => {
-  let (onboardingStep, setOnboardingStep) =
-    React.useState(_ => ArweaveEndpoint); //TODO remember to change this back to Overview
+  let (onboardingStep, setOnboardingStep) = React.useState(_ => Frequency); //TODO remember to change this back to Overview
 
   switch (onboardingStep) {
   | Overview =>
     <Overview moveToNextStep={_ => setOnboardingStep(_ => SkaleEndpoint)} />
   | SkaleEndpoint =>
     <SkaleEndpoint
-      moveToNextStep={_ => setOnboardingStep(_ => SkaleDataTypeToStore)}
       moveToPrevStep={_ => setOnboardingStep(_ => Overview)}
+      moveToNextStep={_ => setOnboardingStep(_ => SkaleDataTypeToStore)}
     />
   | SkaleDataTypeToStore =>
     <SkaleDataTypeToStore
-      moveToNextStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
       moveToPrevStep={_ => setOnboardingStep(_ => SkaleEndpoint)}
+      moveToNextStep={_ => setOnboardingStep(_ => Frequency)}
     />
   | Frequency =>
     <Frequency
-      moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
-      moveToPrevStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
-    />
-  | GenerateArweaveWallet =>
-    <GeneratingArweaveWallet
+      moveToPrevStep={_ => setOnboardingStep(_ => SkaleDataTypeToStore)}
       moveToNextStep={_ => setOnboardingStep(_ => ArweaveEndpoint)}
-      moveToPrevStep={_ => setOnboardingStep(_ => SkaleEndpoint)}
     />
   | ArweaveEndpoint =>
     <ArweaveEndpoint
+      moveToPrevStep={_ => setOnboardingStep(_ => Frequency)}
       moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
-      moveToPrevStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
     />
-
   | TopupArweaveWallet =>
-    <div> "List arweave public key to load with tokens"->React.string </div>
+    <div>
+      "Create & List arweave public key to load with tokens"->React.string
+    </div>
   | OnboardingComplete => <div> "DONE"->React.string </div>
   };
 };

@@ -4,8 +4,8 @@ open Globals;
 //       I had no luck first time I tried.
 module AddArweaveEndpointMutation = [%graphql
   {|
-    mutation addArweaveEndpoint($uri: String!, $userId: String!) {
-      insert_arweave_endpoint_one(object: {uri: $uri, user_id: $userId}) {
+    mutation addArweaveEndpoint($url: String!, $userId: String!) {
+      insert_arweave_endpoint_one(object: {url: $url, user_id: $userId}) {
         id
         url
         user_id
@@ -46,7 +46,7 @@ module EditArweaveEndpoint = {
           ),
         |],
         AddArweaveEndpointMutation.makeVariables(
-          ~uri=newArweaveEndpoint,
+          ~url=newArweaveEndpoint,
           ~userId=usersIdDetails.login,
           (),
         ),
@@ -55,21 +55,22 @@ module EditArweaveEndpoint = {
     switch (result) {
     | {called: false} =>
       <form onSubmit>
-        <input
-          typeof="text"
-          id="newArweaveEndpoint"
-          name="newArweaveEndpoint"
-          placeholder="or input a new endpoint"
-          onChange={event => {
-            let value = ReactEvent.Form.target(event)##value;
-            setNewArweaveEndpoint(_ => value);
-          }}
-          value=newArweaveEndpoint
-        />
-        // "Not called... "->React.string
-        <button onClick=onSubmit>
-          "Add Arweave Endpoint"->React.string
-        </button>
+        <div className="input-with-button">
+          <input
+            typeof="text"
+            id="newArweaveEndpoint"
+            name="newArweaveEndpoint"
+            placeholder="Add new endpoint"
+            onChange={event => {
+              let value = ReactEvent.Form.target(event)##value;
+              setNewArweaveEndpoint(_ => value);
+            }}
+            value=newArweaveEndpoint
+          />
+          <button onClick=onSubmit className="input-add-button">
+            "+"->React.string
+          </button>
+        </div>
       </form>
     | {loading: true} => "Loading..."->React.string
     | {data: _, error: None} =>
@@ -89,7 +90,7 @@ module EditArweaveEndpoint = {
   };
 };
 
-module EndpointDropDown2 = {
+module ArweaveEndpointDropdown = {
   [@react.component]
   let make = () => {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
@@ -125,55 +126,53 @@ module EndpointDropDown2 = {
                 }}
              </dialog>
              // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
-             <select
-               name="arweaveEndpoint"
-               id="arweaveEndpoint"
-               value=selectedArweaveEndpoint
-               onChange={event => {
-                 let value = ReactEvent.Form.target(event)##value;
-                 setSelectedArweaveEndpoint(_ => value);
-               }}>
-               {data.arweave_endpoint
-                ->Belt.Array.map(endpoint =>
-                    <option value={endpoint.url}>
-                      endpoint.url->React.string
-                    </option>
-                  )
-                ->React.array}
-             </select>
+             //  <select
+             //    name="arweaveEndpoint"
+             //    id="arweaveEndpoint"
+             //    value=selectedArweaveEndpoint
+             //    onChange={event => {
+             //      let value = ReactEvent.Form.target(event)##value;
+             //      setSelectedArweaveEndpoint(_ => value);
+             //    }}>
+             //    {data.arweave_endpoint
+             //     ->Belt.Array.map(endpoint =>
+             //         <option value={endpoint.url}>
+             //           endpoint.url->React.string
+             //         </option>
+             //       )
+             //     ->React.array}
+             //  </select>
+             <div>
+               <ul>
+                 {data.arweave_endpoint
+                  ->Belt.Array.map(endpoint =>
+                      <li>
+                        <input
+                          type_="radio"
+                          id={endpoint.id->string_of_int ++ "-option"}
+                          name="selector"
+                          value={endpoint.url}
+                          onChange={event => {
+                            let value = ReactEvent.Form.target(event)##value;
+                            setSelectedArweaveEndpoint(_ => value);
+                          }}
+                        />
+                        <label
+                          htmlFor={endpoint.id->string_of_int ++ "-option"}>
+                          endpoint.url->React.string
+                        </label>
+                        <div className="check" />
+                      </li>
+                    )
+                  ->React.array}
+               </ul>
+             </div>
            </>
          | {loading: false, data: None} =>
            <p> "Error loading data"->React.string </p>
          }}
       </div>
     </div>;
-  };
-};
-
-module ArweaveEndpointDropdown = {
-  [@react.component]
-  let make =
-      (
-        ~arweaveEndpoints:
-           array(GetUserArweaveEndpointsQuery.t_arweave_endpoint),
-      ) => {
-    <select
-      name="arweaveEndpoint"
-      id="arweaveEndpoint"
-      value="some value" //selectedArweaveEndpoint
-      onChange={event => {
-        let value = ReactEvent.Form.target(event)##value;
-        Js.log(value);
-        ();
-      }}>
-      //  setSelectedArweaveEndpoint(_ => value);
-
-        {arweaveEndpoints
-         ->Belt.Array.map(endpoint =>
-             <option value={endpoint.url}> endpoint.url->React.string </option>
-           )
-         ->React.array}
-      </select>;
   };
 };
 
@@ -205,7 +204,7 @@ let make = (~moveToNextStep, ~moveToPrevStep) => {
           }}
          {switch (data.arweave_endpoint) {
           | [||] => React.null
-          | arweaveEndpoints => <ArweaveEndpointDropdown arweaveEndpoints />
+          | _ => <ArweaveEndpointDropdown />
           }}
          // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
        </>

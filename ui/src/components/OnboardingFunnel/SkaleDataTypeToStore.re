@@ -70,9 +70,10 @@ let make = (~moveToNextStep, ~moveToPrevStep) => {
   let (_frequencyRadio, _setFrequencyRadio) = React.useState(_ => "hourly");
 
   <div className="funnel-step-container">
-    <h2>
+    <h2> "Skale Data"->React.string </h2>
+    <h4>
       "Please select the type of data you would like to backup"->React.string
-    </h2>
+    </h4>
     <div> <DataTypeSelect /> </div>
     <NavigationButtons moveToNextStep moveToPrevStep />
   </div>;
