@@ -6,9 +6,9 @@ Dotenv.config();
 [@bs.val]
 external processLoopTime: string = "process.env.PROCESS_LOOP_INTERVAL";
 
-Scheduler.startScheduler(
-  processLoopTime->int_of_string_opt->Option.getWithDefault(120) /*use a default of 2 min*/,
-);
+// Scheduler.startScheduler(
+//   processLoopTime->int_of_string_opt->Option.getWithDefault(120) /*use a default of 2 min*/,
+// );
 
 module AddArweaveWallet = [%graphql
   {|
