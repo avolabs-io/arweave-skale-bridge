@@ -12,17 +12,22 @@ Need info? Join the Skale [Discord](https://discord.gg/vvutwjb)
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
 
-## Skale Arweave bridge
+- [Summary](#summary)
+- [Backend](#backend)
+- [Hasura](#hasura)
+  - [Development](#development)
+  - [Migrations](#migrations)
+  - [Extra](#extra)
+- [UI](#ui)
+- [Under the hood / Behind the scenes](#under-the-hood---behind-the-scenes)
 
-A repo that Skale node maintainers can use to push and backup specific node data on Arweave
+# Summary
 
-### Phase 1:
+The Bridge project is a tool allowing Skale node operators to easily persist 'snapshots' of Skale sub-chains at a specified frequency. The data is uploaded to Arweave, a decentralized solution for eternal storage.
 
-Load data from the skale chain via the [RPC snapshot endpoint](https://github.com/skalenetwork/skaled/blob/a7d54ed7658609ad96f30eaf33af6e31442e7905/docs/snapshots.md) and push it to Arweave at a predeturmined interval with simple UI.
+How the bridge works? It Loads data from the skale chain via the [RPC snapshot endpoint](https://github.com/skalenetwork/skaled/blob/a7d54ed7658609ad96f30eaf33af6e31442e7905/docs/snapshots.md) and pushes it to Arweave at a predetermined interval with simple UI.
 
-## Get started
-
-### Backend
+# Backend
 
 Start the backend via docker-compose:
 `make start-dev`
@@ -30,7 +35,73 @@ Start the backend via docker-compose:
 When hasura is in a bad state :)
 `make hard-restart-dev`
 
-### UI
+# Hasura
+
+### Development
+
+First copy the `.example.env` file to `.env`. Change the passwords ports as desired.
+
+Start Hasura:
+
+```
+make start-dev
+```
+
+Print Hasura logs:
+
+```
+make hasura-logs
+```
+
+Restart: (this keeps the database data intact)
+
+```
+make restart-dev
+```
+
+Restart and clear all data:
+
+```
+make hard-restart-dev
+```
+
+### Migrations
+
+`HASURA_GRAPHQL_ENABLE_CONSOLE=false` So that it isn't possible to run migrations via the console.
+
+Install cli: `npm install --global hasura-cli`
+
+Initialise new hasura project (Not needed for general use, this project is already initialised - ie don't run):
+
+```
+hasura init --directory my-project --endpoint https://api.wildcards.world
+```
+
+Run migrations:
+
+(Please add a space at the beginning of this line so that it doesn't save the password into your bash-history. We will find a better way to handle this when we are more established.)
+
+```
+hasura migrate apply --admin-secret <your password>
+```
+
+Access the hasura console:
+
+```
+hasura console --admin-secret <your password>
+```
+
+**Note, you can use an env file to avoid the need for typing passwords in the terminal. You specify the env file using `--envfile <path-to-env-file>`.**
+
+### Extra
+
+Config hasura to autocomplete when typing in terminal [docs](https://hasura.io/docs/1.0/graphql/manual/hasura-cli/hasura_completion.html#hasura-completion)
+
+```
+hasura completion zsh --file=\$HOME/.zprezto/modules/completion/external/src/\_hasura
+```
+
+# UI
 
 start ui
 
@@ -52,7 +123,7 @@ If and when you ever make changes to the graphql schema you should update the fi
 `cd ui && yarn update-schema`.
 This file should be commited to git.
 
-## Under the hood / Behind the scenes
+# Under the hood / Behind the scenes
 
 - [Skale Network](https://skale.network/)
 - [Arweave](https://www.arweave.org/)
