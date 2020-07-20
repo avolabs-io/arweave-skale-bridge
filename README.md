@@ -4,11 +4,12 @@
 
 Need info? Join the Skale [Discord](https://discord.gg/vvutwjb)
 | or [Create an issue](https://github.com/avolabs-io/arweave-skale-bridge/issues/new)
-| Built with <3 by [Avo Labs](https://avolabs.io)
+| Built with :green_heart: by [Avo Labs](https://avolabs.io)
 
 [![GitHub issues](https://img.shields.io/github/issues-raw/avolabs-io/arweave-skale-bridge?style=flat)](https://github.com/avolabs-io/arweave-skale-bridge/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/avolabs-io/arweave-skale-bridge)](https://github.com/avolabs-io/arweave-skale-bridge/pulls)
 [![License](https://img.shields.io/github/license/avolabs-io/arweave-skale-bridge.svg)](license.txt)
+![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
 
 ## Skale Arweave bridge
