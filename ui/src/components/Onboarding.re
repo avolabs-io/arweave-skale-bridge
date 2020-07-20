@@ -38,6 +38,11 @@ let make = () => {
       moveToNextStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
       moveToPrevStep={_ => setOnboardingStep(_ => SkaleEndpoint)}
     />
+  | Frequency =>
+    <Frequency
+      moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
+      moveToPrevStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
+    />
   | GenerateArweaveWallet =>
     <GeneratingArweaveWallet
       moveToNextStep={_ => setOnboardingStep(_ => ArweaveEndpoint)}
@@ -48,11 +53,7 @@ let make = () => {
       moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
       moveToPrevStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
     />
-  | Frequency =>
-    <Frequency
-      moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
-      moveToPrevStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
-    />
+
   | TopupArweaveWallet =>
     <div> "List arweave public key to load with tokens"->React.string </div>
   | OnboardingComplete => <div> "DONE"->React.string </div>
