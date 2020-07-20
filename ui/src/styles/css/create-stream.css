@@ -20,10 +20,13 @@ Mobile Sizes
   width: calc( 100% - 5rem);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding: 2rem;
-  margin: 1rem;
+  margin: 1rem auto;
   border: 2px solid #fff;
   border-radius: 4px;
+  height: 500px;
+  width: 600px;
   background-color: #1e3c72;
   /* fallback for old browsers */
   background-color: -webkit-linear-gradient(to left, #1e3c72, #2a5298);

@@ -7,10 +7,13 @@
   ); //( 100% - 2rem (left padding) - 2rem (right padding) - 1rem (left margin))
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding: 2rem;
-  margin: 1rem;
+  margin: 1rem auto;
   border: 2px solid $white;
   border-radius: 4px;
+  height: 500px;
+  width: 600px;
   background-color: $blue-gradient-dark; /* fallback for old browsers */
   background-color: -webkit-linear-gradient(
     to left,
