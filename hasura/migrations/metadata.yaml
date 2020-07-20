@@ -25,7 +25,7 @@ tables:
           schema: public
           name: frequency_options
         column_mapping:
-          frequency_deprecated: frequency
+          frequency_deprecated: label
   - name: skale_endpoint
     using:
       manual_configuration:
@@ -66,6 +66,9 @@ tables:
 - table:
     schema: public
     name: frequency_options
+- table:
+    schema: public
+    name: skale_data_type_enum
 - table:
     schema: public
     name: skale_endpoint

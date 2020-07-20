@@ -1,0 +1,10 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: CREATE TABLE "public"."skale_data_type_enum"("data_type" text NOT NULL, PRIMARY
+      KEY ("data_type") );
+  type: run_sql
+- args:
+    name: skale_data_type_enum
+    schema: public
+  type: add_existing_table_or_view

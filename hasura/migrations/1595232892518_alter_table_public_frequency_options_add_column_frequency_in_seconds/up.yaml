@@ -1,0 +1,6 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."frequency_options" ADD COLUMN "frequency_in_seconds"
+      integer NULL;
+  type: run_sql

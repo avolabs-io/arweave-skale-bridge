@@ -16,12 +16,20 @@ Mobile Sizes
 
 */
 .funnel-step-container {
+  font-family: "Nunito", sans-serif;
+  width: calc( 100% - 5rem);
   display: flex;
   flex-direction: column;
   padding: 2rem;
   margin: 1rem;
   border: 2px solid #fff;
-  border-radius: 4px; }
+  border-radius: 4px;
+  background-color: #1e3c72;
+  /* fallback for old browsers */
+  background-color: -webkit-linear-gradient(to left, #1e3c72, #2a5298);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background-color: linear-gradient(to left, #1e3c72, #2a5298);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */ }
   @media (min-width: 768px) {
     .funnel-step-container {
       min-width: 300px; } }
@@ -30,13 +38,18 @@ Mobile Sizes
     font-weight: bold;
     color: #fff;
     margin-top: 0; }
+  .funnel-step-container h4 {
+    font-family: "Nunito", sans-serif;
+    font-weight: bold;
+    color: #5b7aba;
+    margin: 0 0 0.3rem 0; }
   .funnel-step-container .prev-next-container {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between; }
     .funnel-step-container .prev-next-container button {
       color: #fff;
-      padding: 0.2rem;
+      padding: 0.6rem;
       text-transform: uppercase;
       font-family: "Nunito", sans-serif;
       font-weight: bold;
@@ -63,3 +76,17 @@ Mobile Sizes
   font-size: 18px;
   background-color: #121925;
   border-radius: 5px; }
+
+.input-with-button {
+  position: relative; }
+  .input-with-button .input-add-button {
+    position: absolute;
+    color: #121925;
+    border-radius: 2px;
+    border: 1px solid #121925;
+    right: 0.7rem;
+    top: 0.7rem;
+    font-size: 1.4rem; }
+    .input-with-button .input-add-button:hover {
+      background-color: #121925;
+      color: #fff; }

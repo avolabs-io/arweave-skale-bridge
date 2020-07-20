@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."frequency_options" DROP COLUMN "frequency_in_seconds";
+  type: run_sql

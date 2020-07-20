@@ -1,0 +1,7 @@
+- args:
+    cascade: true
+    read_only: false
+    sql: |-
+      INSERT INTO "skale_data_type_enum" (data_type) VALUES
+      ('Block Data'), ('Transactions Data'), ('Transaction Receipts'), ('Event Data'), ('Decentralized Storage');
+  type: run_sql

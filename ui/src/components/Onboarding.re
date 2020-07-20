@@ -3,9 +3,9 @@
 type onboardingSteps =
   | Overview
   | SkaleEndpoint
-  | ArweaveEndpoint
-  | GenerateArweaveWallet
+  | SkaleDataTypeToStore
   | Frequency
+  | ArweaveEndpoint
   | TopupArweaveWallet
   | OnboardingComplete;
 
@@ -19,44 +19,37 @@ module GeneratingArweaveWallet = {
   };
 };
 
-module CreateArweaveEndpoint = {
-  [@react.component]
-  let make = (~moveToNextStep, ~moveToPrevStep) => {
-    <div className="funnel-step-container">
-      "step 3"->React.string
-      <NavigationButtons moveToNextStep moveToPrevStep />
-    </div>;
-  };
-};
 [@react.component]
 let make = () => {
-  let (onboardingStep, setOnboardingStep) = React.useState(_ => Overview); //TODO remember to change this back to Overview
+  let (onboardingStep, setOnboardingStep) = React.useState(_ => Frequency); //TODO remember to change this back to Overview
 
   switch (onboardingStep) {
   | Overview =>
     <Overview moveToNextStep={_ => setOnboardingStep(_ => SkaleEndpoint)} />
   | SkaleEndpoint =>
     <SkaleEndpoint
-      moveToNextStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
       moveToPrevStep={_ => setOnboardingStep(_ => Overview)}
+      moveToNextStep={_ => setOnboardingStep(_ => SkaleDataTypeToStore)}
     />
-  | GenerateArweaveWallet =>
-    <GeneratingArweaveWallet
-      moveToNextStep={_ => setOnboardingStep(_ => ArweaveEndpoint)}
+  | SkaleDataTypeToStore =>
+    <SkaleDataTypeToStore
       moveToPrevStep={_ => setOnboardingStep(_ => SkaleEndpoint)}
-    />
-  | ArweaveEndpoint =>
-    <CreateArweaveEndpoint
-      moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
-      moveToPrevStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
+      moveToNextStep={_ => setOnboardingStep(_ => Frequency)}
     />
   | Frequency =>
     <Frequency
+      moveToPrevStep={_ => setOnboardingStep(_ => SkaleDataTypeToStore)}
+      moveToNextStep={_ => setOnboardingStep(_ => ArweaveEndpoint)}
+    />
+  | ArweaveEndpoint =>
+    <ArweaveEndpoint
+      moveToPrevStep={_ => setOnboardingStep(_ => Frequency)}
       moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
-      moveToPrevStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
     />
   | TopupArweaveWallet =>
-    <div> "List arweave public key to load with tokens"->React.string </div>
+    <div>
+      "Create & List arweave public key to load with tokens"->React.string
+    </div>
   | OnboardingComplete => <div> "DONE"->React.string </div>
   };
 };
