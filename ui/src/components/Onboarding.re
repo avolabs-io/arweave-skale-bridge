@@ -5,6 +5,7 @@ type onboardingSteps =
   | SkaleEndpoint
   | ArweaveEndpoint
   | GenerateArweaveWallet
+  | SkaleDataTypeToStore
   | Frequency
   | TopupArweaveWallet
   | OnboardingComplete;
@@ -37,8 +38,13 @@ let make = () => {
     <Overview moveToNextStep={_ => setOnboardingStep(_ => SkaleEndpoint)} />
   | SkaleEndpoint =>
     <SkaleEndpoint
-      moveToNextStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
+      moveToNextStep={_ => setOnboardingStep(_ => SkaleDataTypeToStore)}
       moveToPrevStep={_ => setOnboardingStep(_ => Overview)}
+    />
+  | SkaleDataTypeToStore =>
+    <SkaleDataTypeToStore
+      moveToNextStep={_ => setOnboardingStep(_ => GenerateArweaveWallet)}
+      moveToPrevStep={_ => setOnboardingStep(_ => SkaleEndpoint)}
     />
   | GenerateArweaveWallet =>
     <GeneratingArweaveWallet
