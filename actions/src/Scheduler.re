@@ -83,7 +83,7 @@ let handleMutateErrorPromise = (promise, ~onError) => {
            result:
              Pervasives.result(
                ApolloClient__ApolloClient.FetchResult.t(_),
-               [> Globals.Prometo.error],
+               [> Prometo.error],
              ),
          ) => {
       switch (result) {
@@ -103,14 +103,23 @@ let handleMutateErrorPromise = (promise, ~onError) => {
       }
     });
 };
-
+type addSyncItemResult = {syncItemId: int};
 let addSyncItem = (~onError, ~bridgeId, ~index, ~startTime) => {
   Client.instance
   ->ApolloClient.mutate(
       ~mutation=(module AddSyncItem),
       {bridgeId, index, startTime},
     )
-  ->handleMutateErrorPromise(~onError);
+  ->handleMutateErrorPromise(~onError)
+  ->Prometo.map(~f=(input: AddSyncItem.t) => {
+      let itemId =
+        input.insert_bridge_sync_one
+        ->Option.mapWithDefault(
+            999 /*TODO: investigate why this is optional.*/, sync =>
+            sync.id
+          );
+      {syncItemId: itemId};
+    });
 };
 
 let updateSyncTime = (~onError, id, frequencyDurationSeconds) => {
@@ -174,16 +183,16 @@ let processBridges = updateInterval => {
                 );
 
               updateSyncTime(
-                ~onError=_ => Js.log("error"),
+                ~onError=_ => Js.log("Unable to Sync Error."),
                 id,
                 frequency_duration_seconds,
               )
               ->Prometo.flatMap(~f=_ => {
                   addSyncItem(
                     ~onError=_ => Js.log("error"),
-                    ~bridgeId=id,
-                    ~index=maxValue->getMaxIndexSyncFromAgregate + 1,
                     ~startTime=currentTimestamp,
+                    ~index=maxValue->getMaxIndexSyncFromAgregate + 1,
+                    ~bridgeId=id,
                   )
                 })
               ->Prometo.flatMap(~f=result => {
@@ -193,7 +202,15 @@ let processBridges = updateInterval => {
                     ~endpoint=skaleEndpointUri,
                   )
                 })
-              ->Prometo.flatMap(~f=result => {Upload.uploadChunkToArweave(~protocol="http", ~port=4646, ~host="Arweave test port", ~onError=(_) => Js.log("error uploading to arweave"))})
+              ->Prometo.flatMap(~f=result => {
+                  Upload.uploadChunkToArweave(
+                    ~protocol="http",
+                    ~port=4646,
+                    ~host="Arweave test port",
+                    ~onError=_ =>
+                    Js.log("error uploading to arweave")
+                  )
+                })
               ->ignore;
             })
           ->ignore
