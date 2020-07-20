@@ -1,3 +1,4 @@
+[%raw "require('../../styles/css/radio-select.css')"];
 open Globals;
 
 // TODO: enforce that the "user <-> uri" combination is unique. https://github.com/hasura/graphql-engine/issues/2200
@@ -73,13 +74,13 @@ module EditArweaveEndpoint = {
             name="skaleEndpoint"
             id="skaleEndpoint"
             value=newArweaveProtocol
-            className=Css.(style([maxWidth(`percent(15.))]))
+            className=Css.(style([maxWidth(`percent(20.))]))
             onChange={event => {
               let value = ReactEvent.Form.target(event)##value;
               setNewArweaveProtocol(_ => value);
             }}>
-            <option value="https"> "https"->React.string </option>
-            <option value="http"> "http"->React.string </option>
+            <option value="https"> "https://"->React.string </option>
+            <option value="http"> "http://"->React.string </option>
           </select>
           <input
             typeof="text"
@@ -101,7 +102,7 @@ module EditArweaveEndpoint = {
               let value = ReactEvent.Form.target(event)##value;
               setNewArweavePort(_ => value->int_of_string_opt);
             }}
-            className=Css.(style([maxWidth(`percent(25.))]))
+            className=Css.(style([maxWidth(`percent(20.))]))
           />
           <button onClick=onSubmit className="input-add-button">
             "+"->React.string
@@ -141,7 +142,7 @@ module ArweaveEndpointDropdown = {
         ),
       );
 
-    <div className="funnel-step-container">
+    <div>
       <h3> "Select the desired arweave endpoint"->React.string </h3>
       <div>
         {switch (arweaveEndpointsQueryResult) {
@@ -176,7 +177,7 @@ module ArweaveEndpointDropdown = {
              //       )
              //     ->React.array}
              //  </select>
-             <div>
+             <div className="radio-box-container">
                <ul>
                  {data.arweave_endpoint
                   ->Belt.Array.map(({id, url, port, protocol}) =>
