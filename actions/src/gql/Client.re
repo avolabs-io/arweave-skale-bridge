@@ -1,10 +1,14 @@
+open Globals;
+
 let headers = {"x-hasura-admin-secret": "testing"};
 // let headers = {"X-Hasura-User-ID": "jason", "X-Hasura-Role": "user"};
 
-[@bs.val] external graphqlEndpoint: string = "process.env.GRAPHQL_ENDPOINT";
+[@bs.val]
+external graphqlEndpoint: option(string) = "process.env.GRAPHQL_ENDPOINT";
 
-[@bs.val] external isHttpsEnv: string = "process.env.REACT_APP_IS_HTTPS";
-let isHttps = isHttpsEnv == "true";
+[@bs.val]
+external isHttpsEnv: option(string) = "process.env.REACT_APP_IS_HTTPS";
+let isHttps = isHttpsEnv |||| "false" == "true";
 
 [%raw "require('isomorphic-fetch')"];
 let ws: ApolloClient.Link.WebSocketLink.webSocketImpl = [%raw "require('ws')"];
@@ -13,7 +17,10 @@ external fetch: ApolloClient.Link.HttpLink.HttpOptions.Js_.t_fetch = "fetch";
 
 let httpLink =
   ApolloClient.Link.HttpLink.make(
-    ~uri=_ => (isHttps ? "https://" : "http://") ++ graphqlEndpoint,
+    ~uri=
+      _ =>
+        (isHttps ? "https://" : "http://")
+        ++ (graphqlEndpoint |||| "localhost:8080/v1/graphql"),
     ~credentials="include",
     ~headers=Obj.magic(headers),
     ~fetch,
@@ -23,7 +30,9 @@ let httpLink =
 let wsLink =
   ApolloClient.Link.WebSocketLink.(
     make(
-      ~uri=(isHttps ? "wss://" : "ws://") ++ graphqlEndpoint,
+      ~uri=
+        (isHttps ? "wss://" : "ws://")
+        ++ (graphqlEndpoint |||| "localhost:8080/v1/graphql"),
       ~options=
         ClientOptions.make(
           ~connectionParams=

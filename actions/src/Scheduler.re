@@ -30,9 +30,6 @@ query GetItemsReadyForSync ($endTime: Int!) {
     arweave_endpoint_id
     contentType
     frequency_duration_seconds
-    frequency_setting {
-      frequency
-    }
     id
     next_scheduled_sync
     skale_endpoint {
