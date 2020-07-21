@@ -28,11 +28,6 @@
     "@apollo/client" "^3.0.0-beta.23"
     tslib "^1.9.3"
 
-"@jeddeloh/reason-apollo-client@^0.0.1-alpha.4":
-  version "0.0.1-alpha.4"
-  resolved "https://registry.yarnpkg.com/@jeddeloh/reason-apollo-client/-/reason-apollo-client-0.0.1-alpha.4.tgz#a5fb0af7458cb472cd49a4d1372aa9e20075d339"
-  integrity sha512-4+sjk+fo0aDeg5fSbpFq42H+zktxlvLkxsq22Kddxf04wB+LSSo1cgG0eOysSt7mz6fBShpDgk/oUyal5bB1Gg==
-
 "@reasonml-community/graphql-ppx@^1.0.0-beta.18":
   version "1.0.0-feee9ea.0"
   resolved "https://registry.yarnpkg.com/@reasonml-community/graphql-ppx/-/graphql-ppx-1.0.0-feee9ea.0.tgz#b42ccf9ce1bb0770d5a230102035efc51ea36cd8"
@@ -1190,6 +1185,11 @@ readdirp@~3.4.0:
   integrity sha512-0xe001vZBnJEK+uKcj8qOhyAKPzIT+gStxWr3LCB0DwcXR5NZJ3IaC+yGnHCYzB/S7ov3m3EEbZI2zeNvX+hGQ==
   dependencies:
     picomatch "^2.2.1"
+
+reason-apollo-client@^0.0.1-beta.1:
+  version "0.0.1-beta.1"
+  resolved "https://registry.yarnpkg.com/reason-apollo-client/-/reason-apollo-client-0.0.1-beta.1.tgz#6282c9683d4e90631d9d5f6e99bc9e07eb97d0ac"
+  integrity sha512-uRCb7EfVxr3jpXbV+lR23SGAf7hyLxlt/jr/VNRAabD0I8Vm+kNcE6rtgg3LNOFeBPCCF2s3QsyJGVgQ0b53ng==
 
 reason-react@^0.9.1:
   version "0.9.1"
