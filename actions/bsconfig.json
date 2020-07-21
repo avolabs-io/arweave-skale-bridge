@@ -33,7 +33,7 @@
   ],
   "suffix": ".bs.js",
   "bs-dependencies": [
-    "@jeddeloh/reason-apollo-client",
+    "reason-apollo-client",
     "bs-express",
     "decco",
     "serbet",

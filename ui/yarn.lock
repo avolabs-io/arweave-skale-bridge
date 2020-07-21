@@ -1241,11 +1241,6 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@jeddeloh/reason-apollo-client@^0.0.1-alpha.3":
-  version "0.0.1-alpha.3"
-  resolved "https://registry.yarnpkg.com/@jeddeloh/reason-apollo-client/-/reason-apollo-client-0.0.1-alpha.3.tgz#4eef54f5a8b9cb6a95fdcc06248e9815da05d1e9"
-  integrity sha512-XXGR8Y9Zm8kbdtWzRqgTNWZMQTEisTlPvRAGA9Y1JIqP51YKP8910N64CuZ+oEXiFSyAtXYVAbGs8uG/CgS0kg==
-
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"
@@ -9287,6 +9282,11 @@ realpath-native@^1.1.0:
   integrity sha512-wlgPA6cCIIg9gKz0fgAPjnzh4yR/LnXovwuo9hvyGvx3h8nX4+/iLZplfUWasXpqD8BdnGnP5njOFjkUwPzvjA==
   dependencies:
     util.promisify "^1.0.0"
+
+reason-apollo-client@^0.0.1-beta.1:
+  version "0.0.1-beta.1"
+  resolved "https://registry.yarnpkg.com/reason-apollo-client/-/reason-apollo-client-0.0.1-beta.1.tgz#6282c9683d4e90631d9d5f6e99bc9e07eb97d0ac"
+  integrity sha512-uRCb7EfVxr3jpXbV+lR23SGAf7hyLxlt/jr/VNRAabD0I8Vm+kNcE6rtgg3LNOFeBPCCF2s3QsyJGVgQ0b53ng==
 
 reason-promise@1.1.1:
   version "1.1.1"
