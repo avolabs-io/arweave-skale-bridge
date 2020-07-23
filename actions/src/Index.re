@@ -2,13 +2,18 @@ open Serbet.Endpoint;
 open Globals;
 
 Dotenv.config();
-[@bs.val] external port: string = "process.env.PORT";
+[@bs.val] external port: option(string) = "process.env.PORT";
 [@bs.val]
-external processLoopTime: string = "process.env.PROCESS_LOOP_INTERVAL";
+external processLoopTime: option(string) =
+  "process.env.PROCESS_LOOP_INTERVAL";
 
-// Scheduler.startScheduler(
-//   processLoopTime->int_of_string_opt->Option.getWithDefault(120) /*use a default of 2 min*/,
-// );
+let optStringToInt = (optStringInt, default) =>
+  optStringInt->Option.flatMap(intString => intString->int_of_string_opt)
+  |||| default;
+
+Scheduler.startScheduler(
+  processLoopTime->optStringToInt(12000) /*use a default of 2 min*/,
+);
 
 module AddArweaveWallet = [%graphql
   {|
@@ -64,6 +69,6 @@ module Arweave = {
 
 let app =
   Serbet.application(
-    ~port=port->int_of_string_opt |||| 9898,
+    ~port=port->optStringToInt(9898),
     [Arweave.createArweaveWallet],
   );
