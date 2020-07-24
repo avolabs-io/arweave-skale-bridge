@@ -1,4 +1,5 @@
 [%raw "require('../styles/css/create-stream.css')"];
+open Globals;
 
 type onboardingSteps =
   | Overview
@@ -27,8 +28,7 @@ let make =
       ~defaultFrequencyInput=None,
       ~defaultArweaveEndpointInput=None,
     ) => {
-  let (onboardingStep, setOnboardingStep) =
-    React.useState(_ => ArweaveEndpoint); //TODO remember to change this back to Overview
+  let (onboardingStep, setOnboardingStep) = React.useState(_ => Overview); //TODO remember to change this back to Overview
   let (skaleEndpointInput, setSkaleEndpointInput) =
     React.useState(_ => defaultSkaleEndpointInput);
   let (skaleDataTypeInput, setSkaleDataType) =
@@ -84,6 +84,12 @@ let make =
       moveToPrevStep={_ => setOnboardingStep(_ => ArweaveEndpoint)}
       moveToNextStep={_ => setOnboardingStep(_ => OnboardingComplete)}
     />
-  | OnboardingComplete => <div> "DONE"->React.string </div>
+  | OnboardingComplete =>
+    <BridgeSubmitted
+      skaleEndpointInput
+      skaleDataTypeInput
+      frequencyInput={frequencyInput->Option.map(Frequency.timeToSecond)}
+      arveaweEndpointInput
+    />
   };
 };
