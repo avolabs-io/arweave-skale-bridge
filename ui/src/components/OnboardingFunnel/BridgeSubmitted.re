@@ -9,25 +9,11 @@ module GetUserArweaveWalletQuery = [%graphql
 |}
 ];
 
-module CreateUserArweaveWalletQuery = [%graphql
-  {|
-  mutation MyMutation ($userId: String!) {
-    createArweaveWallet(userId: $userId) {
-      address
-      arweave_key_data {
-        user_id
-        pub_key
-      }
-    }
-  }
-|}
-];
-
 module CreateBridge = [%graphql
   {|
-  mutation MyMutation ($arweaveEndpointId: Int!, $contentType: String!, $frequency_durationSeconds: Int!, next_scheduled_sync: Int!, skale_endpoint_id: Int!, userId: Int!){
-  insert_bridge_data(objects: {arweave_endpoint_id: 10, contentType: "", frequency_duration_seconds: 10, next_scheduled_sync: 10, skale_endpoint_id: 10, userId: ""}) {
-    affected_rows
+  mutation MyMutation ($arweaveEndpointId: Int!, $contentType: String!, $frequencyDurationSeconds: Int!, $nextScheduledSync: Int!, $skaleEndpointId: Int!, $userId: String!){
+  insert_bridge_data_one(object: {arweave_endpoint_id: $arweaveEndpointId, contentType: $contentType, frequency_duration_seconds: $frequencyDurationSeconds, next_scheduled_sync: $nextScheduledSync, skale_endpoint_id: $skaleEndpointId, userId: $userId}) {
+    active
   }
 }
 |}
@@ -37,7 +23,7 @@ module GenerateArweaveWallet = {
   [@react.component]
   let make = (~setArweaveAddress) => {
     // TODO: allow removing endpoints.
-    let (mutate, result) = CreateUserArweaveWalletQuery.use();
+    let (mutate, result) = CreateBridge.use();
     // let (newArweaveEndpoint, setNewArweaveEndpoint) =
     //   React.useState(() => "");
     // let (newArweaveProtocol, setNewArweaveProtocol) =
@@ -55,7 +41,12 @@ module GenerateArweaveWallet = {
             ),
           ),
         |],
-        CreateUserArweaveWalletQuery.makeVariables(
+        CreateBridge.makeVariables(
+          ~arweaveEndpointId=5,
+          ~contentType="something",
+          ~frequencyDurationSeconds=5,
+          ~nextScheduledSync=5,
+          ~skaleEndpointId=5,
           ~userId=usersIdDetails.login,
           (),
         ),
@@ -63,7 +54,7 @@ module GenerateArweaveWallet = {
       ->ignore;
       None;
     });
-    CreateUserArweaveWalletQuery.(
+    CreateBridge.(
       switch (result) {
       | {called: false} => React.null
       | {loading: true} => "Loading..."->React.string
