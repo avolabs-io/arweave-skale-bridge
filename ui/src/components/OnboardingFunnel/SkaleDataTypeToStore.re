@@ -12,9 +12,7 @@ module GetSkaleDataTypesQuery = [%graphql
 
 module DataTypeSelect = {
   [@react.component]
-  let make = (~setSkaleDataType, ~skaleDataTypeInput) => {
-    let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
-
+  let make = (~setSkaleDataType, ~skaleDataTypeInput, ~moveToNextStep) => {
     let skaleDataTypeQueryResult =
       GetSkaleDataTypesQuery.use(
         ~fetchPolicy=CacheAndNetwork,
@@ -27,7 +25,7 @@ module DataTypeSelect = {
         {switch (skaleDataTypeQueryResult) {
          | {loading: true, data: None} => <p> "Loading"->React.string </p>
          | {loading, data: Some(data), error} =>
-           <>
+           <form onSubmit={_ => Js.log("SUBMITTING THE FORM")}>
              <dialog>
                {loading ? <p> "Refreshing..."->React.string </p> : React.null}
                {switch (error) {
@@ -43,11 +41,22 @@ module DataTypeSelect = {
              <select
                name="skaleDataType"
                id="skaleDataType"
-               value={skaleDataTypeInput->Option.getWithDefault("")}
+               value={skaleDataTypeInput->Option.getWithDefault("select")}
                onChange={event => {
                  let value = ReactEvent.Form.target(event)##value;
-                 setSkaleDataType(_ => Some(value));
+                 if (value != "select") {
+                   setSkaleDataType(_ => Some(value));
+                   moveToNextStep();
+                 } else {
+                   ();
+                 };
                }}>
+               <option
+                 value="select"
+                 disabled=true
+                 className=Css.(style([backgroundColor(blue)]))>
+                 "Select an option"->React.string
+               </option>
                {data.skale_data_type_enum
                 ->Belt.Array.map(dataType =>
                     <option value={dataType.data_type}>
@@ -56,7 +65,7 @@ module DataTypeSelect = {
                   )
                 ->React.array}
              </select>
-           </>
+           </form>
          | {loading: false, data: None} =>
            <p> "Error loading data"->React.string </p>
          }}
@@ -73,7 +82,13 @@ let make =
     <h4>
       "Please select the type of data you would like to backup"->React.string
     </h4>
-    <div> <DataTypeSelect setSkaleDataType skaleDataTypeInput /> </div>
-    <NavigationButtons moveToNextStep moveToPrevStep nextDisabled=false />
+    <div>
+      <DataTypeSelect setSkaleDataType skaleDataTypeInput moveToNextStep />
+    </div>
+    <NavigationButtons
+      moveToNextStep
+      moveToPrevStep
+      nextDisabled={skaleDataTypeInput->Option.isNone}
+    />
   </div>;
 };

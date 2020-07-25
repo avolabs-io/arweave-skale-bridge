@@ -1,5 +1,6 @@
 [%raw "require('../../styles/css/radio-select.css')"];
 open Globals;
+open OnboardingHelpers;
 
 module GetFrequenciesQuery = [%graphql
   {|
@@ -13,8 +14,6 @@ module GetFrequenciesQuery = [%graphql
 ];
 
 type times =
-  | TwoHours
-  | SixHours
   | TwiceADay
   | Daily
   | Weekly
@@ -23,8 +22,6 @@ type times =
 
 let timeToSecond = time =>
   switch (time) {
-  | TwoHours => 7200
-  | SixHours => 21600
   | TwiceADay => 43200
   | Daily => 86400
   | Weekly => 604800
@@ -34,8 +31,6 @@ let timeToSecond = time =>
 
 let timeToText = time =>
   switch (time) {
-  | TwoHours => "2 Hours"
-  | SixHours => "6 Hours"
   | TwiceADay => "Twice a day"
   | Daily => "Daily"
   | Weekly => "Weekly"
@@ -46,8 +41,6 @@ let timeToText = time =>
 
 let secondToTimeSelection = time =>
   switch (time) {
-  | 7200 => TwoHours
-  | 21600 => SixHours
   | 43200 => TwiceADay
   | 86400 => Daily
   | 604800 => Weekly
@@ -58,16 +51,16 @@ let secondToTimeSelection = time =>
 [@react.component]
 let make =
     (~moveToNextStep, ~moveToPrevStep, ~frequencyInput, ~setFrequencyInput) => {
-  let timeOptionsList = [|
-    TwoHours,
-    SixHours,
-    TwiceADay,
-    Daily,
-    Weekly,
-    Monthly,
-  |];
+  let timeOptionsList = [|TwiceADay, Daily, Weekly, Monthly|];
 
   <div className="funnel-step-container frequency radio-box-container">
+    <HiddenAutoFocusButton
+      action={_ => {
+        let idToSet = frequencyInput->Option.getWithDefault(Daily);
+        setFrequencyInput(_ => Some(idToSet));
+        Js.Global.setTimeout(moveToNextStep, 500)->ignore;
+      }}
+    />
     <h2> "Frequency"->React.string </h2>
     <h4>
       "Please specify the frequency the data will be backed up"->React.string
@@ -80,23 +73,29 @@ let make =
                let frequencyText = frequency->timeToText;
                let frequencyInt = frequency->timeToSecond;
                let frequencyIntString = frequencyInt->string_of_int;
+               let checked = {
+                 frequencyInt
+                 == frequencyInput
+                    ->Option.getWithDefault(Custom(-1))
+                    ->timeToSecond;
+               };
                <li
                  key=frequencyIntString
-                 onClick={_event => {setFrequencyInput(_ => Some(frequency))}}>
+                 onClick={_event => {
+                   setFrequencyInput(_ => Some(frequency));
+                   Js.Global.setTimeout(moveToNextStep, 500)->ignore;
+                 }}>
                  <input
                    type_="radio"
-                   checked={
-                     frequencyInt
-                     == frequencyInput
-                        ->Option.getWithDefault(Custom(-1))
-                        ->timeToSecond
-                   }
+                   checked
                    id="frequency"
                    name="selector"
                    value=frequencyIntString
                    readOnly=true
                  />
-                 <label htmlFor=frequencyText>
+                 <label
+                   htmlFor=frequencyText
+                   className={checked ? selectedItemAnimation : ""}>
                    frequencyText->React.string
                  </label>
                  <div className="check" />

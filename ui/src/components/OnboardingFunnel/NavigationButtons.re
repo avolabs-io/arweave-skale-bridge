@@ -8,6 +8,7 @@ let make = (~moveToNextStep, ~moveToPrevStep, ~nextDisabled) => {
     <button
       onClick={_ => moveToNextStep()}
       disabled=nextDisabled
+      autoFocus=true
       className={nextDisabled ? Css.(style([opacity(0.6)])) : ""}>
       "Next "->React.string
       {js|►|js}->React.string

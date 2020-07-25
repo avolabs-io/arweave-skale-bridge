@@ -1,6 +1,7 @@
 [%raw "require('../../styles/css/radio-select.css')"];
 [%raw "require('../../styles/css/create-stream.css')"];
 open Globals;
+open OnboardingHelpers;
 
 // TODO: enforce that the "user <-> uri" combination is unique. https://github.com/hasura/graphql-engine/issues/2200
 //       I had no luck first time I tried.
@@ -53,7 +54,7 @@ module EditSkaleEndpoint = {
     let onSubmit = _ =>
       {
         setValidatingEndpoint(_ => (true, true, None));
-        CheckLink.checkIsValidLink(newSkaleEndpoint, true)
+        CheckLink.checkIsValidLink(newSkaleEndpoint, false)
         ->Js.Promise.then_(
             ((isValid, message)) => {
               setValidatingEndpoint(_ => (false, isValid, message));
@@ -136,7 +137,7 @@ module EditSkaleEndpoint = {
         )
       ->Option.map(({id}) => {
           setSkaleEndpointInput(_ => Some(id));
-          goToNextStep();
+          Js.Global.setTimeout(goToNextStep, 900)->ignore;
         })
       ->ignore;
 
@@ -159,7 +160,7 @@ module EditSkaleEndpoint = {
 
 module SkaleEndpointDropDown = {
   [@react.component]
-  let make = (~setSkaleEndpointInput, ~skaleEndpointInput) => {
+  let make = (~setSkaleEndpointInput, ~skaleEndpointInput, ~moveToNextStep) => {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
 
     let skaleEndpointsQueryResult =
@@ -173,55 +174,72 @@ module SkaleEndpointDropDown = {
       );
 
     <div className="radio-box-container">
-      <div>
-        {switch (skaleEndpointsQueryResult) {
-         | {loading: true, data: None} => <p> "Loading"->React.string </p>
-         | {loading, data: Some(data), error} =>
-           <>
-             <dialog>
-               {loading ? <p> "Refreshing..."->React.string </p> : React.null}
-               {switch (error) {
-                | Some(_) =>
-                  <p>
-                    "The query went wrong, data may be incomplete"
-                    ->React.string
-                  </p>
-                | None => React.null
-                }}
-             </dialog>
-             <div>
-               <ul>
-                 {data.skale_endpoint
-                  ->Belt.Array.map(({id, uri}) => {
-                      let idString = id->string_of_int;
-                      <li
-                        key=idString
-                        onClick={_ => {setSkaleEndpointInput(_ => Some(id))}}>
-                        <input
-                          type_="radio"
-                          id={idString ++ "-option"}
-                          name="selector"
-                          value=uri
-                          checked={
-                            id
-                            == skaleEndpointInput->Option.getWithDefault(-1)
-                          }
-                          readOnly=true
-                        />
-                        <label htmlFor={idString ++ "-option"}>
-                          uri->React.string
-                        </label>
-                        <div className="check" />
-                      </li>;
-                    })
-                  ->React.array}
-               </ul>
-             </div>
-           </>
-         | {loading: false, data: None} =>
-           <p> "Error loading data"->React.string </p>
-         }}
-      </div>
+      {switch (skaleEndpointsQueryResult) {
+       | {loading: true, data: None} => <p> "Loading"->React.string </p>
+       | {loading, data: Some({skale_endpoint}), error} =>
+         <>
+           <HiddenAutoFocusButton
+             action={_ =>
+               switch (skale_endpoint->List.fromArray) {
+               | [] => ()
+               | [{id}, ..._] =>
+                 let idToSet = skaleEndpointInput->Option.getWithDefault(id);
+                 setSkaleEndpointInput(_ => Some(idToSet));
+                 Js.Global.setTimeout(moveToNextStep, 500)->ignore;
+               }
+             }
+           />
+           <dialog>
+             {loading ? <p> "Refreshing..."->React.string </p> : React.null}
+             {switch (error) {
+              | Some(_) =>
+                <p>
+                  "The query went wrong, data may be incomplete"->React.string
+                </p>
+              | None => React.null
+              }}
+           </dialog>
+           <div>
+             <ul>
+               {skale_endpoint
+                ->Belt.Array.map(({id, uri}) => {
+                    let checked =
+                      id == skaleEndpointInput->Option.getWithDefault(-1);
+                    let idString = id->string_of_int;
+                    <li
+                      key=idString
+                      onClick={_ => {
+                        setSkaleEndpointInput(_ => Some(id));
+                        // TODO: the timoout should be canceled if another option is selected.
+                        Js.Global.setTimeout(moveToNextStep, 500)->ignore;
+                      }}>
+                      <input
+                        type_="radio"
+                        id={idString ++ "-option"}
+                        name="selector"
+                        value=uri
+                        onKeyDown={_ => {
+                          %log.warn
+                          "KeyDown"
+                        }}
+                        checked
+                        readOnly=true
+                      />
+                      <label
+                        htmlFor={idString ++ "-option"}
+                        className={checked ? selectedItemAnimation : ""}>
+                        uri->React.string
+                      </label>
+                      <div className="check" />
+                    </li>;
+                  })
+                ->React.array}
+             </ul>
+           </div>
+         </>
+       | {loading: false, data: None} =>
+         <p> "Error loading data"->React.string </p>
+       }}
     </div>;
   };
 };
@@ -262,7 +280,11 @@ let make =
          {switch (data.skale_endpoint) {
           | [||] => React.null
           | _ =>
-            <SkaleEndpointDropDown setSkaleEndpointInput skaleEndpointInput />
+            <SkaleEndpointDropDown
+              moveToNextStep
+              setSkaleEndpointInput
+              skaleEndpointInput
+            />
           }}
        </>
      | {loading: false, data: None} =>
@@ -275,4 +297,5 @@ let make =
       nextDisabled={skaleEndpointInput->Option.isNone}
     />
   </div>;
+  // </form>
 };

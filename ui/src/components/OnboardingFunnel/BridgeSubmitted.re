@@ -28,7 +28,7 @@ module CreateBridgeForm = {
         ~skaleEndpointInput,
         ~skaleDataTypeInput,
         ~frequencyInput,
-        ~arveaweEndpointInput,
+        ~arweaveEndpointInput,
         ~setHasCreatedBridge,
       ) => {
     let (mutate, result) = CreateBridge.use();
@@ -36,17 +36,8 @@ module CreateBridgeForm = {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
     let createBridge = () => {
       mutate(
-        // TODO: Refetch the users active bridges
-        // ~refetchQueries=[|
-        //   GetUserArweaveWalletQuery.refetchQueryDescription(
-        //     GetUserArweaveWalletQuery.makeVariables(
-        //       ~userId=usersIdDetails.login,
-        //       (),
-        //     ),
-        //   ),
-        // |],
         CreateBridge.makeVariables(
-          ~arweaveEndpointId=arveaweEndpointInput,
+          ~arweaveEndpointId=arweaveEndpointInput,
           ~contentType=skaleDataTypeInput,
           ~frequencyDurationSeconds=frequencyInput,
           ~nextScheduledSync=5,
@@ -59,38 +50,43 @@ module CreateBridgeForm = {
       None;
     };
 
-    CreateBridge.(
-      switch (result) {
-      | {called: false} =>
-        <button onClick={_ => createBridge()->ignore}>
-          "Confirm"->React.string
-        </button>
-      | {loading: true} => "Loading..."->React.string
-      | {data, error: None} =>
-        switch (data) {
-        | Some(mutationResult) =>
-          setHasCreatedBridge(_ => true);
+    <div className="funnel-step-container frequency radio-box-container">
+      CreateBridge.(
+        switch (result) {
+        | {called: false} =>
+          <>
+            <h1> "Do you want to create your bridge now?"->React.string </h1>
+            <button onClick={_ => createBridge()->ignore}>
+              "Confirm"->React.string
+            </button>
+          </>
+        | {loading: true} => "Loading..."->React.string
+        | {data, error: None} =>
+          switch (data) {
+          | Some(mutationResult) =>
+            setHasCreatedBridge(_ => true);
 
-          <h4>
-            {React.string("Your Arweave Account has been created. ")}
-          </h4>;
-        | _ =>
-          <h4>
-            {React.string(
-               "There was an error creating your arweave address. Please reload.",
-             )}
-          </h4>
+            <h4>
+              {React.string("Your Arweave Account has been created. ")}
+            </h4>;
+          | _ =>
+            <h4>
+              {React.string(
+                 "There was an error creating your arweave address. Please reload.",
+               )}
+            </h4>
+          }
+        | {error} =>
+          <>
+            "Error creating arweave account."->React.string
+            {switch (error) {
+             | Some(error) => React.string(": " ++ error.message)
+             | None => React.null
+             }}
+          </>
         }
-      | {error} =>
-        <>
-          "Error creating arweave account."->React.string
-          {switch (error) {
-           | Some(error) => React.string(": " ++ error.message)
-           | None => React.null
-           }}
-        </>
-      }
-    );
+      )
+    </div>;
   };
 };
 
@@ -100,7 +96,7 @@ let make =
       ~skaleEndpointInput,
       ~skaleDataTypeInput,
       ~frequencyInput,
-      ~arveaweEndpointInput,
+      ~arweaveEndpointInput,
       ~goToStep,
     ) => {
   let (hasCreatedBridge, setHasCreatedBridge) = React.useState(_ => false);
@@ -109,23 +105,21 @@ let make =
     skaleDataTypeInput,
     skaleEndpointInput,
     frequencyInput,
-    arveaweEndpointInput,
+    arweaveEndpointInput,
   ) {
   | (
       Some(skaleDataTypeInput),
       Some(skaleEndpointInput),
       Some(frequencyInput),
-      Some(arveaweEndpointInput),
+      Some(arweaveEndpointInput),
     ) =>
-    hasCreatedBridge
-      ? "Has created Bridge"->React.string
-      : <CreateBridgeForm
-          skaleDataTypeInput
-          skaleEndpointInput
-          frequencyInput
-          arveaweEndpointInput
-          setHasCreatedBridge
-        />
+    <CreateBridgeForm
+      skaleDataTypeInput
+      skaleEndpointInput
+      frequencyInput
+      arweaveEndpointInput
+      setHasCreatedBridge
+    />
   | _ =>
     <>
       {skaleDataTypeInput->Option.mapWithDefault(
@@ -158,7 +152,7 @@ let make =
          _ =>
          React.null
        )}
-      {arveaweEndpointInput->Option.mapWithDefault(
+      {arweaveEndpointInput->Option.mapWithDefault(
          <p>
            "The Arveawe Endpoint isn't defined."->React.string
            <a onClick={_ => goToStep(Route.ArweaveEndpoint)}>

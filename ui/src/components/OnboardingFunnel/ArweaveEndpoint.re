@@ -1,5 +1,6 @@
 [%raw "require('../../styles/css/radio-select.css')"];
 open Globals;
+open OnboardingHelpers;
 
 // TODO: enforce that the "user <-> uri" combination is unique. https://github.com/hasura/graphql-engine/issues/2200
 //       I had no luck first time I tried.
@@ -190,7 +191,8 @@ module EditArweaveEndpoint = {
 
 module ArweaveEndpointDropdown = {
   [@react.component]
-  let make = (~arveaweEndpointInput, ~setArweaveEndpointInput) => {
+  let make =
+      (~arweaveEndpointInput, ~setArweaveEndpointInput, ~moveToNextStep) => {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
 
     let arweaveEndpointsQueryResult =
@@ -208,8 +210,20 @@ module ArweaveEndpointDropdown = {
       <div>
         {switch (arweaveEndpointsQueryResult) {
          | {loading: true, data: None} => <p> "Loading"->React.string </p>
-         | {loading, data: Some(data), error} =>
+         | {loading, data: Some({arweave_endpoint}), error} =>
            <>
+             <HiddenAutoFocusButton
+               action={_ =>
+                 switch (arweave_endpoint->List.fromArray) {
+                 | [] => ()
+                 | [{id}, ..._] =>
+                   let idToSet =
+                     arweaveEndpointInput->Option.getWithDefault(id);
+                   setArweaveEndpointInput(_ => Some(idToSet));
+                   Js.Global.setTimeout(moveToNextStep, 500)->ignore;
+                 }
+               }
+             />
              <dialog>
                {loading ? <p> "Refreshing..."->React.string </p> : React.null}
                {switch (error) {
@@ -223,29 +237,32 @@ module ArweaveEndpointDropdown = {
              </dialog>
              <div className="radio-box-container">
                <ul>
-                 {data.arweave_endpoint
-                  ->Belt.Array.map(({id, url, port, protocol}) =>
+                 {arweave_endpoint
+                  ->Belt.Array.map(({id, url, port, protocol}) => {
+                      let checked = {
+                        id == arweaveEndpointInput->Option.getWithDefault(-1);
+                      };
                       <li
                         onChange={_event => {
-                          setArweaveEndpointInput(_ => Some(id))
+                          setArweaveEndpointInput(_ => Some(id));
+                          Js.Global.setTimeout(moveToNextStep, 500)->ignore;
                         }}>
                         <input
                           type_="radio"
                           id={id->string_of_int ++ "-option"}
                           name="selector"
                           value=url
-                          checked={
-                            id
-                            == arveaweEndpointInput->Option.getWithDefault(-1)
-                          }
+                          checked
                           readOnly=true
                         />
-                        <label htmlFor={id->string_of_int ++ "-option"}>
+                        <label
+                          htmlFor={id->string_of_int ++ "-option"}
+                          className={checked ? selectedItemAnimation : ""}>
                           {formatArweaveUrl(protocol, url, port)->React.string}
                         </label>
                         <div className="check" />
-                      </li>
-                    )
+                      </li>;
+                    })
                   ->React.array}
                </ul>
              </div>
@@ -263,7 +280,7 @@ let make =
     (
       ~moveToNextStep,
       ~moveToPrevStep,
-      ~arveaweEndpointInput,
+      ~arweaveEndpointInput,
       ~setArweaveEndpointInput,
     ) => {
   let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
@@ -294,8 +311,9 @@ let make =
           | [||] => React.null
           | _ =>
             <ArweaveEndpointDropdown
-              arveaweEndpointInput
+              arweaveEndpointInput
               setArweaveEndpointInput
+              moveToNextStep
             />
           }}
        </>
@@ -306,7 +324,7 @@ let make =
     <NavigationButtons
       moveToNextStep
       moveToPrevStep
-      nextDisabled={arveaweEndpointInput->Option.isNone}
+      nextDisabled={arweaveEndpointInput->Option.isNone}
     />
   </div>;
 };
