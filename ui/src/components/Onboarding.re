@@ -1,21 +1,12 @@
 [%raw "require('../styles/css/create-stream.css')"];
 open Globals;
 
-type onboardingSteps =
-  | Overview
-  | SkaleEndpoint
-  | SkaleDataTypeToStore
-  | Frequency
-  | ArweaveEndpoint
-  | TopupArweaveWallet
-  | OnboardingComplete;
-
 module GeneratingArweaveWallet = {
   [@react.component]
   let make = (~moveToNextStep, ~moveToPrevStep) => {
     <div className="funnel-step-container">
       "step 2"->React.string
-      <NavigationButtons moveToNextStep moveToPrevStep />
+      <NavigationButtons moveToNextStep moveToPrevStep nextDisabled=false />
     </div>;
   };
 };
@@ -28,7 +19,9 @@ let make =
       ~defaultFrequencyInput=None,
       ~defaultArweaveEndpointInput=None,
     ) => {
-  let (onboardingStep, setOnboardingStep) = React.useState(_ => Overview); //TODO remember to change this back to Overview
+  open Route;
+  let (onboardingStep, setOnboardingStep) =
+    React.useState(_ => ArweaveEndpoint); //TODO remember to change this back to Overview
   let (skaleEndpointInput, setSkaleEndpointInput) =
     React.useState(_ => defaultSkaleEndpointInput);
   let (skaleDataTypeInput, setSkaleDataType) =
@@ -49,40 +42,41 @@ let make =
 
   switch (onboardingStep) {
   | Overview =>
-    <Overview moveToNextStep={_ => setOnboardingStep(_ => SkaleEndpoint)} />
+    <Overview moveToNextStep={() => setOnboardingStep(_ => SkaleEndpoint)} />
   | SkaleEndpoint =>
     <SkaleEndpoint
+      skaleEndpointInput
       setSkaleEndpointInput
-      moveToPrevStep={_ => setOnboardingStep(_ => Overview)}
-      moveToNextStep={_ => {setOnboardingStep(_ => SkaleDataTypeToStore)}}
+      moveToPrevStep={() => setOnboardingStep(_ => Overview)}
+      moveToNextStep={() => {setOnboardingStep(_ => SkaleDataTypeToStore)}}
     />
   | SkaleDataTypeToStore =>
     <SkaleDataTypeToStore
       setSkaleDataType
       skaleDataTypeInput
-      moveToPrevStep={_ => setOnboardingStep(_ => SkaleEndpoint)}
-      moveToNextStep={_ => setOnboardingStep(_ => Frequency)}
+      moveToPrevStep={() => setOnboardingStep(_ => SkaleEndpoint)}
+      moveToNextStep={() => setOnboardingStep(_ => Frequency)}
     />
   | Frequency =>
     <Frequency
       frequencyInput
       setFrequencyInput
-      moveToPrevStep={_ => setOnboardingStep(_ => SkaleDataTypeToStore)}
-      moveToNextStep={_ => setOnboardingStep(_ => ArweaveEndpoint)}
+      moveToPrevStep={() => setOnboardingStep(_ => SkaleDataTypeToStore)}
+      moveToNextStep={() => setOnboardingStep(_ => ArweaveEndpoint)}
     />
   | ArweaveEndpoint =>
     <ArweaveEndpoint
       arveaweEndpointInput
       setArweaveEndpointInput
-      moveToPrevStep={_ => setOnboardingStep(_ => Frequency)}
-      moveToNextStep={_ => setOnboardingStep(_ => TopupArweaveWallet)}
+      moveToPrevStep={() => setOnboardingStep(_ => Frequency)}
+      moveToNextStep={() => setOnboardingStep(_ => TopupArweaveWallet)}
     />
   | TopupArweaveWallet =>
     <ArweaveWalletGen
       setArweaveAddress
       // arweaveAddress
-      moveToPrevStep={_ => setOnboardingStep(_ => ArweaveEndpoint)}
-      moveToNextStep={_ => setOnboardingStep(_ => OnboardingComplete)}
+      moveToPrevStep={() => setOnboardingStep(_ => ArweaveEndpoint)}
+      moveToNextStep={() => setOnboardingStep(_ => OnboardingComplete)}
     />
   | OnboardingComplete =>
     <BridgeSubmitted
@@ -90,6 +84,7 @@ let make =
       skaleDataTypeInput
       frequencyInput={frequencyInput->Option.map(Frequency.timeToSecond)}
       arveaweEndpointInput
+      goToStep={step => setOnboardingStep(_ => step)}
     />
   };
 };

@@ -8,6 +8,15 @@ type t =
   | Dashboard
   | GqlExamplesPage;
 
+type onboardingSteps =
+  | Overview
+  | SkaleEndpoint
+  | SkaleDataTypeToStore
+  | Frequency
+  | ArweaveEndpoint
+  | TopupArweaveWallet
+  | OnboardingComplete;
+
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path) {
   | [] => Main->Some

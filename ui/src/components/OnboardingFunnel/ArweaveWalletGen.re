@@ -133,6 +133,6 @@ let make = (~moveToNextStep, ~moveToPrevStep, ~setArweaveAddress) => {
      | {loading: false, data: None} =>
        <p> "Error loading existing endpoints."->React.string </p>
      }}
-    <NavigationButtons moveToNextStep moveToPrevStep />
+    <NavigationButtons moveToNextStep moveToPrevStep nextDisabled=false />
   </div>;
 };

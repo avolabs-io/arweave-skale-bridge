@@ -1,3 +1,5 @@
+open Globals;
+
 module GetUserArweaveWalletQuery = [%graphql
   {|
   query EndpointQuery ($userId: String!) {
@@ -99,6 +101,7 @@ let make =
       ~skaleDataTypeInput,
       ~frequencyInput,
       ~arveaweEndpointInput,
+      ~goToStep,
     ) => {
   let (hasCreatedBridge, setHasCreatedBridge) = React.useState(_ => false);
 
@@ -123,6 +126,48 @@ let make =
           arveaweEndpointInput
           setHasCreatedBridge
         />
-  | _ => "All of the required fields are not defined"->React.string
+  | _ =>
+    <>
+      {skaleDataTypeInput->Option.mapWithDefault(
+         <p>
+           "The skale data type isn't defined."->React.string
+           <a onClick={_ => goToStep(Route.SkaleDataTypeToStore)}>
+             "Please go back and define it."->React.string
+           </a>
+         </p>,
+         _ =>
+         React.null
+       )}
+      {skaleEndpointInput->Option.mapWithDefault(
+         <p>
+           "The skale data type isn't defined."->React.string
+           <a onClick={_ => goToStep(Route.SkaleEndpoint)}>
+             "Please go back and define it."->React.string
+           </a>
+         </p>,
+         _ =>
+         React.null
+       )}
+      {frequencyInput->Option.mapWithDefault(
+         <p>
+           "The frequency of your bridge backup isn't defined."->React.string
+           <a onClick={_ => goToStep(Route.Frequency)}>
+             "Please go back and define it."->React.string
+           </a>
+         </p>,
+         _ =>
+         React.null
+       )}
+      {arveaweEndpointInput->Option.mapWithDefault(
+         <p>
+           "The Arveawe Endpoint isn't defined."->React.string
+           <a onClick={_ => goToStep(Route.ArweaveEndpoint)}>
+             "Please go back and define it."->React.string
+           </a>
+         </p>,
+         _ =>
+         React.null
+       )}
+    </>
   };
 };

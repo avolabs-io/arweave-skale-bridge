@@ -74,6 +74,6 @@ let make =
       "Please select the type of data you would like to backup"->React.string
     </h4>
     <div> <DataTypeSelect setSkaleDataType skaleDataTypeInput /> </div>
-    <NavigationButtons moveToNextStep moveToPrevStep />
+    <NavigationButtons moveToNextStep moveToPrevStep nextDisabled=false />
   </div>;
 };

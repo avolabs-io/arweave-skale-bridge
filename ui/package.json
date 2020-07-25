@@ -33,6 +33,7 @@
     "bs-css-emotion": "^1.2.0",
     "bs-log": "^1.2.0",
     "graphql": "^14.0.0",
+    "link-check": "^4.5.0",
     "onegraph-auth": "^2.2.4",
     "re-classnames": "^5.0.1",
     "react": "^16.13.1",
@@ -54,5 +55,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ],
+    "rules": {
+      "default-case": "off",
+      "no-unused-vars": "off",
+      "no-unused-expressions": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "no-unreachable": "off"
+    }
   }
 }

@@ -67,15 +67,6 @@ let make =
     Monthly,
   |];
 
-  Js.log(frequencyInput);
-  // let (_frequencyRadio, setFrequencyRadio) = React.useState(_ => "3600");
-  // let frequenciesQueryResult =
-  //   GetFrequenciesQuery.use(
-  //     ~fetchPolicy=CacheAndNetwork,
-  //     ~errorPolicy=All,
-  //     GetFrequenciesQuery.makeVariables(),
-  //   );
-
   <div className="funnel-step-container frequency radio-box-container">
     <h2> "Frequency"->React.string </h2>
     <h4>
@@ -115,21 +106,10 @@ let make =
         </ul>
       </div>
     </div>
-    //  )}
-    //    </li>
-    //      <div className="check" />
-    //      </label>
-    //        {frequency.frequency}->React.string
-    //      <label htmlFor={frequency.frequency}>
-    //      />
-    //        // onChange={setFrequencyRadio(_ => "hourly")}
-    //        value={frequency.frequency}
-    //        name="selector"
-    //        id={frequency.frequency}
-    //        type_="radio"
-    //      <input
-    //    <li>
-    // {arrayData->Belt.Array.map(frequency =>
-    <NavigationButtons moveToNextStep moveToPrevStep />
+    <NavigationButtons
+      moveToNextStep
+      moveToPrevStep
+      nextDisabled={frequencyInput->Option.isNone}
+    />
   </div>;
 };

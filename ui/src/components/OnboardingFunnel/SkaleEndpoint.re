@@ -28,64 +28,130 @@ module GetUserSkaleEndpointsQuery = [%graphql
 |}
 ];
 
+module GetSkaleEndpointsByIdQuery = [%graphql
+  {|
+  query EndpointInfoQuery($endpointId: Int!) {
+    skale_endpoint_by_pk(id: $endpointId) {
+      uri
+      user_id
+      id
+    }
+  }
+|}
+];
+
 module EditSkaleEndpoint = {
   [@react.component]
-  let make = () => {
+  let make = (~setSkaleEndpointInput, ~goToNextStep) => {
     // TODO: allow removing endpoints.
     let (mutate, result) = AddSkaleEndpointMutation.use();
     let (newSkaleEndpoint, setNewSkaleEndpoint) = React.useState(() => "");
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
+    let ((isValidating, isValid, message), setValidatingEndpoint) =
+      React.useState(() => (false, true, None));
 
     let onSubmit = _ =>
-      mutate(
-        ~refetchQueries=[|
-          GetUserSkaleEndpointsQuery.refetchQueryDescription(
-            GetUserSkaleEndpointsQuery.makeVariables(
-              ~userId=usersIdDetails.login,
-              (),
-            ),
-          ),
-        |],
-        AddSkaleEndpointMutation.makeVariables(
-          ~uri=newSkaleEndpoint,
-          ~userId=usersIdDetails.login,
-          (),
-        ),
-      )
+      {
+        setValidatingEndpoint(_ => (true, true, None));
+        CheckLink.checkIsValidLink(newSkaleEndpoint, true)
+        ->Js.Promise.then_(
+            ((isValid, message)) => {
+              setValidatingEndpoint(_ => (false, isValid, message));
+              if (isValid) {
+                mutate(
+                  ~refetchQueries=[|
+                    GetUserSkaleEndpointsQuery.refetchQueryDescription(
+                      GetUserSkaleEndpointsQuery.makeVariables(
+                        ~userId=usersIdDetails.login,
+                        (),
+                      ),
+                    ),
+                  |],
+                  AddSkaleEndpointMutation.makeVariables(
+                    ~uri=newSkaleEndpoint,
+                    ~userId=usersIdDetails.login,
+                    (),
+                  ),
+                )
+                ->ignore;
+              } else {
+                ();
+              };
+              ()->async;
+            },
+            _,
+          )
+        ->ignore;
+      }
       ->ignore;
+
+    let inputForm =
+      if (isValidating) {
+        <div>
+          <p>
+            "Validating your link - this can take some time depending on the network response time."
+            ->React.string
+          </p>
+        </div>;
+      } else {
+        <form onSubmit>
+          <div className="input-with-button">
+            <input
+              typeof="text"
+              id="newSkaleEndpoint"
+              name="newSkaleEndpoint"
+              placeholder="Add new endpoint"
+              onChange={event => {
+                let value = ReactEvent.Form.target(event)##value;
+                setNewSkaleEndpoint(_ => value);
+              }}
+              onFocus={_ => {setSkaleEndpointInput(_ => None)}}
+              value=newSkaleEndpoint
+            />
+            <button onClick=onSubmit className="input-add-button">
+              "+"->React.string
+            </button>
+          </div>
+          {isValid
+             ? React.null
+             : <>
+                 <p>
+                   "Please make sure your link is correct:"->React.string
+                 </p>
+                 {switch (message) {
+                  | Some(errorMessage) => <p> errorMessage->React.string </p>
+                  | None => React.null
+                  }}
+               </>}
+        </form>;
+      };
+
     switch (result) {
-    | {called: false} =>
-      <form onSubmit>
-        <div className="input-with-button">
-          <input
-            typeof="text"
-            id="newSkaleEndpoint"
-            name="newSkaleEndpoint"
-            placeholder="Add new endpoint"
-            onChange={event => {
-              let value = ReactEvent.Form.target(event)##value;
-              setNewSkaleEndpoint(_ => value);
-            }}
-            value=newSkaleEndpoint
-          />
-          <button onClick=onSubmit className="input-add-button">
-            "+"->React.string
-          </button>
-        </div>
-      </form>
+    | {called: false} => inputForm
     | {loading: true} => "Loading..."->React.string
-    | {data: _, error: None} =>
-      // Some({uri: Some(uri)
+    | {data, error: None} =>
+      data
+      ->Option.flatMap(({insert_skale_endpoint_one}) =>
+          insert_skale_endpoint_one
+        )
+      ->Option.map(({id}) => {
+          setSkaleEndpointInput(_ => Some(id));
+          goToNextStep();
+        })
+      ->ignore;
+
       <h4>
         {React.string("Endpoint has successfully been added to your account.")}
-      </h4>
+      </h4>;
     | {error} =>
       <>
-        "Error loading data"->React.string
+        "Error setting your endpoint"->React.string
         {switch (error) {
          | Some(error) => React.string(": " ++ error.message)
          | None => React.null
          }}
+        <p> "Please try again:"->React.string </p>
+        inputForm
       </>
     };
   };
@@ -93,10 +159,8 @@ module EditSkaleEndpoint = {
 
 module SkaleEndpointDropDown = {
   [@react.component]
-  let make = (~setSkaleEndpointInput) => {
+  let make = (~setSkaleEndpointInput, ~skaleEndpointInput) => {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
-    let (selectedSkaleEndpoint, setSelectedSkaleEndpoint) =
-      React.useState(() => "");
 
     let skaleEndpointsQueryResult =
       GetUserSkaleEndpointsQuery.use(
@@ -125,46 +189,31 @@ module SkaleEndpointDropDown = {
                 | None => React.null
                 }}
              </dialog>
-             // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
-             //  <select
-             //    name="skaleEndpoint"
-             //    id="skaleEndpoint"
-             //    value=selectedSkaleEndpoint
-             //    onChange={event => {
-             //      let value = ReactEvent.Form.target(event)##value;
-             //      setSelectedSkaleEndpoint(_ => value);
-             //    }}>
-             //    {data.skale_endpoint
-             //     ->Belt.Array.map(endpoint =>
-             //         <option value={endpoint.uri}>
-             //           endpoint.uri->React.string
-             //         </option>
-             //       )
-             //     ->React.array}
-             //  </select>
              <div>
                <ul>
                  {data.skale_endpoint
-                  ->Belt.Array.map(endpoint =>
-                      <li key={endpoint.id->string_of_int}>
+                  ->Belt.Array.map(({id, uri}) => {
+                      let idString = id->string_of_int;
+                      <li
+                        key=idString
+                        onClick={_ => {setSkaleEndpointInput(_ => Some(id))}}>
                         <input
                           type_="radio"
-                          id={endpoint.id->string_of_int ++ "-option"}
+                          id={idString ++ "-option"}
                           name="selector"
-                          value={endpoint.uri}
-                          onChange={event => {
-                            let value = ReactEvent.Form.target(event)##value;
-                            setSelectedSkaleEndpoint(_ => value);
-                            setSkaleEndpointInput(_ => Some(endpoint.id));
-                          }}
+                          value=uri
+                          checked={
+                            id
+                            == skaleEndpointInput->Option.getWithDefault(-1)
+                          }
+                          readOnly=true
                         />
-                        <label
-                          htmlFor={endpoint.id->string_of_int ++ "-option"}>
-                          endpoint.uri->React.string
+                        <label htmlFor={idString ++ "-option"}>
+                          uri->React.string
                         </label>
                         <div className="check" />
-                      </li>
-                    )
+                      </li>;
+                    })
                   ->React.array}
                </ul>
              </div>
@@ -178,7 +227,13 @@ module SkaleEndpointDropDown = {
 };
 
 [@react.component]
-let make = (~moveToNextStep, ~moveToPrevStep, ~setSkaleEndpointInput) => {
+let make =
+    (
+      ~moveToNextStep,
+      ~moveToPrevStep,
+      ~setSkaleEndpointInput,
+      ~skaleEndpointInput,
+    ) => {
   let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
   let skaleEndpointsQueryResult =
     GetUserSkaleEndpointsQuery.use(
@@ -206,14 +261,18 @@ let make = (~moveToNextStep, ~moveToPrevStep, ~setSkaleEndpointInput) => {
           }}
          {switch (data.skale_endpoint) {
           | [||] => React.null
-          | _ => <SkaleEndpointDropDown setSkaleEndpointInput />
+          | _ =>
+            <SkaleEndpointDropDown setSkaleEndpointInput skaleEndpointInput />
           }}
-         // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
        </>
      | {loading: false, data: None} =>
        <p> "Error loading existing endpoints."->React.string </p>
      }}
-    <EditSkaleEndpoint />
-    <NavigationButtons moveToNextStep moveToPrevStep />
+    <EditSkaleEndpoint setSkaleEndpointInput goToNextStep=moveToNextStep />
+    <NavigationButtons
+      moveToNextStep
+      moveToPrevStep
+      nextDisabled={skaleEndpointInput->Option.isNone}
+    />
   </div>;
 };

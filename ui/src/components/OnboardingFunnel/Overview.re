@@ -47,7 +47,7 @@ let make = (~moveToNextStep) => {
     <p> "- Specify Arweave endpoint"->React.string </p>
     <h4> {js| 👉🏽 |js}->React.string "Step 5"->React.string </h4>
     <p> "- Fund Arweave wallet"->React.string </p>
-    <button onClick=moveToNextStep className="full-width-button">
+    <button onClick={_ => moveToNextStep()} className="full-width-button">
       "Get Started"->React.string
     </button>
   </div>;
