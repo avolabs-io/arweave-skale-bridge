@@ -47,30 +47,20 @@ let make = () => {
   <div id="dashboard">
     <h1> "Dashboard"->React.string </h1>
     <table>
-      <tr>
-        <th> "id"->React.string </th>
-        <th> "label"->React.string </th>
-        <th> "last backed up"->React.string </th>
-      </tr>
-      <tr>
-        <td> "1"->React.string </td>
-        <td> "my daily backup"->React.string </td>
-        <td> "just now"->React.string </td>
-      </tr>
       {switch (usersBridgesQueryResult) {
        | {loading: true, data: None} => <p> "Loading"->React.string </p>
        | {loading, data: Some(data), error} =>
          <>
-           <dialog>
-             {loading ? <p> "Refreshing..."->React.string </p> : React.null}
-             {switch (error) {
-              | Some(_) =>
-                <p>
-                  "The query went wrong, data may be incomplete"->React.string
-                </p>
-              | None => React.null
-              }}
-           </dialog>
+           <tr>
+             <th> "id"->React.string </th>
+             <th> "label"->React.string </th>
+             <th> "last backed up"->React.string </th>
+           </tr>
+           <tr>
+             <td> "1"->React.string </td>
+             <td> "my daily backup"->React.string </td>
+             <td> "just now"->React.string </td>
+           </tr>
            {data.bridge_data
             ->Belt.Array.map(bridge =>
                 <tr>

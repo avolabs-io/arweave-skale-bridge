@@ -5,56 +5,57 @@ services:
       - "data_dir:/data_dir"
       - "./config/config.json:/config.json"
     ports:
-      - "0.0.0.0:1234:1234/tcp"
-      - "0.0.0.0:1233:1233/tcp"
+      - "1234:1234"
+      - "1233:1233"
     environment:
       - DATA_DIR=/data_dir
-      - OPTIONS= --http-port 1234 --ws-port 1233 --config /config.json -d /data_dir --ipcpath /data_dir -v 3 --web3-trace --enable-debug-behavior-apis --aa no
+      - OPTIONS= --no-colors --config /config.json --db-path=/data_dir -v 4 --log-value-size-limit 1024000 --performance-timeline-enable --performance-timeline-max-items=16000000 --ssl-key /dev_dir/key.pem --ssl-cert /dev_dir/cert.pem
+      # - OPTIONS= --http-port 1234 --ws-port 1233 --config /config.json -d /data_dir --ipcpath /data_dir -v 3 --web3-trace --enable-debug-behavior-apis --aa no
     image: skalenetwork/schain:1.46-develop.39
-  hasura-actions:
-    build: ./actions
-    volumes:
-      ["./actions/src:/app/src", "./actions/node_modules:/app/node_modules"]
-    ports:
-      - "${ACTIONS_PORT_EXTERNAL}:${ACTIONS_PORT}"
-    environment:
-      PORT: ${ACTIONS_PORT}
-      GRAPHQL_ENDPOINT: graphql-engine:8080/v1/graphql
-    command: ${ACTIONS_START_COMMAND}
-    restart: always
-  postgres:
-    # container_name: hasura-postgres
-    image: postgres:12
-    restart: always
-    ports:
-      - "${POSTGRES_EXTERNAL_PORT}:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  graphql-engine:
-    # name: graphql-engine
-    container_name: graphql-engine
-    image: hasura/graphql-engine:v1.3.0-beta.4
-    # image: hasura/graphql-engine:latest
-    # image: hasura/graphql-engine:v1.2.0
-    ports:
-      - "${HASURA_EXTERNAL_PORT}:8080"
-    volumes:
-      # - ./wildcards/metadata:/hasura-metadata
-      - ./wildcards/migrations:/hasura-migrations
-    depends_on:
-      - "postgres"
-      - "hasura-actions"
-    restart: always
-    environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
-      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-      HASURA_GRAPHQL_NO_OF_RETRIES: 10
-      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
-      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
-      HASURA_GRAPHQL_JWT_SECRET: ${HASURA_GRAPHQL_JWT_SECRET}
+  # hasura-actions:
+  #   build: ./actions
+  #   volumes:
+  #     ["./actions/src:/app/src", "./actions/node_modules:/app/node_modules"]
+  #   ports:
+  #     - "${ACTIONS_PORT_EXTERNAL}:${ACTIONS_PORT}"
+  #   environment:
+  #     PORT: ${ACTIONS_PORT}
+  #     GRAPHQL_ENDPOINT: graphql-engine:8080/v1/graphql
+  #   command: ${ACTIONS_START_COMMAND}
+  #   restart: always
+  # postgres:
+  #   # container_name: hasura-postgres
+  #   image: postgres:12
+  #   restart: always
+  #   ports:
+  #     - "${POSTGRES_EXTERNAL_PORT}:5432"
+  #   volumes:
+  #     - db_data:/var/lib/postgresql/data
+  #   environment:
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  # graphql-engine:
+  #   # name: graphql-engine
+  #   container_name: graphql-engine
+  #   image: hasura/graphql-engine:v1.3.0-beta.4
+  #   # image: hasura/graphql-engine:latest
+  #   # image: hasura/graphql-engine:v1.2.0
+  #   ports:
+  #     - "${HASURA_EXTERNAL_PORT}:8080"
+  #   volumes:
+  #     # - ./wildcards/metadata:/hasura-metadata
+  #     - ./wildcards/migrations:/hasura-migrations
+  #   depends_on:
+  #     - "postgres"
+  #     - "hasura-actions"
+  #   restart: always
+  #   environment:
+  #     HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
+  #     HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
+  #     HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+  #     HASURA_GRAPHQL_NO_OF_RETRIES: 10
+  #     HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
+  #     HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
+  #     HASURA_GRAPHQL_JWT_SECRET: ${HASURA_GRAPHQL_JWT_SECRET}
 volumes:
   db_data:
   data_dir:
