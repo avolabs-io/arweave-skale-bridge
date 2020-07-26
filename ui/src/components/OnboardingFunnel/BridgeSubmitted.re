@@ -1,3 +1,5 @@
+open Globals;
+
 module GetUserArweaveWalletQuery = [%graphql
   {|
   query EndpointQuery ($userId: String!) {
@@ -9,140 +11,157 @@ module GetUserArweaveWalletQuery = [%graphql
 |}
 ];
 
-module CreateUserArweaveWalletQuery = [%graphql
-  {|
-  mutation MyMutation ($userId: String!) {
-    createArweaveWallet(userId: $userId) {
-      address
-      arweave_key_data {
-        user_id
-        pub_key
-      }
-    }
-  }
-|}
-];
-
 module CreateBridge = [%graphql
   {|
-  mutation MyMutation ($arweaveEndpointId: Int!, $contentType: String!, $frequency_durationSeconds: Int!, next_scheduled_sync: Int!, skale_endpoint_id: Int!, userId: Int!){
-  insert_bridge_data(objects: {arweave_endpoint_id: 10, contentType: "", frequency_duration_seconds: 10, next_scheduled_sync: 10, skale_endpoint_id: 10, userId: ""}) {
-    affected_rows
+  mutation MyMutation ($arweaveEndpointId: Int!, $contentType: String!, $frequencyDurationSeconds: Int!, $nextScheduledSync: Int!, $skaleEndpointId: Int!, $userId: String!){
+  insert_bridge_data_one(object: {arweave_endpoint_id: $arweaveEndpointId, contentType: $contentType, frequency_duration_seconds: $frequencyDurationSeconds, next_scheduled_sync: $nextScheduledSync, skale_endpoint_id: $skaleEndpointId, userId: $userId}) {
+    active
   }
 }
 |}
 ];
 
-module GenerateArweaveWallet = {
+module CreateBridgeForm = {
   [@react.component]
-  let make = (~setArweaveAddress) => {
-    // TODO: allow removing endpoints.
-    let (mutate, result) = CreateUserArweaveWalletQuery.use();
-    // let (newArweaveEndpoint, setNewArweaveEndpoint) =
-    //   React.useState(() => "");
-    // let (newArweaveProtocol, setNewArweaveProtocol) =
-    //   React.useState(() => "https");
-    // let (newArweavePort, setNewArweavePort) = React.useState(() => None);
-    let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
+  let make =
+      (
+        ~skaleEndpointInput,
+        ~skaleDataTypeInput,
+        ~frequencyInput,
+        ~arweaveEndpointInput,
+        ~setHasCreatedBridge,
+      ) => {
+    let (mutate, result) = CreateBridge.use();
 
-    React.useEffect(() => {
+    let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
+    let createBridge = () => {
       mutate(
-        ~refetchQueries=[|
-          GetUserArweaveWalletQuery.refetchQueryDescription(
-            GetUserArweaveWalletQuery.makeVariables(
-              ~userId=usersIdDetails.login,
-              (),
-            ),
-          ),
-        |],
-        CreateUserArweaveWalletQuery.makeVariables(
+        CreateBridge.makeVariables(
+          ~arweaveEndpointId=arweaveEndpointInput,
+          ~contentType=skaleDataTypeInput,
+          ~frequencyDurationSeconds=frequencyInput,
+          ~nextScheduledSync=5,
+          ~skaleEndpointId=skaleEndpointInput,
           ~userId=usersIdDetails.login,
           (),
         ),
       )
       ->ignore;
       None;
-    });
-    CreateUserArweaveWalletQuery.(
-      switch (result) {
-      | {called: false} => React.null
-      | {loading: true} => "Loading..."->React.string
-      | {data, error: None} =>
-        switch (data) {
-        // | Some(newAddress) =>
-        | Some({createArweaveWallet: Some({address})}) =>
-          setArweaveAddress(_ => Some(address));
+    };
 
-          <h4>
-            {React.string(
-               "Your Arweave Account has been created. " ++ address,
-             )}
-          </h4>;
-        | _ =>
-          <h4>
-            {React.string(
-               "There was an error creating your arweave address. Please reload.",
-             )}
-          </h4>
+    <div className="funnel-step-container frequency radio-box-container">
+      CreateBridge.(
+        switch (result) {
+        | {called: false} =>
+          <>
+            <h1> "Do you want to create your bridge now?"->React.string </h1>
+            <button onClick={_ => createBridge()->ignore}>
+              "Confirm"->React.string
+            </button>
+          </>
+        | {loading: true} => "Loading..."->React.string
+        | {data, error: None} =>
+          switch (data) {
+          | Some(mutationResult) =>
+            setHasCreatedBridge(_ => true);
+
+            <h4>
+              {React.string("Your Arweave Account has been created. ")}
+            </h4>;
+          | _ =>
+            <h4>
+              {React.string(
+                 "There was an error creating your arweave address. Please reload.",
+               )}
+            </h4>
+          }
+        | {error} =>
+          <>
+            "Error creating arweave account."->React.string
+            {switch (error) {
+             | Some(error) => React.string(": " ++ error.message)
+             | None => React.null
+             }}
+          </>
         }
-      | {error} =>
-        <>
-          "Error creating arweave account."->React.string
-          {switch (error) {
-           | Some(error) => React.string(": " ++ error.message)
-           | None => React.null
-           }}
-        </>
-      }
-    );
+      )
+    </div>;
   };
 };
 
 [@react.component]
-let make = (~moveToNextStep, ~moveToPrevStep, ~setArweaveAddress) => {
-  let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
-  let arweaveEndpointsQueryResult =
-    GetUserArweaveWalletQuery.use(
-      ~fetchPolicy=CacheAndNetwork,
-      ~errorPolicy=All,
-      GetUserArweaveWalletQuery.makeVariables(
-        ~userId=usersIdDetails.login,
-        (),
-      ),
-    );
-  <div className="funnel-step-container">
-    <h2>
-      "Please deposit into your arweave account so that we can perform syncs on your behalf."
-      ->React.string
-    </h2>
-    {switch (arweaveEndpointsQueryResult) {
-     | {loading: true, data: None} => React.null
-     | {loading, data: Some(data), error} =>
-       <>
-         {loading
-            ? <p> "Loading your current data."->React.string </p> : React.null}
-         {switch (error) {
-          | Some(_) =>
-            <p>
-              "Unexpected error, please check your connection."->React.string
-            </p>
-          | None => React.null
-          }}
-         {switch (data.arweave_key) {
-          | [||] => <GenerateArweaveWallet setArweaveAddress />
-          | [|{pub_key}|]
-          | [|{pub_key}, _|] =>
-            setArweaveAddress(_ => Some(pub_key));
-            <div>
-              <p> "Your arweave wallet address:"->React.string </p>
-              <p> pub_key->React.string </p>
-            </div>;
-          }}
-         // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
-       </>
-     | {loading: false, data: None} =>
-       <p> "Error loading existing endpoints."->React.string </p>
-     }}
-    <NavigationButtons moveToNextStep moveToPrevStep />
-  </div>;
+let make =
+    (
+      ~skaleEndpointInput,
+      ~skaleDataTypeInput,
+      ~frequencyInput,
+      ~arweaveEndpointInput,
+      ~goToStep,
+    ) => {
+  let (hasCreatedBridge, setHasCreatedBridge) = React.useState(_ => false);
+
+  switch (
+    skaleDataTypeInput,
+    skaleEndpointInput,
+    frequencyInput,
+    arweaveEndpointInput,
+  ) {
+  | (
+      Some(skaleDataTypeInput),
+      Some(skaleEndpointInput),
+      Some(frequencyInput),
+      Some(arweaveEndpointInput),
+    ) =>
+    <CreateBridgeForm
+      skaleDataTypeInput
+      skaleEndpointInput
+      frequencyInput
+      arweaveEndpointInput
+      setHasCreatedBridge
+    />
+  | _ =>
+    <>
+      {skaleDataTypeInput->Option.mapWithDefault(
+         <p>
+           "The skale data type isn't defined."->React.string
+           <a onClick={_ => goToStep(Route.SkaleDataTypeToStore)}>
+             "Please go back and define it."->React.string
+           </a>
+         </p>,
+         _ =>
+         React.null
+       )}
+      {skaleEndpointInput->Option.mapWithDefault(
+         <p>
+           "The skale data type isn't defined."->React.string
+           <a onClick={_ => goToStep(Route.SkaleEndpoint)}>
+             "Please go back and define it."->React.string
+           </a>
+         </p>,
+         _ =>
+         React.null
+       )}
+      {frequencyInput->Option.mapWithDefault(
+         <p>
+           "The frequency of your bridge backup isn't defined."->React.string
+           <a onClick={_ => goToStep(Route.Frequency)}>
+             "Please go back and define it."->React.string
+           </a>
+         </p>,
+         _ =>
+         React.null
+       )}
+      {arweaveEndpointInput->Option.mapWithDefault(
+         <p>
+           "The Arveawe Endpoint isn't defined."->React.string
+           <a onClick={_ => goToStep(Route.ArweaveEndpoint)}>
+             "Please go back and define it."->React.string
+           </a>
+         </p>,
+         _ =>
+         React.null
+       )}
+    </>
+  };
 };

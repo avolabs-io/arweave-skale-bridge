@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."skale_endpoint" drop constraint "skale_endpoint_uri_user_id_key";
+  type: run_sql
