@@ -2,13 +2,34 @@ open Globals;
 
 module GetUserBridgesQuery = [%graphql
   {|
-  query BridgesQuery($userId: String!) {
-    bridge_data (where: {user_id: {_eq: $userId}}){
-      userId
+  query ActiveBridgesQuery($userId: String!) {
+  bridge_data(where: {userId: {_eq: $userId}, active: {_eq: true}}) {
+    userId
+    id
+    contentType
+    arweave_endpoint_rel {
       id
-      contentType
+      port
+      protocol
+      url
     }
+    bridge_sync_rel_aggregate {
+      aggregate {
+        max {
+          index
+        }
+      }
+    }
+    frequency_duration_seconds
+    label
+    metaData
+    skale_endpoint {
+      uri
+      id
+    }
+    next_scheduled_sync
   }
+}
 |}
 ];
 

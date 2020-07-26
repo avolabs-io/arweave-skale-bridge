@@ -22,8 +22,7 @@ let make =
       ~defaultArweaveEndpointInput=None,
     ) => {
   open Route;
-  let (onboardingStep, setOnboardingStep) =
-    React.useState(_ => ArweaveEndpoint); //TODO remember to change this back to Overview
+  let (onboardingStep, setOnboardingStep) = React.useState(_ => Overview);
   let (skaleEndpointInput, setSkaleEndpointInput) =
     React.useState(_ => defaultSkaleEndpointInput);
   let (skaleDataTypeInput, setSkaleDataType) =
