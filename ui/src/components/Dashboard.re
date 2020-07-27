@@ -65,13 +65,19 @@ let make = () => {
        | {loading, data: Some(data), error} =>
          <>
            <tr>
-             <th> "Type"->React.string </th>
-             <th> "Skale Endpoint"->React.string </th>
-             <th> "Arweave Endpoint"->React.string </th>
-             <th> "Frequency"->React.string </th>
-             <th> "Next Scheduled Sync"->React.string </th>
-             <th> "Number Completed Syncs"->React.string </th>
-             <th> "Label"->React.string </th>
+             <th> {js| 📁 |js}->React.string " Type"->React.string </th>
+             <th>
+               {js| 📥 |js}->React.string
+               " Skale Endpoint"->React.string
+             </th>
+             <th>
+               {js| 📤 |js}->React.string
+               " Arweave Endpoint"->React.string
+             </th>
+             <th> {js| 🕔 |js}->React.string " Frequency"->React.string </th>
+             <th> {js| ⏳ |js}->React.string " Next Sync"->React.string </th>
+             <th> {js| 🧮 |js}->React.string " # Syncs"->React.string </th>
+             <th> {js| 🏷️ |js}->React.string " Label"->React.string </th>
            </tr>
            {data.bridge_data
             ->Belt.Array.map(
