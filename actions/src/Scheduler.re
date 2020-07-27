@@ -64,8 +64,8 @@ module AddSyncItem = [%graphql
 // Then if an arweave upload fails, we could set the sync time back to now to try again "immediately"
 module UpdateNextSync = [%graphql
   {|
-mutation ScheduleNextSyncTime($id: Int!, $frequencyDurationSeconds: Int!) {
-  update_bridge_data_by_pk(pk_columns: {id: $id}, _inc: {next_scheduled_sync: $frequencyDurationSeconds}) {
+mutation ScheduleNextSyncTime($id: Int!, $nextScheduledSync: Int!) {
+  update_bridge_data_by_pk(pk_columns: {id: $id}, _inc: {next_scheduled_sync: $nextScheduledSync}) {
     id
   }
 }
@@ -119,11 +119,11 @@ let addSyncItem = (~onError, ~bridgeId, ~index, ~startTime) => {
     });
 };
 
-let updateSyncTime = (~onError, id, frequencyDurationSeconds) => {
+let updateSyncTime = (~onError, id, nextScheduledSync) => {
   Client.instance
   ->ApolloClient.mutate(
       ~mutation=(module UpdateNextSync),
-      {id, frequencyDurationSeconds},
+      {id, nextScheduledSync},
     )
   ->handleMutateErrorPromise(~onError);
 };
@@ -146,6 +146,8 @@ let getMaxIndexSyncFromAgregate =
 // mutation to update when next sync should be (based on frequency). (does this change if current sync fails.)
 // call uploadChunkToArweave
 let processBridges = updateInterval => {
+  Js.log("processing the bridges");
+
   let currentTimestamp = Js.Math.floor_int(Js.Date.now() /. 1000.);
   // NOTE: Here we take the end time to be halfway between this interval and the next.
   //       This means that it processes any future items that are closer to this interval than the next interval.
@@ -179,10 +181,12 @@ let processBridges = updateInterval => {
                   endpoint.uri
                 );
 
+              let nextSyncTime = currentTimestamp + frequency_duration_seconds;
+
               updateSyncTime(
                 ~onError=_ => Js.log("Unable to Sync Error."),
                 id,
-                frequency_duration_seconds,
+                nextSyncTime,
               )
               ->Prometo.flatMap(~f=_ => {
                   addSyncItem(
@@ -229,11 +233,11 @@ let processBridges = updateInterval => {
 //     (),
 //   );
 
-let startScheduler = updateInterval =>
+let startScheduler = updateInterval => {
+  processBridges(updateInterval);
+
   Js.Global.setInterval(
-    () => {
-      Js.log("processing the bridges");
-      processBridges(updateInterval);
-    },
+    () => {processBridges(updateInterval)},
     updateInterval,
   );
+};

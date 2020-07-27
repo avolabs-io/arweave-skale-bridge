@@ -19,7 +19,8 @@
       "-template-tag-location=@apollo/client"
     ],
     "decco/ppx",
-    "bs-let/ppx"
+    "bs-let/ppx",
+    "bs-log/ppx"
   ],
   "reason": {
     "react-jsx": 3
@@ -41,6 +42,7 @@
     "bs-cron",
     "@reasonml-community/graphql-ppx",
     "@yawaramin/prometo",
+    "bs-log",
     // "reason-promise",
     "reason-react" // This is needed by apollo probably... Don't use in code
   ]

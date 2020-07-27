@@ -48,6 +48,8 @@ let secondToTimeSelection = time =>
   | value => Custom(value)
   };
 
+let secondsToText = time => time->secondToTimeSelection->timeToText;
+
 [@react.component]
 let make =
     (~moveToNextStep, ~moveToPrevStep, ~frequencyInput, ~setFrequencyInput) => {

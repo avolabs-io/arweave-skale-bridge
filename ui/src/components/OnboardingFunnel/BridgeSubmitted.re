@@ -21,6 +21,8 @@ module CreateBridge = [%graphql
 |}
 ];
 
+open OnboardingHelpers;
+
 module CreateBridgeForm = {
   [@react.component]
   let make =
@@ -51,41 +53,46 @@ module CreateBridgeForm = {
     };
 
     <div className="funnel-step-container frequency radio-box-container">
-      CreateBridge.(
-        switch (result) {
-        | {called: false} =>
-          <>
-            <h1> "Do you want to create your bridge now?"->React.string </h1>
-            <button onClick={_ => createBridge()->ignore}>
-              "Confirm"->React.string
-            </button>
-          </>
-        | {loading: true} => "Loading..."->React.string
-        | {data, error: None} =>
-          switch (data) {
-          | Some(mutationResult) =>
-            setHasCreatedBridge(_ => true);
+      {switch (result) {
+       | {called: false} =>
+         <>
+           <HiddenAutoFocusButton action={_ => createBridge()->ignore} />
+           <h1> "Do you want to create your bridge now?"->React.string </h1>
+           <button onClick={_ => createBridge()->ignore}>
+             "Confirm"->React.string
+           </button>
+         </>
+       | {loading: true} => "Loading..."->React.string
+       | {data, error: None} =>
+         switch (data) {
+         | Some(_mutationResult) =>
+           setHasCreatedBridge(_ => true);
 
-            <h4>
-              {React.string("Your Arweave Account has been created. ")}
-            </h4>;
-          | _ =>
-            <h4>
-              {React.string(
-                 "There was an error creating your arweave address. Please reload.",
-               )}
-            </h4>
-          }
-        | {error} =>
-          <>
-            "Error creating arweave account."->React.string
-            {switch (error) {
-             | Some(error) => React.string(": " ++ error.message)
-             | None => React.null
-             }}
-          </>
-        }
-      )
+           <>
+             <HiddenAutoFocusButton
+               action={_ => Route.Dashboard->Router.push}
+             />
+             <h4> {React.string("Your Bridge has been created.")} </h4>
+             <Router.Link route=Route.Dashboard>
+               "Manage your active Bridges."->React.string
+             </Router.Link>
+           </>;
+         | _ =>
+           <h4>
+             {React.string(
+                "There was an error creating your arweave address. Please reload.",
+              )}
+           </h4>
+         }
+       | {error} =>
+         <>
+           "Error creating arweave account."->React.string
+           {switch (error) {
+            | Some(error) => React.string(": " ++ error.message)
+            | None => React.null
+            }}
+         </>
+       }}
     </div>;
   };
 };
@@ -99,7 +106,7 @@ let make =
       ~arweaveEndpointInput,
       ~goToStep,
     ) => {
-  let (hasCreatedBridge, setHasCreatedBridge) = React.useState(_ => false);
+  let (_hasCreatedBridge, setHasCreatedBridge) = React.useState(_ => false);
 
   switch (
     skaleDataTypeInput,

@@ -10,7 +10,7 @@ services:
     environment:
       - DATA_DIR=/data_dir
       - OPTIONS= --http-port 1234 --ws-port 1233 --config /config.json -d /data_dir --ipcpath /data_dir -v 3 --web3-trace --enable-debug-behavior-apis --aa no
-    image: skalenetwork/schain:1.46-develop.27
+    image: skalenetwork/schain:1.46-develop.39
   hasura-actions:
     build: ./actions
     volumes:

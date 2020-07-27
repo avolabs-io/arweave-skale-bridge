@@ -40,6 +40,7 @@
     "bs-log",
     "bs-css",
     "bs-css-emotion",
-    "re-classnames"
+    "re-classnames",
+    "bs-moment"
   ]
 }

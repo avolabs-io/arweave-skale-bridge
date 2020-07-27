@@ -2,15 +2,49 @@ open Globals;
 
 module GetUserBridgesQuery = [%graphql
   {|
-  query BridgesQuery($userId: String!) {
-    bridge_data (where: {user_id: {_eq: $userId}}){
-      userId
+query ActiveBridgesQuery($userId: String!) {
+  bridge_data(where: {userId: {_eq: $userId}, active: {_eq: true}}) {
+    userId
+    id
+    contentType
+    arweave_endpoint_rel {
       id
-      contentType
+      port
+      protocol
+      url
     }
+    bridge_sync_rel_aggregate {
+      aggregate {
+        max {
+          index
+        }
+      }
+    }
+    frequency_duration_seconds
+    label
+    metaData
+    skale_endpoint {
+      uri
+      id
+    }
+    next_scheduled_sync
   }
+}
 |}
 ];
+
+let getMaxIndexSyncFromAgregate =
+    (
+      maxAgregate:
+        option(
+          GetUserBridgesQuery.t_bridge_data_bridge_sync_rel_aggregate_aggregate,
+        ),
+    ) => {
+  maxAgregate
+  ->Option.flatMap(obj => {obj.max})
+  ->Option.flatMap(max => {max.index})
+  ->Option.getWithDefault(0);
+};
 
 [@react.component]
 let make = () => {
@@ -26,38 +60,73 @@ let make = () => {
   <div id="dashboard">
     <h1> "Dashboard"->React.string </h1>
     <table>
-      <tr>
-        <th> "id"->React.string </th>
-        <th> "label"->React.string </th>
-        <th> "last backed up"->React.string </th>
-      </tr>
-      <tr>
-        <td> "1"->React.string </td>
-        <td> "my daily backup"->React.string </td>
-        <td> "just now"->React.string </td>
-      </tr>
       {switch (usersBridgesQueryResult) {
        | {loading: true, data: None} => <p> "Loading"->React.string </p>
        | {loading, data: Some(data), error} =>
          <>
-           <dialog>
-             {loading ? <p> "Refreshing..."->React.string </p> : React.null}
-             {switch (error) {
-              | Some(_) =>
-                <p>
-                  "The query went wrong, data may be incomplete"->React.string
-                </p>
-              | None => React.null
-              }}
-           </dialog>
+           <tr>
+             <th> "Type"->React.string </th>
+             <th> "Skale Endpoint"->React.string </th>
+             <th> "Arweave Endpoint"->React.string </th>
+             <th> "Frequency"->React.string </th>
+             <th> "Next Scheduled Sync"->React.string </th>
+             <th> "Number Completed Syncs"->React.string </th>
+             <th> "Label"->React.string </th>
+           </tr>
            {data.bridge_data
-            ->Belt.Array.map(bridge =>
+            ->Belt.Array.map(
+                (
+                  {
+                    id,
+                    contentType,
+                    skale_endpoint,
+                    arweave_endpoint_rel,
+                    frequency_duration_seconds,
+                    next_scheduled_sync,
+                    bridge_sync_rel_aggregate: {aggregate},
+                    label,
+                    metaData,
+                  },
+                ) => {
+                let (skaleEndpoint, skaleEndpointId) =
+                  skale_endpoint->Option.mapWithDefault(
+                    ("null", (-1)), ({uri, id}) =>
+                    (uri, id)
+                  );
+                let (arweaveEndpoint, areweaveEndpointId) =
+                  arweave_endpoint_rel->Option.mapWithDefault(
+                    ("null", (-1)), ({protocol, url: host, port, id}) =>
+                    (
+                      ArweaveEndpoint.formatArweaveUrl(
+                        ~host,
+                        ~port,
+                        ~protocol,
+                      ),
+                      id,
+                    )
+                  );
+                let frequencyText =
+                  Frequency.secondsToText(frequency_duration_seconds);
+                let numberOfSyncs = getMaxIndexSyncFromAgregate(aggregate);
                 <tr>
-                  <td> bridge.contentType->React.string </td>
-                  <td> "my daily backup"->React.string </td>
-                  <td> "just now"->React.string </td>
-                </tr>
-              )
+                  <td> contentType->React.string </td>
+                  <td> skaleEndpoint->React.string </td>
+                  <td> arweaveEndpoint->React.string </td>
+                  <td> frequencyText->React.string </td>
+                  <td>
+                    <CountDown
+                      displayUnits=false
+                      endDateMoment={MomentRe.momentWithUnix(
+                        next_scheduled_sync->Option.getWithDefault(0),
+                      )}
+                    />
+                  </td>
+                  <td onClick={_ => {id->Route.Bridge->Router.push}}>
+                    {numberOfSyncs->string_of_int->React.string}
+                  </td>
+                  <td> {label->Option.getWithDefault("")->React.string} </td>
+                </tr>;
+              })
             ->React.array}
          </>
        | {loading: false, data: None} =>

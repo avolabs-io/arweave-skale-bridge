@@ -28,6 +28,7 @@
     "bs-cron": "^1.1.0",
     "bs-express": "^1.0.1",
     "bs-fetch": "^0.6.1",
+    "bs-log": "^1.2.0",
     "graphql": "^14.0.0",
     "graphql-tag": "^2.10.3",
     "isomorphic-fetch": "^2.2.1",

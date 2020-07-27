@@ -16,13 +16,7 @@ let make = () => {
      | Some(Dashboard) => <Login> <Dashboard /> </Login>
      | Some(Config) => <Login> <Config /> </Login>
      | Some(About) => <Login loginProtected=false> <About /> </Login>
-     | Some(Bridge(_id)) =>
-       <Login>
-         <p>
-           "TODO - show a page that allows the user to edit their bridge"
-           ->React.string
-         </p>
-       </Login>
+     | Some(Bridge(bridgeId)) => <Login> <Bridge bridgeId /> </Login>
      | Some(GqlExamplesPage) => <GqlExamples />
      | None => <NotFound />
      }}

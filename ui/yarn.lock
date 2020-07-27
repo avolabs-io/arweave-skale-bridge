@@ -2718,6 +2718,11 @@ bs-log@^1.2.0:
   resolved "https://registry.yarnpkg.com/bs-log/-/bs-log-1.2.0.tgz#b54739969a3d506ff0bd8c8f1fd9fe4d98bdfe2b"
   integrity sha512-ZvQXNWMJH2FnTH6tipZww0/PoRl3Dm45z4Cc8jNuTuM2GCfQNy18RyjPEE17YK5XkSGqVFeo0I/X9QIzeVvSgw==
 
+bs-moment@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/bs-moment/-/bs-moment-0.6.0.tgz#b49c5580598ef277696494684fd274ea1f8b1019"
+  integrity sha512-AYtL5j6hXHwA+SZut4uhvlhDrabpqwjuXIa/0qfVpEjR45HGBruSZFxUcXwjtOGy9eoRc1FKjRM0n+X21oJb+w==
+
 bs-platform@^8.0.3:
   version "8.0.3"
   resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-8.0.3.tgz#574e41ec04fee381d4c400dac547735368caa48f"
@@ -7255,6 +7260,11 @@ mixin-object@^2.0.1:
   integrity sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==
   dependencies:
     minimist "^1.2.5"
+
+moment@^2.27.0:
+  version "2.27.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
+  integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
 
 move-concurrently@^1.0.1:
   version "1.0.1"
