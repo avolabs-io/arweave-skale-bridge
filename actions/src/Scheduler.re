@@ -204,11 +204,6 @@ let processBridges = updateInterval => {
 
               let nextSyncTime = currentTimestamp + frequency_duration_seconds;
 
-              Js.log("id");
-              Js.log([%raw "typeof id"]);
-              Js.log("nextSyncTime");
-              Js.log(nextSyncTime);
-
               updateSyncTime(
                 ~onError=_ => Js.log("Unable to Sync Error."),
                 id,

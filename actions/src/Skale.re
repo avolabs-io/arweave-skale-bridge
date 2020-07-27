@@ -1,13 +1,30 @@
 open Globals;
 open BridgeSyncTypes;
 
+[@bs.module "./skale-fetch-functions/blockData.js"]
+external handleBlockData:
+  (. string, string, string => unit, exn => unit) => unit =
+  "default";
+
 let processDataFetching =
     (~typeOfDataFetch, ~endpoint, ~onError, {syncItemId}) => {
-  // MOCKED FUNCTION.
   Js.log3("Fetching Skale Data", typeOfDataFetch, endpoint);
-  Js.Promise.make((~resolve, ~reject as _) => {
+  Js.Promise.make((~resolve, ~reject) => {
     ignore(
-      Js.Global.setTimeout(() => resolve(. {syncItemId: syncItemId}), 1000),
+      switch (typeOfDataFetch) {
+      | "Block Data"
+      | "Transactions Data"
+      | "Transaction Receipts"
+      | "Event Data"
+      | "Decentralized Storage" =>
+        let fileName = "block-data." ++ syncItemId->string_of_int;
+        handleBlockData(.
+          endpoint,
+          fileName,
+          path => resolve(. {syncItemId, path}),
+          fetchException => reject(. fetchException),
+        );
+      },
     )
   })
   ->Prometo.fromPromise
