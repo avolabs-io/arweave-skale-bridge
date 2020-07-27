@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: alter table "public"."bridge_sync" rename column "Info" to "info";
+  type: run_sql

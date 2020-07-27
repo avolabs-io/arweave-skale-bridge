@@ -58,7 +58,9 @@ module CreateBridgeForm = {
          <>
            <HiddenAutoFocusButton action={_ => createBridge()->ignore} />
            <h1> "Do you want to create your bridge now?"->React.string </h1>
-           <button onClick={_ => createBridge()->ignore}>
+           <button
+             onClick={_ => createBridge()->ignore}
+             className="confirm-bridge-button">
              "Confirm"->React.string
            </button>
          </>

@@ -44,6 +44,7 @@
     "reason-apollo-client": "^0.0.1-beta.1",
     "reason-promise": "1.1.1",
     "reason-react": "^0.9.1",
+    "reason-transition-group": "^2.1.0",
     "subscriptions-transport-ws": "^0.9.16"
   },
   "browserslist": {

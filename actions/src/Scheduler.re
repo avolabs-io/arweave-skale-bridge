@@ -54,7 +54,7 @@ query GetItemsReadyForSync ($endTime: Int!) {
 module AddSyncItem = [%graphql
   {|
   mutation InsertBridgeSyncItem($bridgeId: Int!, $index: Int!, $startTime: Int!) {
-    insert_bridge_sync_one(object: {Info: "", bridge_id: $bridgeId, index: $index, start_time: $startTime, status: "Initiated"}) {
+    insert_bridge_sync_one(object: {info: "", bridge_id: $bridgeId, index: $index, start_time: $startTime, status: "Initiated"}) {
       id
     }
   }
@@ -89,13 +89,16 @@ let handleMutateErrorPromise = (promise, ~onError) => {
         | {data: Some(data), errors: None} => Ok(data)
         | {errors: Some(error)} =>
           onError();
+          Js.log(error);
           Error(`Prometo_error(error->Obj.magic));
         | _ =>
           onError();
+          Js.log("error: unknown");
           Error(`Prometo_error("unknownError"->Obj.magic));
         }
       | Error(a) =>
         onError();
+        Js.log2("error: ", a);
         Error(a);
       }
     });
@@ -182,6 +185,11 @@ let processBridges = updateInterval => {
                 );
 
               let nextSyncTime = currentTimestamp + frequency_duration_seconds;
+
+              Js.log("id");
+              Js.log([%raw "typeof id"]);
+              Js.log("nextSyncTime");
+              Js.log(nextSyncTime);
 
               updateSyncTime(
                 ~onError=_ => Js.log("Unable to Sync Error."),

@@ -52,6 +52,16 @@
       border-radius: 5px;
     }
   }
+  .confirm-bridge-button {
+    color: $white;
+    padding: 0.6rem;
+    text-transform: uppercase;
+    font-family: "Nunito", sans-serif;
+    font-weight: bold;
+    font-size: 12px;
+    background-color: $dark-color;
+    border-radius: 5px;
+  }
 }
 
 .overview {

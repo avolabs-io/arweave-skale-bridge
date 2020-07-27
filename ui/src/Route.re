@@ -5,8 +5,7 @@ type t =
   | CreateBridge
   | Bridge(int)
   | Profile
-  | Dashboard
-  | GqlExamplesPage;
+  | Dashboard;
 
 type onboardingSteps =
   | Overview
@@ -30,18 +29,16 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     | Some(bridgeId) => Bridge(bridgeId)->Some
     | None => None
     }
-  | ["gql-examples-page"] => GqlExamplesPage->Some
   | _ => None // 404
   };
 
 let toString = route =>
   switch (route) {
   | Main => "/"
-  | Config => "config"
-  | About => "about"
-  | CreateBridge => "create-bridge"
-  | Profile => "profile"
-  | Dashboard => "dashboard"
-  | GqlExamplesPage => "gql-examples-page"
-  | Bridge(id) => "bridge/" ++ id->string_of_int
+  | Config => "/config"
+  | About => "/about"
+  | CreateBridge => "/create-bridge"
+  | Profile => "/profile"
+  | Dashboard => "/dashboard"
+  | Bridge(id) => "/bridge/" ++ id->string_of_int
   };
