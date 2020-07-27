@@ -17,11 +17,12 @@ Mobile Sizes
 */
 .funnel-step-container {
   font-family: "Nunito", sans-serif;
-  width: calc( 100% - 5rem);
+  width: 500px;
+  max-width: calc( 100% - 5rem);
   display: flex;
   flex-direction: column;
   padding: 2rem;
-  margin: 1rem;
+  margin: 1rem auto;
   border: 2px solid #fff;
   border-radius: 4px;
   background-color: #1e3c72;
