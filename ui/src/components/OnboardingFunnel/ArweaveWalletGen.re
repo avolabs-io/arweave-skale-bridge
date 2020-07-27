@@ -91,7 +91,7 @@ module GenerateArweaveWallet = {
 [@react.component]
 let make = (~moveToNextStep, ~moveToPrevStep, ~setArweaveAddress) => {
   let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
-  let arweaveEndpointsQueryResult =
+  let arweaveWalletQueryResult =
     GetUserArweaveWalletQuery.use(
       ~fetchPolicy=CacheAndNetwork,
       ~errorPolicy=All,
@@ -105,7 +105,7 @@ let make = (~moveToNextStep, ~moveToPrevStep, ~setArweaveAddress) => {
       "Please deposit into your arweave account so that we can perform syncs on your behalf."
       ->React.string
     </h2>
-    {switch (arweaveEndpointsQueryResult) {
+    {switch (arweaveWalletQueryResult) {
      | {loading: true, data: None} => React.null
      | {loading, data: Some(data), error} =>
        <>

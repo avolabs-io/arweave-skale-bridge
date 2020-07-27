@@ -6,8 +6,6 @@ let useReadableRouteName = () => {
   | Some(Bridge(_))
   | Some(CreateBridge)
   | Some(About)
-  | Some(Config) => "Config Page"->Some
-  | Some(Profile) => "Profile Profile"->Some
   | Some(Bridges) => "Bridges"->Some
   };
 };

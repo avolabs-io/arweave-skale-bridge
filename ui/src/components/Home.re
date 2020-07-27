@@ -13,6 +13,6 @@ let make = () => {
         </Link>
       </button>
     </div>
-    <Bridges />
+    <div className="dashboard-container"> <Profile /> <Bridges /> </div>
   </div>;
 };
