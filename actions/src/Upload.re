@@ -16,13 +16,7 @@ module SyncItemUpdate = [%graphql
 // The arweave endpoint so we know where to upload it
 // What else? Should use users arweave keys for this action
 let uploadChunkToArweave =
-    (
-      ~protocol,
-      ~port,
-      ~host,
-      ~onError,
-      previousStepResult: BridgeSyncTypes.addSyncItemResult,
-    ) => {
+    (~protocol, ~port, ~host, ~onError, previousStepResult) => {
   Js.log(
     "uploading to arweave endpoint",
     // based on result of arweave update, call SyncItemUpdate

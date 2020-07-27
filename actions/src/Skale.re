@@ -6,9 +6,10 @@ external handleBlockData:
   (. string, string, string => unit, exn => unit) => unit =
   "default";
 
+exception InvalidOption(string);
+
 let processDataFetching =
-    (~typeOfDataFetch, ~endpoint, ~onError, {syncItemId}) => {
-  Js.log3("Fetching Skale Data", typeOfDataFetch, endpoint);
+    (~typeOfDataFetch, ~endpoint, ~onError, {syncItemId}: addSyncItemResult) => {
   Js.Promise.make((~resolve, ~reject) => {
     ignore(
       switch (typeOfDataFetch) {
@@ -24,6 +25,7 @@ let processDataFetching =
           path => resolve(. {syncItemId, path}),
           fetchException => reject(. fetchException),
         );
+      | unrecognised => reject(. InvalidOption(unrecognised))
       },
     )
   })
