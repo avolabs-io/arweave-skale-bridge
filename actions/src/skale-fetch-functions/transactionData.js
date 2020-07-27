@@ -1,8 +1,8 @@
 const fs = require("fs");
 const request = require("request");
 
-const url = "https://thispersondoesnotexist.com/image";
-const path = "./src/temp-data/eventData/";
+const url = "https://loremflickr.com/320/240";
+const path = "./src/temp-data/transactionData/";
 
 const fetchData = (endpoint, chainId, filename, callback, onError) => {
   console.log(

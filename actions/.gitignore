@@ -28,4 +28,5 @@ node_modules
 *.bs.js
 .graphql_ppx_cache/
 .env
-src/temp-data*
+src/temp-data/*/*
+!.keep

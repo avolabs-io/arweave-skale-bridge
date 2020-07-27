@@ -10,6 +10,18 @@ external handleBlockData:
 external handleEventData:
   (. string, int, string, string => unit, exn => unit) => unit =
   "default";
+[@bs.module "./skale-fetch-functions/transactionData.js"]
+external handleTransactionData:
+  (. string, int, string, string => unit, exn => unit) => unit =
+  "default";
+[@bs.module "./skale-fetch-functions/transactionReceipts.js"]
+external handleTransactionReceipts:
+  (. string, int, string, string => unit, exn => unit) => unit =
+  "default";
+[@bs.module "./skale-fetch-functions/storageData.js"]
+external handleStorageData:
+  (. string, int, string, string => unit, exn => unit) => unit =
+  "default";
 
 exception InvalidOption(string);
 
@@ -33,8 +45,24 @@ let processDataFetching =
           path => resolve(. {syncItemId, path}),
           fetchException => reject(. fetchException),
         );
-      | "Transactions Data"
-      | "Transaction Receipts"
+      | "Transactions Data" =>
+        let fileName = "transaction-data." ++ syncItemId->string_of_int;
+        handleTransactionData(.
+          endpoint,
+          chainId,
+          fileName,
+          path => resolve(. {syncItemId, path}),
+          fetchException => reject(. fetchException),
+        );
+      | "Transaction Receipts" =>
+        let fileName = "transaction-receipts." ++ syncItemId->string_of_int;
+        handleTransactionReceipts(.
+          endpoint,
+          chainId,
+          fileName,
+          path => resolve(. {syncItemId, path}),
+          fetchException => reject(. fetchException),
+        );
       | "Event Data" =>
         let fileName = "event-data." ++ syncItemId->string_of_int;
         handleBlockData(.
@@ -45,8 +73,8 @@ let processDataFetching =
           fetchException => reject(. fetchException),
         );
       | "Decentralized Storage" =>
-        let fileName = "block-data." ++ syncItemId->string_of_int;
-        handleBlockData(.
+        let fileName = "storage-data." ++ syncItemId->string_of_int;
+        handleStorageData(.
           endpoint,
           chainId,
           fileName,
