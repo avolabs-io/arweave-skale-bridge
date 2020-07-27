@@ -32,7 +32,7 @@ module GetUserArweaveEndpointsQuery = [%graphql
 |}
 ];
 
-let formatArweaveUrl = (protocol, host, port) => {
+let formatArweaveUrl = (~protocol, ~host, ~port) => {
   protocol ++ "://" ++ host ++ ":" ++ port->string_of_int;
 };
 
@@ -53,9 +53,9 @@ module EditArweaveEndpoint = {
         setValidatingEndpoint(_ => (true, true, None));
         CheckLink.checkIsValidLink(
           formatArweaveUrl(
-            newArweaveProtocol,
-            newArweaveEndpoint,
-            newArweavePort->Option.getWithDefault(80),
+            ~protocol=newArweaveProtocol,
+            ~host=newArweaveEndpoint,
+            ~port=newArweavePort->Option.getWithDefault(80),
           ),
           false,
         )
@@ -238,7 +238,7 @@ module ArweaveEndpointDropdown = {
              <div className="radio-box-container">
                <ul>
                  {arweave_endpoint
-                  ->Belt.Array.map(({id, url, port, protocol}) => {
+                  ->Belt.Array.map(({id, url: host, port, protocol}) => {
                       let checked = {
                         id == arweaveEndpointInput->Option.getWithDefault(-1);
                       };
@@ -251,14 +251,15 @@ module ArweaveEndpointDropdown = {
                           type_="radio"
                           id={id->string_of_int ++ "-option"}
                           name="selector"
-                          value=url
+                          value=host
                           checked
                           readOnly=true
                         />
                         <label
                           htmlFor={id->string_of_int ++ "-option"}
                           className={checked ? selectedItemAnimation : ""}>
-                          {formatArweaveUrl(protocol, url, port)->React.string}
+                          {formatArweaveUrl(~protocol, ~host, ~port)
+                           ->React.string}
                         </label>
                         <div className="check" />
                       </li>;
