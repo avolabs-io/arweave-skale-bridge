@@ -5,7 +5,7 @@ type t =
   | CreateBridge
   | Bridge(int)
   | Profile
-  | Dashboard;
+  | Bridges;
 
 type onboardingSteps =
   | Overview
@@ -23,7 +23,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | ["about"] => About->Some
   | ["create-bridge"] => CreateBridge->Some
   | ["profile"] => Profile->Some
-  | ["dashboard"] => Dashboard->Some
+  | ["bridges"] => Bridges->Some
   | ["bridge", id] =>
     switch (id->int_of_string_opt) {
     | Some(bridgeId) => Bridge(bridgeId)->Some
@@ -39,6 +39,6 @@ let toString = route =>
   | About => "/about"
   | CreateBridge => "/create-bridge"
   | Profile => "/profile"
-  | Dashboard => "/dashboard"
+  | Bridges => "/bridges"
   | Bridge(id) => "/bridge/" ++ id->string_of_int
   };

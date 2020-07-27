@@ -37,8 +37,9 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(calc(-50% - 2rem), calc(-50% - 2rem));
   width: 90%;
+  margin: 2rem;
 }
 
 button {
@@ -75,6 +76,7 @@ button:hover {
 .menu {
   position: absolute;
   right: 40px;
+  z-index: 20;
 }
 
 .funnel-step-container {
@@ -203,6 +205,30 @@ th {
   padding: 10px;
   text-align: left;
 }
+#bridges tr {
+  cursor: pointer;
+  &:hover {
+    color: $white;
+  }
+}
 tr:nth-of-type(odd) {
   background: rgba($white, 0.05);
+}
+
+.heading-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+.secondary-button {
+  background-color: $dark-color;
+  color: $white;
+  border: none;
+  font-size: 20px;
+  padding: 0.2rem 1rem;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  border-radius: 10px;
+  outline: none;
 }

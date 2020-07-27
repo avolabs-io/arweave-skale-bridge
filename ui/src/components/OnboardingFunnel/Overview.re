@@ -8,7 +8,7 @@ let useReadableRouteName = () => {
   | Some(About)
   | Some(Config) => "Config Page"->Some
   | Some(Profile) => "Profile Profile"->Some
-  | Some(Dashboard) => "Dashboard"->Some
+  | Some(Bridges) => "Bridges"->Some
   };
 };
 

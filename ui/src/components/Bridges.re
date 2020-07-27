@@ -57,8 +57,8 @@ let make = () => {
       GetUserBridgesQuery.makeVariables(~userId=usersIdDetails.login, ()),
     );
 
-  <div id="dashboard">
-    <h1> "Dashboard"->React.string </h1>
+  <div id="bridges">
+    <h1> "Bridges"->React.string </h1>
     <table>
       {switch (usersBridgesQueryResult) {
        | {loading: true, data: None} => <p> "Loading"->React.string </p>
@@ -114,7 +114,7 @@ let make = () => {
                 let frequencyText =
                   Frequency.secondsToText(frequency_duration_seconds);
                 let numberOfSyncs = getMaxIndexSyncFromAgregate(aggregate);
-                <tr>
+                <tr onClick={_ => {id->Route.Bridge->Router.push}}>
                   <td> contentType->React.string </td>
                   <td> skaleEndpoint->React.string </td>
                   <td> arweaveEndpoint->React.string </td>
@@ -127,9 +127,7 @@ let make = () => {
                       )}
                     />
                   </td>
-                  <td onClick={_ => {id->Route.Bridge->Router.push}}>
-                    {numberOfSyncs->string_of_int->React.string}
-                  </td>
+                  <td> {numberOfSyncs->string_of_int->React.string} </td>
                   <td> {label->Option.getWithDefault("")->React.string} </td>
                 </tr>;
               })

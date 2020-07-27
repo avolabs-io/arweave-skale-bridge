@@ -71,11 +71,9 @@ module CreateBridgeForm = {
            setHasCreatedBridge(_ => true);
 
            <>
-             <HiddenAutoFocusButton
-               action={_ => Route.Dashboard->Router.push}
-             />
+             <HiddenAutoFocusButton action={_ => Route.Bridges->Router.push} />
              <h4> {React.string("Your Bridge has been created.")} </h4>
-             <Router.Link route=Route.Dashboard>
+             <Router.Link route=Route.Bridges>
                "Manage your active Bridges."->React.string
              </Router.Link>
            </>;

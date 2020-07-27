@@ -34,19 +34,11 @@ let make = () => {
              {isLoggedIn
                 ? <>
                     <li onClick>
+                      <Link route=Bridges> "Bridges"->React.string </Link>
+                    </li>
+                    <li onClick>
                       <Link route=CreateBridge>
                         "Create bridge"->React.string
-                      </Link>
-                    </li>
-                    <li onClick>
-                      <Link route=Dashboard> "Dashboard"->React.string </Link>
-                    </li>
-                    <li onClick>
-                      <Link route=Profile>
-                        <span className="menu-item-with-icon">
-                          <span> "Profile "->React.string </span>
-                          <img src="/assets/icons/profile.svg" />
-                        </span>
                       </Link>
                     </li>
                     <hr />
