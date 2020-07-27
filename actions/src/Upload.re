@@ -1,4 +1,5 @@
 open Globals;
+open BridgeSyncTypes;
 
 // Mutation to change sync status + update endTime.
 module SyncItemUpdate = [%graphql
@@ -18,7 +19,7 @@ module SyncItemUpdate = [%graphql
 let uploadChunkToArweave =
     (~protocol, ~port, ~host, ~onError, previousStepResult) => {
   Js.log(
-    "uploading to arweave endpoint",
+    "data at " ++ previousStepResult.path ++ " to arweave endpoint",
     // based on result of arweave update, call SyncItemUpdate
   );
   // MOCKED FUNCTION.
