@@ -17,7 +17,6 @@ let make = () => {
      | Some(Config) => <Login> <Config /> </Login>
      | Some(About) => <Login loginProtected=false> <About /> </Login>
      | Some(Bridge(bridgeId)) => <Login> <Bridge bridgeId /> </Login>
-     | Some(GqlExamplesPage) => <GqlExamples />
      | None => <NotFound />
      }}
   </div>;

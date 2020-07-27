@@ -2,7 +2,7 @@ open Globals;
 
 module BridgeSyncsQuery = [%graphql
   {|
-query Syncs($bridgeId: Int!) {
+subscription Syncs($bridgeId: Int!) {
   bridge_sync(where: {bridge_id: {_eq: $bridgeId}}, limit: 30, order_by: [{index: desc}]) {
     id
     info
@@ -21,8 +21,8 @@ let make = (~bridgeId) => {
 
   let usersBridgeQueryResult =
     BridgeSyncsQuery.use(
-      ~fetchPolicy=CacheAndNetwork,
-      ~errorPolicy=All,
+      // ~fetchPolicy=CacheAndNetwork,
+      // ~errorPolicy=All,
       BridgeSyncsQuery.makeVariables(~bridgeId, ()),
     );
 
