@@ -236,8 +236,6 @@ let processBridges = updateInterval => {
       GetNextScheduledSyncs.(
         switch (result) {
         | {data: Some({bridge_data})} =>
-          Js.log("hello");
-
           bridge_data
           ->Array.map(
               (
@@ -360,8 +358,7 @@ let processBridges = updateInterval => {
                 )
               ->ignore;
             })
-          ->ignore;
-          Js.log("End");
+          ->ignore
         | _ => Js.Exn.raiseError("Error: failed to query")
         }
       )

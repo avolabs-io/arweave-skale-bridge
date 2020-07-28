@@ -10,10 +10,17 @@ subscription Syncs($bridgeId: Int!) {
     index
     start_time
     status
+    arweave_tx_id
+    error_message
   }
 }
 |}
 ];
+
+type infoType =
+  | Nothing
+  | Error(string)
+  | TxId(string);
 
 [@react.component]
 let make = (~bridgeId) => {
@@ -38,10 +45,31 @@ let make = (~bridgeId) => {
              <th> {js| ⏳ |js}->React.string "Start Time"->React.string </th>
              <th> {js| ⌛ |js}->React.string "End Time"->React.string </th>
              <th> {js| 🧮 |js}->React.string "Sync #"->React.string </th>
+             <th> {js| ⛑ |js}->React.string "Info"->React.string </th>
              <th> {js| 🛠 |js}->React.string "Status"->React.string </th>
            </tr>
            {data.bridge_sync
-            ->Belt.Array.map(({id, end_time, index, start_time, status}) => {
+            ->Belt.Array.map(
+                (
+                  {
+                    id,
+                    end_time,
+                    index,
+                    start_time,
+                    status,
+                    arweave_tx_id,
+                    error_message,
+                  },
+                ) => {
+                let info =
+                  arweave_tx_id->Option.mapWithDefault(
+                    error_message->Option.mapWithDefault(Nothing, errorMessage =>
+                      Error(errorMessage)
+                    ),
+                    arweaveTxId =>
+                    TxId(arweaveTxId)
+                  );
+
                 <tr>
                   <td> {id->string_of_int->React.string} </td>
                   <td>
@@ -78,8 +106,26 @@ let make = (~bridgeId) => {
                      }}
                   </td>
                   <td> {index->string_of_int->React.string} </td>
+                  <td>
+                    <small>
+                      {switch (info) {
+                       | Nothing => React.null
+                       | Error(errorMessage) =>
+                         <span className=Css.(style([color(red)]))>
+                           errorMessage->React.string
+                         </span>
+                       | TxId(id) =>
+                         <a
+                           href={"https://viewblock.io/arweave/tx/" ++ id}
+                           target="_blank"
+                           rel="noopener noreferer">
+                           {("Tx id: " ++ id)->React.string}
+                         </a>
+                       }}
+                    </small>
+                  </td>
                   <td> status->React.string </td>
-                </tr>
+                </tr>;
               })
             ->React.array}
          </>

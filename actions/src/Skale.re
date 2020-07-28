@@ -87,6 +87,7 @@ let processDataFetching =
         | `Prometo_error(jsError) =>
           let (errorMessage, errorStackTrace) =
             Util.errorToMessageAndStacktrace(jsError);
+          Js.log3("IMPORTANT ERROR", error, errorStackTrace);
           onError(~errorMessage, ~errorStackTrace);
         | _ =>
           onError(

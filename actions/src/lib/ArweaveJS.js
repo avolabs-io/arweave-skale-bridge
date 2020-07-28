@@ -56,12 +56,10 @@ const uploadDataToArweave = async (key, arweave, pathToData, pushStatus) => {
 
   while (!uploader.isComplete) {
     await uploader.uploadChunk();
-    console.log(
-      `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
+    pushStatus(
+      `Upload: ${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
     );
   }
-
-  pushStatus("Finished arweave upload");
 
   return {
     format: transaction.format,

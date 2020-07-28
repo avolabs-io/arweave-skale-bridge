@@ -55,6 +55,7 @@ let uploadChunkToArweave =
 
           NodeJs.(
             if (Fs.existsSync(path)) {
+              let file = Fs.readFileSync(path, ());
               // upload to arweave function (filePath)
               uploadDataToArweave(.
                 privKey,
