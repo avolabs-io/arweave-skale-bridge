@@ -1,3 +1,0 @@
-- args:
-    name: gql_example_test_endpoint
-  type: remove_remote_schema
