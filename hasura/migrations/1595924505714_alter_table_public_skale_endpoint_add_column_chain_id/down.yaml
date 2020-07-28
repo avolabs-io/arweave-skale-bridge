@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."skale_endpoint" DROP COLUMN "chain_id";
+  type: run_sql

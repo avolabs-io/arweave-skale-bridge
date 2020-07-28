@@ -12,7 +12,7 @@ let optStringToInt = (optStringInt, default) =>
   |||| default;
 
 Scheduler.startScheduler(
-  processLoopTime->optStringToInt(12000) /*use a default of 2 min*/,
+  processLoopTime->optStringToInt(120000) /*use a default of 2 min*/,
 );
 
 module AddArweaveWallet = [%graphql

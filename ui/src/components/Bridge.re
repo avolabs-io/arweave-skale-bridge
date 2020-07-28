@@ -3,7 +3,7 @@ open Globals;
 module BridgeSyncsQuery = [%graphql
   {|
 subscription Syncs($bridgeId: Int!) {
-  bridge_sync(where: {bridge_id: {_eq: $bridgeId}}, limit: 16, order_by: [{index: desc}]) {
+  bridge_sync(where: {bridge_id: {_eq: $bridgeId}}, limit: 10, order_by: [{index: desc}]) {
     id
     info
     end_time
@@ -45,12 +45,36 @@ let make = (~bridgeId) => {
                 <tr>
                   <td> {id->string_of_int->React.string} </td>
                   <td>
-                    {end_time
-                     ->Option.mapWithDefault("in progress", string_of_int)
+                    {MomentRe.Moment.format(
+                       "LL",
+                       MomentRe.momentWithUnix(start_time),
+                     )
+                     ->React.string}
+                    " "->React.string
+                    {MomentRe.Moment.format(
+                       "LTS",
+                       MomentRe.momentWithUnix(start_time),
+                     )
+                     ->React.string}
+                  </td>
+                  <td>
+                    {MomentRe.Moment.format(
+                       "LL",
+                       MomentRe.momentWithUnix(
+                         end_time->Option.getWithDefault(0),
+                       ),
+                     )
+                     ->React.string}
+                    " "->React.string
+                    {MomentRe.Moment.format(
+                       "LTS",
+                       MomentRe.momentWithUnix(
+                         end_time->Option.getWithDefault(0),
+                       ),
+                     )
                      ->React.string}
                   </td>
                   <td> {index->string_of_int->React.string} </td>
-                  <td> {start_time->string_of_int->React.string} </td>
                   <td> status->React.string </td>
                 </tr>
               })

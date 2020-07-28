@@ -57,6 +57,14 @@ let make = () => {
       GetUserBridgesQuery.makeVariables(~userId=usersIdDetails.login, ()),
     );
 
+  let onClick = (id, _) => {
+    id->Route.Bridge->Router.push;
+  };
+
+  let deactivateBridge = id => {
+    Js.log(id);
+  };
+
   <div id="bridges">
     <h1> "Bridges"->React.string </h1>
     <table>
@@ -78,6 +86,10 @@ let make = () => {
              <th> {js| ⏳ |js}->React.string " Next Sync"->React.string </th>
              <th> {js| 🧮 |js}->React.string " # Syncs"->React.string </th>
              <th> {js| 🏷️ |js}->React.string " Label"->React.string </th>
+             <th>
+               {js| 🏗️ |js}->React.string
+               " Actions"->React.string
+             </th>
            </tr>
            {data.bridge_data
             ->Belt.Array.map(
@@ -114,12 +126,14 @@ let make = () => {
                 let frequencyText =
                   Frequency.secondsToText(frequency_duration_seconds);
                 let numberOfSyncs = getMaxIndexSyncFromAgregate(aggregate);
-                <tr onClick={_ => {id->Route.Bridge->Router.push}}>
-                  <td> contentType->React.string </td>
-                  <td> skaleEndpoint->React.string </td>
-                  <td> arweaveEndpoint->React.string </td>
-                  <td> frequencyText->React.string </td>
-                  <td>
+                <tr>
+                  <td onClick={onClick(id)}> contentType->React.string </td>
+                  <td onClick={onClick(id)}> skaleEndpoint->React.string </td>
+                  <td onClick={onClick(id)}>
+                    arweaveEndpoint->React.string
+                  </td>
+                  <td onClick={onClick(id)}> frequencyText->React.string </td>
+                  <td onClick={onClick(id)}>
                     <CountDown
                       displayUnits=false
                       endDateMoment={MomentRe.momentWithUnix(
@@ -127,8 +141,15 @@ let make = () => {
                       )}
                     />
                   </td>
-                  <td> {numberOfSyncs->string_of_int->React.string} </td>
+                  <td onClick={onClick(id)}>
+                    {numberOfSyncs->string_of_int->React.string}
+                  </td>
                   <td> {label->Option.getWithDefault("")->React.string} </td>
+                  <td>
+                    <button onClick={_ => deactivateBridge(id)}>
+                      "De-activate"->React.string
+                    </button>
+                  </td>
                 </tr>;
               })
             ->React.array}

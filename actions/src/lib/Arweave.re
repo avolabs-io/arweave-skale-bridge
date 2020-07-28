@@ -10,16 +10,36 @@ type initParams = {
 };
 
 let defaultArweaveParams = {
-  host: "127.0.0.1",
-  port: 1984,
-  protocol: "http",
-  timeout: None,
-  logging: None,
+  host: "arweave.net",
+  port: 443,
+  protocol: "https",
+  timeout: Some(10 * 60 * 1000),
+  logging: Some(false),
+};
+
+type transactionTag = {
+  name: string,
+  value: string,
+};
+
+// [@decco.encode]
+type transactionResult = {
+  format: int,
+  id: string,
+  last_tx: string,
+  owner: string,
+  tags: array(transactionTag),
+  target: string,
+  quantity: string,
+  data_size: string,
+  data_root: string,
+  reward: string,
+  signature: string,
 };
 
 [@bs.module "arweave/node"] external init: initParams => t = "init";
 
-[@decco.encode]
+[@decco]
 type jwk = {
   kty: string,
   n: string,

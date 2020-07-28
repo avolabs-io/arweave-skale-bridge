@@ -1,16 +1,17 @@
 version: "3.6"
 services:
-  run:
-    volumes:
-      - "data_dir:/data_dir"
-      - "./config/config.json:/config.json"
-    ports:
-      - "0.0.0.0:1234:1234/tcp"
-      - "0.0.0.0:1233:1233/tcp"
-    environment:
-      - DATA_DIR=/data_dir
-      - OPTIONS= --http-port 1234 --ws-port 1233 --config /config.json -d /data_dir --ipcpath /data_dir -v 3 --web3-trace --enable-debug-behavior-apis --aa no
-    image: skalenetwork/schain:1.46-develop.39
+  # Skale endpoint - temp out of use
+  # run:
+  #   volumes:
+  #     - "data_dir:/data_dir"
+  #     - "./config/config.json:/config.json"
+  #   ports:
+  #     - "0.0.0.0:1234:1234/tcp"
+  #     - "0.0.0.0:1233:1233/tcp"
+  #   environment:
+  #     - DATA_DIR=/data_dir
+  #     - OPTIONS= --http-port 1234 --ws-port 1233 --config /config.json -d /data_dir --ipcpath /data_dir -v 3 --web3-trace --enable-debug-behavior-apis --aa no
+  #   image: skalenetwork/schain:1.46-develop.39
   hasura-actions:
     build: ./actions
     volumes:

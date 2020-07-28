@@ -1,7 +1,9 @@
 require("isomorphic-fetch");
 const fs = require("fs");
+const resolve = require("path").resolve;
+const path = require("path");
 
-const path = "./src/temp-data/blockData/";
+const absolutePath = path.join(__dirname, "../temp-data/blockData/");
 
 const fetchData = (endpoint, chainId, filename, callback, onError) => {
   fetch(endpoint, {
@@ -19,12 +21,14 @@ const fetchData = (endpoint, chainId, filename, callback, onError) => {
       // Process the data recieved from the RPC endpoint (here we just 'stringify' it)
       var jsonContent = JSON.stringify(data);
 
-      fs.writeFile(path + filename, jsonContent, "utf8", function (err) {
+      fs.writeFile(absolutePath + filename, jsonContent, "utf8", function (
+        err
+      ) {
         if (err) {
           console.log("Error here", err);
           onError(err);
         } else {
-          callback(path + filename);
+          callback(absolutePath + filename);
         }
       });
     })

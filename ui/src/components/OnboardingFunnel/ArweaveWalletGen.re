@@ -120,13 +120,10 @@ let make = (~moveToNextStep, ~moveToPrevStep, ~setArweaveAddress) => {
           }}
          {switch (data.arweave_key) {
           | [||] => <GenerateArweaveWallet setArweaveAddress />
-          | [|{pub_key}|]
-          | [|{pub_key}, _|] =>
-            setArweaveAddress(_ => Some(pub_key));
-            <div>
-              <p> "Your arweave wallet address:"->React.string </p>
-              <p> pub_key->React.string </p>
-            </div>;
+          | [|{pub_key: arweavePublicKey}|]
+          | [|{pub_key: arweavePublicKey}, _|] =>
+            setArweaveAddress(_ => Some(arweavePublicKey));
+            <> <Profile.ArweaveDisplay arweavePublicKey /> </>;
           }}
          // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
        </>
