@@ -7,11 +7,12 @@ open OnboardingHelpers;
 //       I had no luck first time I tried.
 module AddSkaleEndpointMutation = [%graphql
   {|
-    mutation addSkaleEndpoint($uri: String!, $userId: String!) {
-      insert_skale_endpoint_one(object: {uri: $uri, user_id: $userId}) {
+    mutation addSkaleEndpoint($uri: String!, $userId: String!, $chainId: Int!) {
+      insert_skale_endpoint_one(object: {uri: $uri, user_id: $userId, chain_id: $chainId}) {
         id
         uri
         user_id
+        chain_id
       }
     }
   |}
@@ -24,6 +25,7 @@ module GetUserSkaleEndpointsQuery = [%graphql
       uri
       user_id
       id
+      chain_id
     }
   }
 |}
@@ -47,42 +49,58 @@ module EditSkaleEndpoint = {
     // TODO: allow removing endpoints.
     let (mutate, result) = AddSkaleEndpointMutation.use();
     let (newSkaleEndpoint, setNewSkaleEndpoint) = React.useState(() => "");
+    let (newSkaleEndpointId, setNewSkaleEndpointId) =
+      React.useState(() => None);
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
     let ((isValidating, isValid, message), setValidatingEndpoint) =
       React.useState(() => (false, true, None));
 
-    let onSubmit = _ =>
+    let handleSubmit = () =>
       {
         setValidatingEndpoint(_ => (true, true, None));
-        CheckLink.checkIsValidLink(newSkaleEndpoint, false)
-        ->Js.Promise.then_(
-            ((isValid, message)) => {
-              setValidatingEndpoint(_ => (false, isValid, message));
-              if (isValid) {
-                mutate(
-                  ~refetchQueries=[|
-                    GetUserSkaleEndpointsQuery.refetchQueryDescription(
-                      GetUserSkaleEndpointsQuery.makeVariables(
-                        ~userId=usersIdDetails.login,
-                        (),
+        switch (newSkaleEndpointId) {
+        | None =>
+          Js.log("chain id is undefined!");
+          setValidatingEndpoint(_ =>
+            (
+              false,
+              false,
+              Some("You must specify a chain ID for your skale endpoint"),
+            )
+          );
+        | Some(chainId) =>
+          Js.log("the chain id is defined");
+          CheckLink.checkIsValidLink(newSkaleEndpoint, false)
+          ->Js.Promise.then_(
+              ((isValid, message)) => {
+                setValidatingEndpoint(_ => (false, isValid, message));
+                if (isValid) {
+                  mutate(
+                    ~refetchQueries=[|
+                      GetUserSkaleEndpointsQuery.refetchQueryDescription(
+                        GetUserSkaleEndpointsQuery.makeVariables(
+                          ~userId=usersIdDetails.login,
+                          (),
+                        ),
                       ),
+                    |],
+                    AddSkaleEndpointMutation.makeVariables(
+                      ~uri=newSkaleEndpoint,
+                      ~userId=usersIdDetails.login,
+                      ~chainId,
+                      (),
                     ),
-                  |],
-                  AddSkaleEndpointMutation.makeVariables(
-                    ~uri=newSkaleEndpoint,
-                    ~userId=usersIdDetails.login,
-                    (),
-                  ),
-                )
-                ->ignore;
-              } else {
-                ();
-              };
-              ()->async;
-            },
-            _,
-          )
-        ->ignore;
+                  )
+                  ->ignore;
+                } else {
+                  ();
+                };
+                ()->async;
+              },
+              _,
+            )
+          ->ignore;
+        };
       }
       ->ignore;
 
@@ -95,8 +113,16 @@ module EditSkaleEndpoint = {
           </p>
         </div>;
       } else {
-        <form onSubmit>
-          <div className="input-with-button">
+        <form
+          onSubmit={event => {
+            event->ReactEvent.Form.preventDefault;
+            handleSubmit();
+          }}>
+          <div
+            className=Cn.(
+              "input-with-button"
+              + Css.(style([display(`flex), justifyContent(`spaceBetween)]))
+            )>
             <input
               typeof="text"
               id="newSkaleEndpoint"
@@ -108,8 +134,28 @@ module EditSkaleEndpoint = {
               }}
               onFocus={_ => {setSkaleEndpointInput(_ => None)}}
               value=newSkaleEndpoint
+              className=Css.(style([maxWidth(`percent(70.))]))
             />
-            <button onClick=onSubmit className="input-add-button">
+            <input
+              typeof="number"
+              id="newSkaleEndpointId"
+              name="newSkaleEndpointId"
+              value={
+                newSkaleEndpointId->Option.mapWithDefault("", string_of_int)
+              }
+              placeholder="Chain id"
+              onChange={event => {
+                let value = ReactEvent.Form.target(event)##value;
+                setNewSkaleEndpointId(_ => value->int_of_string_opt);
+              }}
+              className=Css.(style([maxWidth(`percent(30.))]))
+            />
+            <button
+              onClick={event => {
+                event->ReactEvent.Mouse.preventDefault;
+                handleSubmit();
+              }}
+              className="input-add-button">
               "+"->React.string
             </button>
           </div>
@@ -117,7 +163,7 @@ module EditSkaleEndpoint = {
              ? React.null
              : <>
                  <p>
-                   "Please make sure your link is correct:"->React.string
+                   "Please make sure your input is correct:"->React.string
                  </p>
                  {switch (message) {
                   | Some(errorMessage) => <p> errorMessage->React.string </p>
@@ -202,7 +248,7 @@ module SkaleEndpointDropDown = {
            <div>
              <ul>
                {skale_endpoint
-                ->Belt.Array.map(({id, uri}) => {
+                ->Belt.Array.map(({id, uri, chain_id}) => {
                     let checked =
                       id == skaleEndpointInput->Option.getWithDefault(-1);
                     let idString = id->string_of_int;
@@ -228,7 +274,13 @@ module SkaleEndpointDropDown = {
                       <label
                         htmlFor={idString ++ "-option"}
                         className={checked ? selectedItemAnimation : ""}>
-                        uri->React.string
+                        {(
+                           uri
+                           ++ " (chain id: "
+                           ++ chain_id->string_of_int
+                           ++ ")"
+                         )
+                         ->React.string}
                       </label>
                       <div className="check" />
                     </li>;

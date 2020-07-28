@@ -1,5 +1,9 @@
 open Globals;
 
+[@bs.module "../lib/arweave.js"] [@bs.scope "default"]
+external getWalletBalanceArweave: (. string) => Js.Promise.t(string) =
+  "getWalletBalanceArweave";
+
 module GetUserArweaveWalletQuery = [%graphql
   {|
   query EndpointQuery ($userId: String!) {
@@ -10,6 +14,34 @@ module GetUserArweaveWalletQuery = [%graphql
   }
 |}
 ];
+
+module ArweaveDisplay = {
+  [@react.component]
+  let make = (~arweavePublicKey) => {
+    let (arweaveAmount, setArweaveAmount) = React.useState(_ => None);
+
+    React.useEffect(() => {
+      getWalletBalanceArweave(. arweavePublicKey)
+      ->Js.Promise.then_(
+          balance => setArweaveAmount(_ => Some(balance))->async,
+          _,
+        )
+      ->ignore;
+
+      None;
+    });
+    <div>
+      <p> "Arweave wallet: "->React.string arweavePublicKey->React.string </p>
+      <p>
+        {switch (arweaveAmount) {
+         | Some(amount) =>
+           <> "Balance: "->React.string {(amount ++ "AR")->React.string} </>
+         | None => "loading arweave balance..."->React.string
+         }}
+      </p>
+    </div>;
+  };
+};
 
 [@react.component]
 let make = () => {
@@ -52,12 +84,9 @@ let make = () => {
           }}
          {switch (data.arweave_key) {
           | [||] => <span />
-          | [|{pub_key}|]
-          | [|{pub_key}, _|] =>
-            <div>
-              <p> "Arweave wallet: "->React.string pub_key->React.string </p>
-              <p> "Balance: "->React.string "AR"->React.string </p>
-            </div>
+          | [|{pub_key: arweavePublicKey}|]
+          | [|{pub_key: arweavePublicKey}, _|] =>
+            <ArweaveDisplay arweavePublicKey />
           }}
          // TODO: this may be more flexible than a normal html select: https://github.com/ahrefs/bs-react-select
        </>

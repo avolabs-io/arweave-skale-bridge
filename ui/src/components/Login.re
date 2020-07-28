@@ -59,7 +59,9 @@ module HasLoadedUsersBridgeData = {
       useGetSkaleEndpointsQueryResult(usersIdDetails.login);
     switch (endpointQueryResult) {
     | {loading: true, data: None} =>
-      <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
+      <div className="loader-container">
+        <Loader _type="Puff" color="#5b7aba" height=80 width=80 />
+      </div>
     | {loading: _, data: Some(data), error: _} =>
       switch (data.bridge_data) {
       | [||] => <Onboarding />
