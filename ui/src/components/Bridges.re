@@ -83,7 +83,7 @@ let make = () => {
   let (mutate, result) = MarkBridgeInactiveQuery.use();
   let (mutateLabel, resultLabel) = AddLabelToBridgeQuery.use();
 
-  let (editLabel, setEditLabel) = React.useState(_ => false);
+  let (selectedLabel, setSelectedLabel) = React.useState(_ => None);
   let (newLabel, setNewLabel) = React.useState(_ => "");
 
   let onClick = (id, _) => {
@@ -91,7 +91,6 @@ let make = () => {
   };
 
   let deactivateBridge = id => {
-    Js.log(id);
     mutate(
       ~refetchQueries=[|
         GetUserBridgesQuery.refetchQueryDescription(
@@ -104,8 +103,7 @@ let make = () => {
   };
 
   let addLabel = (id, label) => {
-    setEditLabel(_ => false);
-    Js.log(label);
+    setSelectedLabel(_ => None);
     mutateLabel(
       ~refetchQueries=[|
         GetUserBridgesQuery.refetchQueryDescription(
@@ -182,6 +180,10 @@ let make = () => {
                 let frequencyText =
                   Frequency.secondsToText(frequency_duration_seconds);
                 let numberOfSyncs = getMaxIndexSyncFromAgregate(aggregate);
+                let isLabelEditable =
+                  selectedLabel->Option.mapWithDefault(false, selectedLabel =>
+                    id == selectedLabel
+                  );
                 <tr key={id->string_of_int}>
                   <td onClick={onClick(id)}> contentType->React.string </td>
                   <td onClick={onClick(id)}>
@@ -204,8 +206,8 @@ let make = () => {
                     {numberOfSyncs->string_of_int->React.string}
                   </td>
                   <td>
-                    {editLabel
-                       ? <div>
+                    {isLabelEditable
+                       ? <form onSubmit={_ => addLabel(id, newLabel)}>
                            <input
                              value=newLabel
                              onChange={event => {
@@ -217,7 +219,7 @@ let make = () => {
                            <button onClick={_ => addLabel(id, newLabel)}>
                              {js|✅|js}->React.string
                            </button>
-                         </div>
+                         </form>
                        //  <input value={label->Option.getWithDefault("")} />
                        : <>
                            {label->Option.getWithDefault("")->React.string}
@@ -229,9 +231,15 @@ let make = () => {
                       className="bridge-action">
                       {js|🗑️|js}->React.string
                     </button>
-                    // onClick={_ => addLabel(id, "my label")}
                     <button
-                      onClick={_ => setEditLabel(_ => !editLabel)}
+                      onClick={_ =>
+                        setSelectedLabel(current =>
+                          switch (current) {
+                          | Some(_) => None
+                          | None => Some(id)
+                          }
+                        )
+                      }
                       className="bridge-action">
                       {js|🏷️|js}->React.string
                     </button>
