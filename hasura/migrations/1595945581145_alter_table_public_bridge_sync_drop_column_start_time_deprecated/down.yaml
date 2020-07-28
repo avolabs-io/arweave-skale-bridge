@@ -1,0 +1,17 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_sync" ADD COLUMN "start_time_deprecated" timestamptz;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_sync" ALTER COLUMN "start_time_deprecated" DROP
+      NOT NULL;
+  type: run_sql
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_sync" ALTER COLUMN "start_time_deprecated" SET
+      DEFAULT now();
+  type: run_sql

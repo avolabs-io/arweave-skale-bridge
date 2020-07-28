@@ -30,7 +30,8 @@ body {
   background-image: url("/assets/bridge-silhouette-blue.png");
   background-size: 100% auto;
   background-position: bottom right;
-  font-family: Arial, Helvetica, sans-serif; }
+  font-family: Arial, Helvetica, sans-serif;
+}
 
 .app {
   height: calc(100vh - 80px);
@@ -38,7 +39,8 @@ body {
   padding: 20px;
   margin: 20px;
   border: 2px solid #fff;
-  border-radius: 4px; }
+  border-radius: 4px;
+}
 
 .login {
   position: absolute;
@@ -46,12 +48,14 @@ body {
   top: 50%;
   transform: translate(calc(-50% - 2rem), calc(-50% - 2rem));
   width: 90%;
-  margin: 2rem; }
+  margin: 2rem;
+}
 
 button {
   background-color: transparent;
   border: none;
-  outline: none; }
+  outline: none;
+}
 
 .login-button {
   background-color: #121925;
@@ -60,101 +64,125 @@ button {
   font-size: 20px;
   padding: 1rem;
   border-radius: 1rem;
-  outline: none; }
+  outline: none;
+}
 
 button:hover {
-  opacity: 0.6; }
+  opacity: 0.6;
+}
 
 .login-button > img {
   height: 20px;
   margin: 0 4px;
-  transform: translateY(3px); }
+  transform: translateY(3px);
+}
 
 .logout {
   position: absolute;
-  right: 40px; }
+  right: 40px;
+}
 
 .menu {
   position: absolute;
   right: 40px;
-  z-index: 20; }
+  z-index: 20;
+}
 
 .funnel-step-container select,
 .funnel-step-container input {
   padding: 1rem;
   font-size: 14px;
-  margin-bottom: 1rem; }
+  margin-bottom: 1rem;
+}
 
 .funnel-step-container input {
-  width: calc(100% - calc(2rem + 2px)); }
+  width: calc(100% - calc(2rem + 2px));
+}
 
 .funnel-step-container select {
-  width: 100%; }
+  width: 100%;
+}
 
 .login-container,
 .loader-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; }
+  align-items: center;
+}
 
 .joint-logo {
-  width: 400px; }
+  width: 400px;
+}
 
 .menu {
   background-color: #121925;
-  border-radius: 3px; }
-  .menu .menu-inner {
-    border-radius: 3px;
-    border: 1px solid #fff;
-    padding: 0.2rem;
-    margin: 0.2rem;
-    font-size: 16px; }
-    .menu .menu-inner button {
-      display: block;
-      margin-left: auto; }
-      .menu .menu-inner button img {
-        height: 24px; }
-    .menu .menu-inner ul {
-      min-width: 140px;
-      padding: 1rem 0.4rem 0.4rem 0.4rem;
-      list-style-type: none;
-      margin: 0;
-      text-decoration: none;
-      text-transform: uppercase; }
-      .menu .menu-inner ul :hover {
-        opacity: 0.8; }
-    .menu .menu-inner li {
-      font-family: "Nunito", sans-serif;
-      font-weight: bold;
-      text-decoration: none;
-      color: #fff; }
-    .menu .menu-inner .menu-item-with-icon {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: space-between; }
-      .menu .menu-inner .menu-item-with-icon img {
-        display: block;
-        height: 16px; }
+  border-radius: 3px;
+}
+.menu .menu-inner {
+  border-radius: 3px;
+  border: 1px solid #fff;
+  padding: 0.2rem;
+  margin: 0.2rem;
+  font-size: 16px;
+}
+.menu .menu-inner button {
+  display: block;
+  margin-left: auto;
+}
+.menu .menu-inner button img {
+  height: 24px;
+}
+.menu .menu-inner ul {
+  min-width: 140px;
+  padding: 1rem 0.4rem 0.4rem 0.4rem;
+  list-style-type: none;
+  margin: 0;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.menu .menu-inner ul :hover {
+  opacity: 0.8;
+}
+.menu .menu-inner li {
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  color: #fff;
+}
+.menu .menu-inner .menu-item-with-icon {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+.menu .menu-inner .menu-item-with-icon img {
+  display: block;
+  height: 16px;
+}
 
 a {
   font-family: "Nunito", sans-serif;
   font-weight: bold;
   text-decoration: none;
-  color: #fff; }
+  color: #fff;
+}
 
 hr {
   border: 0;
   height: 1px;
   background: #333;
-  background-color: #fff; }
+  background-color: #fff;
+}
 
 #about {
-  font-size: 2rem; }
-  #about h1 {
-    margin: 0; }
-  #about p {
-    color: #a3b4d8; }
+  font-size: 2rem;
+}
+#about h1 {
+  margin: 0;
+}
+#about p {
+  color: #a3b4d8;
+}
 
 table {
   border-collapse: collapse;
@@ -164,33 +192,40 @@ table {
   background-color: -webkit-linear-gradient(to left, #1e3c72, #2a5298);
   /* Chrome 10-25, Safari 5.1-6 */
   background-color: linear-gradient(to left, #1e3c72, #2a5298);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */ }
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
 
 th {
   font-family: "Nunito", sans-serif;
   background: #121925;
   color: #fff;
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 td,
 th {
   border: 1.4px solid #fff;
   padding: 8px;
   padding: 10px;
-  text-align: left; }
+  text-align: left;
+}
 
 #bridges tr {
-  cursor: pointer; }
-  #bridges tr:hover {
-    color: #fff; }
+  cursor: pointer;
+}
+#bridges tr:hover {
+  color: #fff;
+}
 
 tr:nth-of-type(odd) {
-  background: rgba(255, 255, 255, 0.05); }
+  background: rgba(255, 255, 255, 0.05);
+}
 
 .heading-container {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: space-between; }
+  justify-content: space-between;
+}
 
 .secondary-button {
   background-color: #121925;
@@ -201,8 +236,17 @@ tr:nth-of-type(odd) {
   margin-top: 0.67em;
   margin-bottom: 0.67em;
   border-radius: 10px;
-  outline: none; }
+  outline: none;
+}
+
+.bridge-action {
+  background-color: #121925;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  margin-right: 2px;
+}
 
 .profile-menu {
   height: 2rem;
-  transform: translateY(25%); }
+  transform: translateY(25%);
+}

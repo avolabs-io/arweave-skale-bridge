@@ -26,10 +26,33 @@ query ActiveBridgesQuery($userId: String!) {
     skale_endpoint {
       uri
       id
+      chain_id
     }
     next_scheduled_sync
   }
 }
+|}
+];
+
+module MarkBridgeInactiveQuery = [%graphql
+  {|
+    mutation markBridgeInactiveQuery($id: Int!) {
+    update_bridge_data_by_pk(pk_columns: {id: $id}, _set: {active: false}) {
+        id
+        active
+    }
+  }
+|}
+];
+
+module AddLabelToBridgeQuery = [%graphql
+  {|
+    mutation addLabelToBridgeQuery($id: Int!, $label: String!) {
+    update_bridge_data_by_pk(pk_columns: {id: $id}, _set: {label: $label}) {
+        id
+        label
+    }
+  }
 |}
 ];
 
@@ -57,21 +80,50 @@ let make = () => {
       GetUserBridgesQuery.makeVariables(~userId=usersIdDetails.login, ()),
     );
 
+  let (mutate, result) = MarkBridgeInactiveQuery.use();
+  let (mutateLabel, resultLabel) = AddLabelToBridgeQuery.use();
+
+  let (selectedLabel, setSelectedLabel) = React.useState(_ => None);
+  let (newLabel, setNewLabel) = React.useState(_ => "");
+
   let onClick = (id, _) => {
     id->Route.Bridge->Router.push;
   };
 
   let deactivateBridge = id => {
-    Js.log(id);
+    mutate(
+      ~refetchQueries=[|
+        GetUserBridgesQuery.refetchQueryDescription(
+          GetUserBridgesQuery.makeVariables(~userId=usersIdDetails.login, ()),
+        ),
+      |],
+      MarkBridgeInactiveQuery.makeVariables(~id, ()),
+    )
+    ->ignore;
+  };
+
+  let addLabel = (id, label) => {
+    setSelectedLabel(_ => None);
+    mutateLabel(
+      ~refetchQueries=[|
+        GetUserBridgesQuery.refetchQueryDescription(
+          GetUserBridgesQuery.makeVariables(~userId=usersIdDetails.login, ()),
+        ),
+      |],
+      AddLabelToBridgeQuery.makeVariables(~id, ~label, ()),
+    )
+    ->ignore;
   };
 
   <div id="bridges">
-    <h1> "Bridges"->React.string </h1>
-    <table>
-      {switch (usersBridgesQueryResult) {
-       | {loading: true, data: None} => <p> "Loading"->React.string </p>
-       | {loading, data: Some(data), error} =>
-         <>
+    <h1 onClick={_ => Route.Bridges->Router.push}>
+      "Bridges"->React.string
+    </h1>
+    {switch (usersBridgesQueryResult) {
+     | {loading: true, data: None} => <p> "Loading"->React.string </p>
+     | {loading, data: Some(data), error} =>
+       <table>
+         <thead>
            <tr>
              <th> {js| 📁 |js}->React.string " Type"->React.string </th>
              <th>
@@ -91,6 +143,8 @@ let make = () => {
                " Actions"->React.string
              </th>
            </tr>
+         </thead>
+         <tbody>
            {data.bridge_data
             ->Belt.Array.map(
                 (
@@ -106,10 +160,10 @@ let make = () => {
                     metaData,
                   },
                 ) => {
-                let (skaleEndpoint, skaleEndpointId) =
+                let (skaleEndpoint, skaleEndpointId, chainId) =
                   skale_endpoint->Option.mapWithDefault(
-                    ("null", (-1)), ({uri, id}) =>
-                    (uri, id)
+                    ("null", (-1), (-1)), ({uri, id, chain_id}) =>
+                    (uri, id, chain_id)
                   );
                 let (arweaveEndpoint, areweaveEndpointId) =
                   arweave_endpoint_rel->Option.mapWithDefault(
@@ -126,9 +180,16 @@ let make = () => {
                 let frequencyText =
                   Frequency.secondsToText(frequency_duration_seconds);
                 let numberOfSyncs = getMaxIndexSyncFromAgregate(aggregate);
-                <tr>
+                let isLabelEditable =
+                  selectedLabel->Option.mapWithDefault(false, selectedLabel =>
+                    id == selectedLabel
+                  );
+                <tr key={id->string_of_int}>
                   <td onClick={onClick(id)}> contentType->React.string </td>
-                  <td onClick={onClick(id)}> skaleEndpoint->React.string </td>
+                  <td onClick={onClick(id)}>
+                    {(skaleEndpoint ++ ":" ++ chainId->string_of_int)
+                     ->React.string}
+                  </td>
                   <td onClick={onClick(id)}>
                     arweaveEndpoint->React.string
                   </td>
@@ -144,19 +205,52 @@ let make = () => {
                   <td onClick={onClick(id)}>
                     {numberOfSyncs->string_of_int->React.string}
                   </td>
-                  <td> {label->Option.getWithDefault("")->React.string} </td>
                   <td>
-                    <button onClick={_ => deactivateBridge(id)}>
-                      "De-activate"->React.string
+                    {isLabelEditable
+                       ? <form onSubmit={_ => addLabel(id, newLabel)}>
+                           <input
+                             value=newLabel
+                             onChange={event => {
+                               let value =
+                                 ReactEvent.Form.target(event)##value;
+                               setNewLabel(_ => value);
+                             }}
+                           />
+                           <button onClick={_ => addLabel(id, newLabel)}>
+                             {js|✅|js}->React.string
+                           </button>
+                         </form>
+                       //  <input value={label->Option.getWithDefault("")} />
+                       : <>
+                           {label->Option.getWithDefault("")->React.string}
+                         </>}
+                  </td>
+                  <td>
+                    <button
+                      onClick={_ => deactivateBridge(id)}
+                      className="bridge-action">
+                      {js|🗑️|js}->React.string
+                    </button>
+                    <button
+                      onClick={_ =>
+                        setSelectedLabel(current =>
+                          switch (current) {
+                          | Some(_) => None
+                          | None => Some(id)
+                          }
+                        )
+                      }
+                      className="bridge-action">
+                      {js|🏷️|js}->React.string
                     </button>
                   </td>
                 </tr>;
               })
             ->React.array}
-         </>
-       | {loading: false, data: None} =>
-         <p> "Error loading data"->React.string </p>
-       }}
-    </table>
+         </tbody>
+       </table>
+     | {loading: false, data: None} =>
+       <p> "Error loading data"->React.string </p>
+     }}
   </div>;
 };

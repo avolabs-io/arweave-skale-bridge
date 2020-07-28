@@ -10,8 +10,8 @@ external uploadDataToArweave:
 // Mutation to change sync status + update endTime.
 module SyncItemUpdate = [%graphql
   {|
-    mutation SyncItemMutation($Id: Int!, $endTime: Int!, $status: String!) {
-    update_bridge_sync_by_pk(pk_columns: {id: $Id}, _set: {end_time: $endTime, status: $status}) {
+    mutation SyncItemMutation($id: Int!, $endTime: Int!, $status: String!) {
+    update_bridge_sync_by_pk(pk_columns: {id: $id}, _set: {end_time: $endTime, status: $status}) {
         end_time
         status
     }
@@ -55,6 +55,7 @@ let uploadChunkToArweave =
 
           NodeJs.(
             if (Fs.existsSync(path)) {
+              let file = Fs.readFileSync(path, ());
               // upload to arweave function (filePath)
               uploadDataToArweave(.
                 privKey,

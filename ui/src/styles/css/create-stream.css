@@ -18,7 +18,7 @@ Mobile Sizes
 .funnel-step-container {
   font-family: "Nunito", sans-serif;
   width: 500px;
-  max-width: calc( 100% - 5rem);
+  max-width: calc(100% - 5rem);
   display: flex;
   flex-direction: column;
   padding: 2rem;
@@ -30,50 +30,60 @@ Mobile Sizes
   background-color: -webkit-linear-gradient(to left, #1e3c72, #2a5298);
   /* Chrome 10-25, Safari 5.1-6 */
   background-color: linear-gradient(to left, #1e3c72, #2a5298);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */ }
-  @media (min-width: 768px) {
-    .funnel-step-container {
-      min-width: 300px; } }
-  .funnel-step-container h2 {
-    font-family: "Nunito", sans-serif;
-    font-weight: bold;
-    color: #fff;
-    margin-top: 0; }
-  .funnel-step-container h4 {
-    font-family: "Nunito", sans-serif;
-    font-weight: bold;
-    color: #5b7aba;
-    margin: 0 0 0.3rem 0; }
-  .funnel-step-container .prev-next-container {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between; }
-    .funnel-step-container .prev-next-container button {
-      color: #fff;
-      padding: 0.6rem;
-      text-transform: uppercase;
-      font-family: "Nunito", sans-serif;
-      font-weight: bold;
-      font-size: 12px;
-      background-color: #121925;
-      border-radius: 5px; }
-  .funnel-step-container .confirm-bridge-button {
-    color: #fff;
-    padding: 0.6rem;
-    text-transform: uppercase;
-    font-family: "Nunito", sans-serif;
-    font-weight: bold;
-    font-size: 12px;
-    background-color: #121925;
-    border-radius: 5px; }
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+@media (min-width: 768px) {
+  .funnel-step-container {
+    min-width: 300px;
+  }
+}
+.funnel-step-container h2 {
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  color: #fff;
+  margin-top: 0;
+}
+.funnel-step-container h4 {
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  color: #5b7aba;
+  margin: 0 0 0.3rem 0;
+}
+.funnel-step-container .prev-next-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+.funnel-step-container .prev-next-container button {
+  color: #fff;
+  padding: 0.6rem;
+  text-transform: uppercase;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  font-size: 12px;
+  background-color: #121925;
+  border-radius: 5px;
+}
+.funnel-step-container .confirm-bridge-button {
+  color: #fff;
+  padding: 0.6rem;
+  text-transform: uppercase;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  font-size: 12px;
+  background-color: #121925;
+  border-radius: 5px;
+}
 
 .overview h4 {
   color: #fff;
-  margin: 5px 0; }
+  margin: 5px 0;
+}
 
 .overview p {
   color: #7f97c9;
-  margin: 2px 0; }
+  margin: 2px 0;
+}
 
 .full-width-button {
   color: #fff;
@@ -85,18 +95,44 @@ Mobile Sizes
   font-weight: bold;
   font-size: 18px;
   background-color: #121925;
-  border-radius: 5px; }
+  border-radius: 5px;
+}
 
 .input-with-button {
-  position: relative; }
-  .input-with-button .input-add-button {
-    position: absolute;
-    color: #121925;
-    border-radius: 2px;
-    border: 1px solid #121925;
-    right: 0.7rem;
-    top: 0.7rem;
-    font-size: 1.4rem; }
-    .input-with-button .input-add-button:hover {
-      background-color: #121925;
-      color: #fff; }
+  position: relative;
+}
+.input-with-button .input-add-button {
+  position: absolute;
+  color: #121925;
+  border-radius: 2px;
+  border: 1px solid #121925;
+  right: 0.7rem;
+  top: 0.7rem;
+  font-size: 1.4rem;
+}
+.input-with-button .input-add-button:hover {
+  background-color: #121925;
+  color: #fff;
+}
+
+/* CSS transitions for the onboarding step */
+.onboarding-step-transition-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.onboarding-step-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+}
+.onboarding-step-transition-exit {
+  opacity: 1;
+  transform: translateX(0%);
+}
+.onboarding-step-transition-exit-active {
+  opacity: 0;
+  transform: translateX(100%);
+}
+.onboarding-step-transition-enter-active,
+.onboarding-step-transition-exit-active {
+  transition: opacity 500ms, transform 500ms;
+}
