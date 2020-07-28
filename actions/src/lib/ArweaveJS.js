@@ -42,7 +42,8 @@ const getTransactionData = async (transactionId, arweave) => {
     });
 };
 
-const uploadDataToArweave = async (key, arweave, pathToData) => {
+const uploadDataToArweave = async (key, arweave, pathToData, pushStatus) => {
+  pushStatus("Starting arweave upload");
   let data = fs.readFileSync(pathToData);
 
   let transaction = await arweave.createTransaction({ data: data }, key);
@@ -59,6 +60,8 @@ const uploadDataToArweave = async (key, arweave, pathToData) => {
       `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
     );
   }
+
+  pushStatus("Finished arweave upload");
 
   return {
     format: transaction.format,

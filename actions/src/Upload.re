@@ -3,7 +3,7 @@ open BridgeSyncTypes;
 
 [@bs.module "./lib/ArweaveJS.js"]
 external uploadDataToArweave:
-  (. Arweave.jwk, Arweave.t, string) =>
+  (. Arweave.jwk, Arweave.t, string, string => unit) =>
   Js.Promise.t(Arweave.transactionResult) =
   "uploadDataToArweave";
 
@@ -31,6 +31,7 @@ let uploadChunkToArweave =
       ~host,
       ~onError,
       ~privKey,
+      ~pushStatus,
       {syncItemId, path}: BridgeSyncTypes.skaleFetchResult,
     ) => {
   Js.log(
@@ -43,10 +44,24 @@ let uploadChunkToArweave =
     ignore(
       Js.Global.setTimeout(
         () => {
+          let arweaveInstance =
+            Arweave.init({
+              host,
+              port,
+              protocol,
+              timeout: Some(10 * 60 * 1000),
+              logging: Some(false),
+            });
+
           NodeJs.(
             if (Fs.existsSync(path)) {
               // upload to arweave function (filePath)
-              uploadDataToArweave(. privKey, Arweave.defaultInstance, path)
+              uploadDataToArweave(.
+                privKey,
+                arweaveInstance,
+                path,
+                pushStatus,
+              )
               ->Js.Promise.then_(
                   arweaveTransactionResult => {
                     Fs.unlinkSync(path);
@@ -59,7 +74,7 @@ let uploadChunkToArweave =
             } else {
               reject(. FileNotFound("file not found at: " ++ path));
             }
-          )
+          );
         },
         1000,
       ),

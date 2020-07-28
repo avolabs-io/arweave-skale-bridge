@@ -87,6 +87,7 @@ module ReportStatus = [%graphql
   }
 |}
 ];
+
 module ReportError = [%graphql
   {|
   mutation ReportError($id: Int!, $errorMessage: String!, $errorStackTrace: String!) {
@@ -168,11 +169,19 @@ let updateSyncTime = (~onError, id, nextScheduledSync) => {
 };
 
 let reportError = (~id, ~errorMessage, ~errorStackTrace) => {
-  Js.log2("id of bridge that errored", id);
   Client.instance
   ->ApolloClient.mutate(
       ~mutation=(module ReportError),
       ReportError.makeVariables(~id, ~errorMessage, ~errorStackTrace, ()),
+    )
+  ->ignore;
+};
+
+let reportStatus = (~id, status) => {
+  Client.instance
+  ->ApolloClient.mutate(
+      ~mutation=(module ReportStatus),
+      ReportStatus.makeVariables(~id, ~status, ()),
     )
   ->ignore;
 };
@@ -308,6 +317,8 @@ let processBridges = updateInterval => {
                                 ~typeOfDataFetch=contentType,
                                 ~endpoint=skaleEndpointUri,
                                 ~chainId=chain_id,
+                                ~pushStatus=
+                                  reportStatus(~id=result.syncItemId),
                                 result,
                               )
                             })
@@ -318,6 +329,8 @@ let processBridges = updateInterval => {
                                 ~host,
                                 ~privKey,
                                 ~onError=reportError(~id=result.syncItemId),
+                                ~pushStatus=
+                                  reportStatus(~id=result.syncItemId),
                                 result,
                               )
                             })

@@ -31,59 +31,52 @@ let processDataFetching =
       ~endpoint,
       ~chainId,
       ~onError,
+      ~pushStatus,
       {syncItemId}: addSyncItemResult,
     ) => {
   Js.Promise.make((~resolve, ~reject) => {
+    pushStatus("Fetching Skale Data");
+
+    let resolveAndSetState = path => {
+      pushStatus("Data retrieved from Skale");
+      resolve(. {syncItemId, path});
+    };
+
     ignore(
       switch (typeOfDataFetch) {
       | "Block Data" =>
         let fileName = "block-data." ++ syncItemId->string_of_int;
         handleBlockData(.
-          endpoint,
-          chainId,
-          fileName,
-          path => resolve(. {syncItemId, path}),
-          fetchException => reject(. fetchException),
+           endpoint, chainId, fileName, resolveAndSetState, fetchException =>
+          reject(. fetchException)
         );
       | "Transactions Data" =>
         let fileName = "transaction-data." ++ syncItemId->string_of_int;
         handleTransactionData(.
-          endpoint,
-          chainId,
-          fileName,
-          path => resolve(. {syncItemId, path}),
-          fetchException => reject(. fetchException),
+           endpoint, chainId, fileName, resolveAndSetState, fetchException =>
+          reject(. fetchException)
         );
       | "Transaction Receipts" =>
         let fileName = "transaction-receipts." ++ syncItemId->string_of_int;
         handleTransactionReceipts(.
-          endpoint,
-          chainId,
-          fileName,
-          path => resolve(. {syncItemId, path}),
-          fetchException => reject(. fetchException),
+           endpoint, chainId, fileName, resolveAndSetState, fetchException =>
+          reject(. fetchException)
         );
       | "Event Data" =>
         let fileName = "event-data." ++ syncItemId->string_of_int;
         handleBlockData(.
-          endpoint,
-          chainId,
-          fileName,
-          path => resolve(. {syncItemId, path}),
-          fetchException => reject(. fetchException),
+           endpoint, chainId, fileName, resolveAndSetState, fetchException =>
+          reject(. fetchException)
         );
       | "Decentralized Storage" =>
         let fileName = "storage-data." ++ syncItemId->string_of_int;
         handleStorageData(.
-          endpoint,
-          chainId,
-          fileName,
-          path => resolve(. {syncItemId, path}),
-          fetchException => reject(. fetchException),
+           endpoint, chainId, fileName, resolveAndSetState, fetchException =>
+          reject(. fetchException)
         );
       | unrecognised => reject(. InvalidOption(unrecognised))
       },
-    )
+    );
   })
   ->Prometo.fromPromise
   ->Prometo.handle(~f=result =>
