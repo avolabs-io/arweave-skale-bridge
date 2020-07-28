@@ -18,22 +18,21 @@ const connectWallet = async (pvtKey, arweave) => {
   return await arweave.wallets.jwkToAddress(pvtKey);
 };
 
-const createDataTransaction = async (content, arweave) => {
+const createDataTransaction = async (content, arweave, pvtKey) => {
   console.log("store data on arweave");
-  let key = await arweave.wallets.generate();
 
   let transaction = await arweave.createTransaction(
     {
       data: content,
     },
-    key
+    pvtKey
   );
 
   return transaction;
 };
 
 const addTagsToTransaction = (transaction, tags) => {
-  // transaction.addTag("Content-Type", "application/x-gzip");
+  transaction.addTag("Content-Type", "application/x-gzip");
   transaction.addTag("key2", "value2");
 };
 
@@ -44,28 +43,101 @@ const getTransaction = (transactionId, arweave) =>
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
-const uploadDataToArweave = async (pvtKey, arweave, pathToData) => {
-  await connectWallet(pvtKey, arweave);
-  // const filePath = path.join(__dirname, pathToData);
-  console.log("filePath");
-  console.log(pathToData);
-  const file = await new Promise((resolve, reject) =>
-    fs.readFile(pathToData, { encoding: "utf-8" }, function (err, data) {
-      if (!err) {
-        console.log("received data ");
-        resolve(data);
-      } else {
-        console.log(err);
-        reject(err);
-      }
-    })
-  );
-  const transaction = await createDataTransaction(file, arweave);
-  transaction.addTag("skale-arweave-bridge", "testing");
-  transaction.addTag("path", pathToData);
-  console.log(transaction);
+// const uploadDataToArweave = async (pvtKey, arweave, pathToData) => {
+//   console.log({ pvtKey });
+//   await connectWallet(pvtKey, arweave);
+//   // const filePath = path.join(__dirname, pathToData);
+//   console.log("filePath");
+//   console.log(pathToData);
+//   const file = fs.readFileSync(pathToData);
+//   // await new Promise((resolve, reject) =>
+//   //   fs.readFile(pathToData, { encoding: "utf-8" }, function (err, data) {
+//   //     if (!err) {
+//   //       console.log("received data ");
+//   //       resolve(data);
+//   //     } else {
+//   //       console.log(err);
+//   //       reject(err);
+//   //     }
+//   //   })
+//   // );
+//   console.log(file);
+//   const transaction = await createDataTransaction(file, arweave, pvtKey);
+//   transaction.addTag("skale-arweave-bridge", "testing");
+//   transaction.addTag("path", pathToData);
+//   console.log(transaction);
 
-  await arweave.transactions.sign(transaction, pvtKey);
+//   await arweave.transactions.sign(transaction, pvtKey);
+
+//   console.log(transaction);
+
+//   // let uploader = await arweave.transactions.getUploader(transaction);
+
+//   // while (!uploader.isComplete) {
+//   //   await uploader.uploadChunk();
+//   //   console.log(
+//   //     `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
+//   //   );
+//   // }
+
+//   const response = await arweave.transactions.post(transaction);
+
+//   console.log("response");
+//   console.log(response);
+//   console.log(response.status);
+
+//   // const publicKey = await arweave.wallets.jwkToAddress(pvtKey);
+//   // console.log("publicKey:  ", publicKey);
+//   // const prevTransactionId = await new Promise(async (res, rej) => {
+//   //   let hasFoundId = false;
+//   //   while (!hasFoundId) {
+//   //     const prevTransactionId = await getWalletLastTxId(publicKey, arweave);
+//   //     console.log("waiting for tx id", prevTransactionId);
+
+//   //     if (!!prevTransactionId) {
+//   //       hasFoundId = true;
+//   //       res(prevTransactionId);
+//   //     } else {
+//   //       await sleep(1000);
+//   //     }
+//   //   }
+//   // });
+//   // console.log("prevTransactionId:  ", prevTransactionId);
+
+//   // const transactionData = await getTransactionData(prevTransactionId, arweave);
+
+//   // console.log("transactionData:  ", transactionData);
+
+//   const data = await getTransactionData(transaction.id, arweave);
+//   console.log("data: ", data);
+
+//   return transaction;
+// };
+
+const getTransactionData = async (transactionId, arweave) => {
+  await arweave.transactions
+    .getData(transactionId, {
+      decode: true,
+      string: true,
+    })
+    .then((data) => {
+      console.log("data: ", data);
+
+      console.log(data);
+      // <!DOCTYPE HTML>...
+    });
+};
+
+const uploadDataToArweave = async (key, arweave, pathToData) => {
+  console.log("upload data to arweave");
+  let data = fs.readFileSync(pathToData);
+
+  console.log(data);
+
+  let transaction = await arweave.createTransaction({ data: data }, key);
+  // transaction.addTag("Content-Type", "application/pdf");
+
+  await arweave.transactions.sign(transaction, key);
 
   console.log(transaction);
 
@@ -78,43 +150,7 @@ const uploadDataToArweave = async (pvtKey, arweave, pathToData) => {
     );
   }
 
-  // const publicKey = await arweave.wallets.jwkToAddress(pvtKey);
-  // console.log("publicKey:  ", publicKey);
-  // const prevTransactionId = await new Promise(async (res, rej) => {
-  //   let hasFoundId = false;
-  //   while (!hasFoundId) {
-  //     const prevTransactionId = await getWalletLastTxId(publicKey, arweave);
-  //     console.log("waiting for tx id", prevTransactionId);
-
-  //     if (!!prevTransactionId) {
-  //       hasFoundId = true;
-  //       res(prevTransactionId);
-  //     } else {
-  //       await sleep(1000);
-  //     }
-  //   }
-  // });
-  // console.log("prevTransactionId:  ", prevTransactionId);
-
-  // const transactionData = await getTransactionData(prevTransactionId, arweave);
-
-  // console.log("transactionData:  ", transactionData);
-
-  // const data = await getTransactionData(
-  //   "eyyW-Q0k2VN7ukP47nKc6LqpBod9uneKWcer8xODDt4",
-  //   arweave
-  // );
-  // console.log("data: ", data);
-
-  return transaction;
-};
-
-const getTransactionData = async (transactionId, arweave) => {
-  const data = await arweave.transactions.getData(transactionId, {
-    decode: true,
-    string: true,
-  });
-  return data;
+  console.log("complete");
 };
 
 const getWalletLastTxId = async (publicKey, arweave) => {

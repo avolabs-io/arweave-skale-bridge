@@ -45,14 +45,33 @@ let make = (~bridgeId) => {
                 <tr>
                   <td> {id->string_of_int->React.string} </td>
                   <td>
-                    {MomentRe.momentWithUnix(start_time)
-                     ->MomentRe.Moment.defaultFormat
-                     //  ->MomentRe.Moment.format("hh:mm:ss")
+                    {MomentRe.Moment.format(
+                       "LL",
+                       MomentRe.momentWithUnix(start_time),
+                     )
+                     ->React.string}
+                    " "->React.string
+                    {MomentRe.Moment.format(
+                       "LTS",
+                       MomentRe.momentWithUnix(start_time),
+                     )
                      ->React.string}
                   </td>
                   <td>
-                    {end_time
-                     ->Option.mapWithDefault("in progress", string_of_int)
+                    {MomentRe.Moment.format(
+                       "LL",
+                       MomentRe.momentWithUnix(
+                         end_time->Option.getWithDefault(0),
+                       ),
+                     )
+                     ->React.string}
+                    " "->React.string
+                    {MomentRe.Moment.format(
+                       "LTS",
+                       MomentRe.momentWithUnix(
+                         end_time->Option.getWithDefault(0),
+                       ),
+                     )
                      ->React.string}
                   </td>
                   <td> {index->string_of_int->React.string} </td>

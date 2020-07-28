@@ -235,7 +235,9 @@ let processBridges = updateInterval => {
                       | Some({pub_key, priv_key}) =>
                         // TODO: use the correct decoder to prevent malformed private keys from being accepted.
                         // let privKey = priv_key->Arweave.jwk_decode;
+
                         let privKey = priv_key->Obj.magic;
+
                         updateSyncTime(
                           ~onError=_ => Js.log("Unable to Sync Error."),
                           id,
