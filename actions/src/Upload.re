@@ -25,7 +25,14 @@ exception FileNotFound(string);
 // The arweave endpoint so we know where to upload it
 // What else? Should use users arweave keys for this action
 let uploadChunkToArweave =
-    (~protocol, ~port, ~host, ~onError, ~privKey, {syncItemId, path}) => {
+    (
+      ~protocol,
+      ~port,
+      ~host,
+      ~onError,
+      ~privKey,
+      {syncItemId, path}: BridgeSyncTypes.skaleFetchResult,
+    ) => {
   Js.log(
     "data at " ++ path ++ " to arweave endpoint",
     // based on result of arweave update, call SyncItemUpdate
@@ -40,9 +47,15 @@ let uploadChunkToArweave =
             if (Fs.existsSync(path)) {
               // upload to arweave function (filePath)
               uploadDataToArweave(. privKey, Arweave.defaultInstance, path)
+              ->Js.Promise.then_(
+                  arweaveTransactionResult => {
+                    Fs.unlinkSync(path);
+                    resolve(. {syncItemId, path, arweaveTransactionResult})
+                    ->async;
+                  },
+                  _,
+                )
               ->ignore;
-              // Fs.unlinkSync(path);
-              resolve(. {syncItemId, path});
             } else {
               reject(. FileNotFound("file not found at: " ++ path));
             }
@@ -57,7 +70,21 @@ let uploadChunkToArweave =
       switch (result) {
       | Ok(uploadResult) => Ok(uploadResult)
       | Error(error) =>
-        onError(error);
+        switch (error) {
+        | `Prometo_error(jsError) =>
+          let (errorMessage, errorStackTrace) =
+            Util.errorToMessageAndStacktrace(jsError);
+          onError(~errorMessage, ~errorStackTrace);
+        | _ =>
+          onError(
+            ~errorMessage=
+              "Unknown error when fetching uploading data to arweave. Please report to support.",
+            ~errorStackTrace="No stack trace",
+          );
+          Js.log(
+            "WARNING - unknown error when uploading data to arweave! Investigate this.",
+          );
+        };
         Error(error);
       }
     );

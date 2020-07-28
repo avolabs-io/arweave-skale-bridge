@@ -90,7 +90,21 @@ let processDataFetching =
       switch (result) {
       | Ok(dataFetchResult) => Ok(dataFetchResult)
       | Error(error) =>
-        onError(error);
+        switch (error) {
+        | `Prometo_error(jsError) =>
+          let (errorMessage, errorStackTrace) =
+            Util.errorToMessageAndStacktrace(jsError);
+          onError(~errorMessage, ~errorStackTrace);
+        | _ =>
+          onError(
+            ~errorMessage=
+              "Unknown error when fetching Skale data. Please report to support.",
+            ~errorStackTrace="No stack trace",
+          );
+          Js.log(
+            "WARNING - unknown error when fetching skale data! Investigate this.",
+          );
+        };
         Error(error);
       }
     );
