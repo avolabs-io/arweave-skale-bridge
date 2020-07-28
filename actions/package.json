@@ -34,6 +34,7 @@
     "isomorphic-fetch": "^2.2.1",
     "react": "^16.13.1",
     "reason-apollo-client": "^0.0.1-beta.1",
+    "reason-nodejs": "^13.0.0-beta.1",
     "reason-react": "^0.9.1",
     "request": "^2.88.2",
     "serbet": "^0.4.0",

@@ -222,6 +222,7 @@ let processBridges = updateInterval => {
                     ~onError=_ => Js.log("Error fetching skale data"),
                     ~typeOfDataFetch=contentType,
                     ~endpoint=skaleEndpointUri,
+                    ~chainId=346750,
                     result,
                   )
                 })

@@ -44,6 +44,7 @@
     "@yawaramin/prometo",
     "bs-log",
     // "reason-promise",
+    "reason-nodejs",
     "reason-react" // This is needed by apollo probably... Don't use in code
   ]
 }
