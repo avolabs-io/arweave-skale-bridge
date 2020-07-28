@@ -36,8 +36,8 @@ query ActiveBridgesQuery($userId: String!) {
 
 module MarkBridgeInactiveQuery = [%graphql
   {|
-    mutation markBridgeInactiveQuery($Id: Int!) {
-    update_bridge_data_by_pk(pk_columns: {id: $Id}, _set: {active: false}) {
+    mutation markBridgeInactiveQuery($id: Int!) {
+    update_bridge_data_by_pk(pk_columns: {id: $id}, _set: {active: false}) {
         id
         active
     }
@@ -47,8 +47,8 @@ module MarkBridgeInactiveQuery = [%graphql
 
 module AddLabelToBridgeQuery = [%graphql
   {|
-    mutation addLabelToBridgeQuery($Id: Int!, $label: String!) {
-    update_bridge_data_by_pk(pk_columns: {id: $Id}, _set: {label: $label}) {
+    mutation addLabelToBridgeQuery($id: Int!, $label: String!) {
+    update_bridge_data_by_pk(pk_columns: {id: $id}, _set: {label: $label}) {
         id
         label
     }
@@ -83,27 +83,38 @@ let make = () => {
   let (mutate, result) = MarkBridgeInactiveQuery.use();
   let (mutateLabel, resultLabel) = AddLabelToBridgeQuery.use();
 
-  let (editLabel, setEditLabel) = React.useState(_ => false)
+  let (editLabel, setEditLabel) = React.useState(_ => false);
+  let (newLabel, setNewLabel) = React.useState(_ => "");
 
   let onClick = (id, _) => {
     id->Route.Bridge->Router.push;
   };
 
   let deactivateBridge = id => {
-    Js.log(
-      id,
-      // mutate(_ => None, MarkBridgeInactiveQuery.makeVariables(~Id=id, ())
-      // ->ignore;
-    );
+    Js.log(id);
+    mutate(
+      ~refetchQueries=[|
+        GetUserBridgesQuery.refetchQueryDescription(
+          GetUserBridgesQuery.makeVariables(~userId=usersIdDetails.login, ()),
+        ),
+      |],
+      MarkBridgeInactiveQuery.makeVariables(~id, ()),
+    )
+    ->ignore;
   };
 
   let addLabel = (id, label) => {
+    setEditLabel(_ => false);
     Js.log(label);
-    Js.log(
-      id,
-      // mutate(_ => None, MarkBridgeInactiveQuery.makeVariables(~Id=id, ())
-      // ->ignore;
-    );
+    mutateLabel(
+      ~refetchQueries=[|
+        GetUserBridgesQuery.refetchQueryDescription(
+          GetUserBridgesQuery.makeVariables(~userId=usersIdDetails.login, ()),
+        ),
+      |],
+      AddLabelToBridgeQuery.makeVariables(~id, ~label, ()),
+    )
+    ->ignore;
   };
 
   <div id="bridges">
@@ -191,24 +202,34 @@ let make = () => {
                   <td onClick={onClick(id)}>
                     {numberOfSyncs->string_of_int->React.string}
                   </td>
-                  <td> 
-                  
-                  {
-                    editLabel ? 
-                    label->Option.getWithDefault("")->React.string
-                    :
-                    <input>{label->Option.getWithDefault("")->React.string}</input>
-                    }
-                  
-                   </td>
+                  <td>
+                    {editLabel
+                       ? <div>
+                           <input
+                             value=newLabel
+                             onChange={event => {
+                               let value =
+                                 ReactEvent.Form.target(event)##value;
+                               setNewLabel(_ => value);
+                             }}
+                           />
+                           <button onClick={_ => addLabel(id, newLabel)}>
+                             {js|✅|js}->React.string
+                           </button>
+                         </div>
+                       //  <input value={label->Option.getWithDefault("")} />
+                       : <>
+                           {label->Option.getWithDefault("")->React.string}
+                         </>}
+                  </td>
                   <td>
                     <button
                       onClick={_ => deactivateBridge(id)}
                       className="bridge-action">
                       {js|🗑️|js}->React.string
                     </button>
+                    // onClick={_ => addLabel(id, "my label")}
                     <button
-                      // onClick={_ => addLabel(id, "my label")}
                       onClick={_ => setEditLabel(_ => !editLabel)}
                       className="bridge-action">
                       {js|🏷️|js}->React.string
