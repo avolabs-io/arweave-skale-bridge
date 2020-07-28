@@ -23,6 +23,7 @@ type transactionTag = {
 };
 
 // [@decco.encode]
+// TODO: quite a few of these values are actually optional...
 type transactionResult = {
   format: int,
   id: string,
@@ -59,3 +60,29 @@ external generateWallet: (t, unit) => Js.Promise.t(jwk) = "generate";
 external getPublicKey: (t, jwk) => Js.Promise.t(string) = "jwkToAddress";
 
 let defaultInstance = init(defaultArweaveParams);
+
+type transactionData = {data: NodeJs.Buffer.t};
+[@bs.send]
+external createTransaction:
+  (t, transactionData, jwk) => Js.Promise.t(transactionResult) =
+  "createTransaction";
+
+[@bs.send] [@bs.scope "transactions"]
+external transactionsSign: (t, transactionData) => Js.Promise.t(unit) =
+  "sign";
+
+type uploader;
+
+[@bs.send] [@bs.scope "transactions"]
+external transactionsUpload: (t, transactionData) => Js.Promise.t(uploader) =
+  "getUploader";
+
+[@bs.get] [@bs.scope "transactions"]
+external isUploadComplete: uploader => bool = "isComplete";
+
+[@bs.send]
+external uploadChunk: uploader => Js.Promise.t(unit) = "uploadChunk";
+
+[@bs.send] external pctComplete: uploader => int = "pctComplete";
+[@bs.send] external uploadedChunks: uploader => int = "uploadedChunks";
+[@bs.send] external totalChunks: uploader => int = "totalChunks";
