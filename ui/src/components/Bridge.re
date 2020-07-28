@@ -35,11 +35,11 @@ let make = (~bridgeId) => {
 
   <div>
     <h1> {("Bridge: #" ++ bridgeId->string_of_int)->React.string} </h1>
-    <table>
-      {switch (usersBridgeQueryResult) {
-       | {loading: true, data: None} => <p> "Loading"->React.string </p>
-       | {loading, data: Some(data), error} =>
-         <>
+    {switch (usersBridgeQueryResult) {
+     | {loading: true, data: None} => <p> "Loading"->React.string </p>
+     | {loading, data: Some(data), error} =>
+       <table>
+         <thead>
            <tr>
              <th> {js| 🚀 |js}->React.string "#"->React.string </th>
              <th> {js| ⏳ |js}->React.string "Start Time"->React.string </th>
@@ -48,6 +48,8 @@ let make = (~bridgeId) => {
              <th> {js| ⛑ |js}->React.string "Info"->React.string </th>
              <th> {js| 🛠 |js}->React.string "Status"->React.string </th>
            </tr>
+         </thead>
+         <tbody>
            {data.bridge_sync
             ->Belt.Array.map(
                 (
@@ -69,9 +71,10 @@ let make = (~bridgeId) => {
                     arweaveTxId =>
                     TxId(arweaveTxId)
                   );
+                let idString = id->string_of_int;
 
-                <tr>
-                  <td> {id->string_of_int->React.string} </td>
+                <tr key=idString>
+                  <td> idString->React.string </td>
                   <td>
                     {MomentRe.Moment.format(
                        "LL",
@@ -128,10 +131,10 @@ let make = (~bridgeId) => {
                 </tr>;
               })
             ->React.array}
-         </>
-       | {loading: false, data: None} =>
-         <p> "Error loading data"->React.string </p>
-       }}
-    </table>
+         </tbody>
+       </table>
+     | {loading: false, data: None} =>
+       <p> "Error loading data"->React.string </p>
+     }}
   </div>;
 };

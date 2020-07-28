@@ -121,11 +121,11 @@ let make = () => {
     <h1 onClick={_ => Route.Bridges->Router.push}>
       "Bridges"->React.string
     </h1>
-    <table>
-      {switch (usersBridgesQueryResult) {
-       | {loading: true, data: None} => <p> "Loading"->React.string </p>
-       | {loading, data: Some(data), error} =>
-         <>
+    {switch (usersBridgesQueryResult) {
+     | {loading: true, data: None} => <p> "Loading"->React.string </p>
+     | {loading, data: Some(data), error} =>
+       <table>
+         <thead>
            <tr>
              <th> {js| 📁 |js}->React.string " Type"->React.string </th>
              <th>
@@ -145,6 +145,8 @@ let make = () => {
                " Actions"->React.string
              </th>
            </tr>
+         </thead>
+         <tbody>
            {data.bridge_data
             ->Belt.Array.map(
                 (
@@ -165,7 +167,6 @@ let make = () => {
                     ("null", (-1), (-1)), ({uri, id, chain_id}) =>
                     (uri, id, chain_id)
                   );
-                Js.log(chainId->string_of_int);
                 let (arweaveEndpoint, areweaveEndpointId) =
                   arweave_endpoint_rel->Option.mapWithDefault(
                     ("null", (-1)), ({protocol, url: host, port, id}) =>
@@ -181,7 +182,7 @@ let make = () => {
                 let frequencyText =
                   Frequency.secondsToText(frequency_duration_seconds);
                 let numberOfSyncs = getMaxIndexSyncFromAgregate(aggregate);
-                <tr>
+                <tr key={id->string_of_int}>
                   <td onClick={onClick(id)}> contentType->React.string </td>
                   <td onClick={onClick(id)}>
                     {(skaleEndpoint ++ ":" ++ chainId->string_of_int)
@@ -238,10 +239,10 @@ let make = () => {
                 </tr>;
               })
             ->React.array}
-         </>
-       | {loading: false, data: None} =>
-         <p> "Error loading data"->React.string </p>
-       }}
-    </table>
+         </tbody>
+       </table>
+     | {loading: false, data: None} =>
+       <p> "Error loading data"->React.string </p>
+     }}
   </div>;
 };

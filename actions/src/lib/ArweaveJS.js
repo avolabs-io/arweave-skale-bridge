@@ -62,6 +62,9 @@ const uploadDataToArweave = async (key, arweave, pathToData, pushStatus) => {
     );
   }
 
+  // Add a very small sleep here to prevent out of order data setting.
+  await sleep(100);
+
   return {
     format: transaction.format,
     id: transaction.id,
