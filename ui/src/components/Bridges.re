@@ -26,10 +26,33 @@ query ActiveBridgesQuery($userId: String!) {
     skale_endpoint {
       uri
       id
+      chain_id
     }
     next_scheduled_sync
   }
 }
+|}
+];
+
+module MarkBridgeInactiveQuery = [%graphql
+  {|
+    mutation markBridgeInactiveQuery($Id: Int!) {
+    update_bridge_data_by_pk(pk_columns: {id: $Id}, _set: {active: false}) {
+        id
+        active
+    }
+  }
+|}
+];
+
+module AddLabelToBridgeQuery = [%graphql
+  {|
+    mutation addLabelToBridgeQuery($Id: Int!, $label: String!) {
+    update_bridge_data_by_pk(pk_columns: {id: $Id}, _set: {label: $label}) {
+        id
+        label
+    }
+  }
 |}
 ];
 
@@ -57,16 +80,34 @@ let make = () => {
       GetUserBridgesQuery.makeVariables(~userId=usersIdDetails.login, ()),
     );
 
+  let (mutate, result) = MarkBridgeInactiveQuery.use();
+  let (mutateLabel, resultLabel) = AddLabelToBridgeQuery.use();
+
   let onClick = (id, _) => {
     id->Route.Bridge->Router.push;
   };
 
   let deactivateBridge = id => {
-    Js.log(id);
+    Js.log(
+      id,
+      // mutate(_ => None, MarkBridgeInactiveQuery.makeVariables(~Id=id, ())
+      // ->ignore;
+    );
+  };
+
+  let addLabel = (id, label) => {
+    Js.log(label);
+    Js.log(
+      id,
+      // mutate(_ => None, MarkBridgeInactiveQuery.makeVariables(~Id=id, ())
+      // ->ignore;
+    );
   };
 
   <div id="bridges">
-    <h1> "Bridges"->React.string </h1>
+    <h1 onClick={_ => Route.Bridges->Router.push}>
+      "Bridges"->React.string
+    </h1>
     <table>
       {switch (usersBridgesQueryResult) {
        | {loading: true, data: None} => <p> "Loading"->React.string </p>
@@ -106,11 +147,12 @@ let make = () => {
                     metaData,
                   },
                 ) => {
-                let (skaleEndpoint, skaleEndpointId) =
+                let (skaleEndpoint, skaleEndpointId, chainId) =
                   skale_endpoint->Option.mapWithDefault(
-                    ("null", (-1)), ({uri, id}) =>
-                    (uri, id)
+                    ("null", (-1), (-1)), ({uri, id, chain_id}) =>
+                    (uri, id, chain_id)
                   );
+                Js.log(chainId->string_of_int);
                 let (arweaveEndpoint, areweaveEndpointId) =
                   arweave_endpoint_rel->Option.mapWithDefault(
                     ("null", (-1)), ({protocol, url: host, port, id}) =>
@@ -128,7 +170,10 @@ let make = () => {
                 let numberOfSyncs = getMaxIndexSyncFromAgregate(aggregate);
                 <tr>
                   <td onClick={onClick(id)}> contentType->React.string </td>
-                  <td onClick={onClick(id)}> skaleEndpoint->React.string </td>
+                  <td onClick={onClick(id)}>
+                    {(skaleEndpoint ++ ":" ++ chainId->string_of_int)
+                     ->React.string}
+                  </td>
                   <td onClick={onClick(id)}>
                     arweaveEndpoint->React.string
                   </td>
@@ -146,8 +191,15 @@ let make = () => {
                   </td>
                   <td> {label->Option.getWithDefault("")->React.string} </td>
                   <td>
-                    <button onClick={_ => deactivateBridge(id)}>
-                      "De-activate"->React.string
+                    <button
+                      onClick={_ => deactivateBridge(id)}
+                      className="bridge-action">
+                      {js|🗑️|js}->React.string
+                    </button>
+                    <button
+                      onClick={_ => addLabel(id, "my label")}
+                      className="bridge-action">
+                      {js|🏷️|js}->React.string
                     </button>
                   </td>
                 </tr>;

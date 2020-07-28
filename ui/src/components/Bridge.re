@@ -58,21 +58,24 @@ let make = (~bridgeId) => {
                      ->React.string}
                   </td>
                   <td>
-                    {MomentRe.Moment.format(
-                       "LL",
-                       MomentRe.momentWithUnix(
-                         end_time->Option.getWithDefault(0),
-                       ),
-                     )
-                     ->React.string}
-                    " "->React.string
-                    {MomentRe.Moment.format(
-                       "LTS",
-                       MomentRe.momentWithUnix(
-                         end_time->Option.getWithDefault(0),
-                       ),
-                     )
-                     ->React.string}
+                    {switch (end_time) {
+                     | Some(endtime) =>
+                       <>
+                         {(
+                            MomentRe.Moment.format(
+                              "LL",
+                              MomentRe.momentWithUnix(endtime),
+                            )
+                            ++ " "
+                            ++ MomentRe.Moment.format(
+                                 "LTS",
+                                 MomentRe.momentWithUnix(endtime),
+                               )
+                          )
+                          ->React.string}
+                       </>
+                     | None => "Pending"->React.string
+                     }}
                   </td>
                   <td> {index->string_of_int->React.string} </td>
                   <td> status->React.string </td>
