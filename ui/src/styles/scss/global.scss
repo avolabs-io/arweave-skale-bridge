@@ -37,7 +37,9 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(calc(-50% - 2rem), calc(-50% - 2rem));
+  width: 90%;
+  margin: 2rem;
 }
 
 button {
@@ -74,6 +76,7 @@ button:hover {
 .menu {
   position: absolute;
   right: 40px;
+  z-index: 20;
 }
 
 .funnel-step-container {
@@ -172,4 +175,65 @@ hr {
   p {
     color: lighten($primary-blue, 20%);
   }
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: $blue-gradient-dark; /* fallback for old browsers */
+  background-color: -webkit-linear-gradient(
+    to left,
+    $blue-gradient-dark,
+    $blue-gradient-light
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background-color: linear-gradient(
+    to left,
+    $blue-gradient-dark,
+    $blue-gradient-light
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+th {
+  font-family: "Nunito", sans-serif;
+  background: $dark-color;
+  color: $white;
+  font-weight: bold;
+}
+td,
+th {
+  border: 1.4px solid $white;
+  padding: 8px;
+  padding: 10px;
+  text-align: left;
+}
+#bridges tr {
+  cursor: pointer;
+  &:hover {
+    color: $white;
+  }
+}
+tr:nth-of-type(odd) {
+  background: rgba($white, 0.05);
+}
+
+.heading-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+.secondary-button {
+  background-color: $dark-color;
+  color: $white;
+  border: none;
+  font-size: 20px;
+  padding: 0.2rem 1rem;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  border-radius: 10px;
+  outline: none;
+}
+
+.profile-menu {
+  height: 2rem;
+  transform: translateY(25%);
 }

@@ -1,0 +1,6 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."bridge_data" ALTER COLUMN "next_scheduled_sync" TYPE
+      int4;
+  type: run_sql

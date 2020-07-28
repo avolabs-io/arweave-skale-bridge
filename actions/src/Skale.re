@@ -1,23 +1,36 @@
 open Globals;
+open BridgeSyncTypes;
 
-let processDataFetching = (~typeOfDataFetch, ~endpoint, ~onError) => {
-  // MOCKED FUNCTION.
+[@bs.module "./skale-fetch-functions/blockData.js"]
+external handleBlockData:
+  (. string, string, string => unit, exn => unit) => unit =
+  "default";
+
+let processDataFetching =
+    (~typeOfDataFetch, ~endpoint, ~onError, {syncItemId}) => {
   Js.log3("Fetching Skale Data", typeOfDataFetch, endpoint);
-  Js.Promise.make((~resolve, ~reject as _) => {
+  Js.Promise.make((~resolve, ~reject) => {
     ignore(
-      Js.Global.setTimeout(
-        () =>
-          resolve(.
-            "Finished Featching Skale Data - this is some test data that must be pushed to arweave...",
-          ),
-        1000,
-      ),
+      switch (typeOfDataFetch) {
+      | "Block Data"
+      | "Transactions Data"
+      | "Transaction Receipts"
+      | "Event Data"
+      | "Decentralized Storage" =>
+        let fileName = "block-data." ++ syncItemId->string_of_int;
+        handleBlockData(.
+          endpoint,
+          fileName,
+          path => resolve(. {syncItemId, path}),
+          fetchException => reject(. fetchException),
+        );
+      },
     )
   })
   ->Prometo.fromPromise
   ->Prometo.handle(~f=result =>
       switch (result) {
-      | Ok(_) => Ok(3)
+      | Ok(dataFetchResult) => Ok(dataFetchResult)
       | Error(error) =>
         onError(error);
         Error(error);

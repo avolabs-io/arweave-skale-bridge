@@ -35,8 +35,7 @@ let timeToText = time =>
   | Daily => "Daily"
   | Weekly => "Weekly"
   | Monthly => "Monthly"
-  | Custom(value) =>
-    "Custom setting of " ++ value->string_of_int ++ " seconds"
+  | Custom(value) => value->string_of_int ++ " seconds"
   };
 
 let secondToTimeSelection = time =>

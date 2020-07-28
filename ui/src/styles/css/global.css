@@ -44,7 +44,9 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%); }
+  transform: translate(calc(-50% - 2rem), calc(-50% - 2rem));
+  width: 90%;
+  margin: 2rem; }
 
 button {
   background-color: transparent;
@@ -74,7 +76,8 @@ button:hover {
 
 .menu {
   position: absolute;
-  right: 40px; }
+  right: 40px;
+  z-index: 20; }
 
 .funnel-step-container select,
 .funnel-step-container input {
@@ -152,3 +155,54 @@ hr {
     margin: 0; }
   #about p {
     color: #a3b4d8; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: #1e3c72;
+  /* fallback for old browsers */
+  background-color: -webkit-linear-gradient(to left, #1e3c72, #2a5298);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background-color: linear-gradient(to left, #1e3c72, #2a5298);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */ }
+
+th {
+  font-family: "Nunito", sans-serif;
+  background: #121925;
+  color: #fff;
+  font-weight: bold; }
+
+td,
+th {
+  border: 1.4px solid #fff;
+  padding: 8px;
+  padding: 10px;
+  text-align: left; }
+
+#bridges tr {
+  cursor: pointer; }
+  #bridges tr:hover {
+    color: #fff; }
+
+tr:nth-of-type(odd) {
+  background: rgba(255, 255, 255, 0.05); }
+
+.heading-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between; }
+
+.secondary-button {
+  background-color: #121925;
+  color: #fff;
+  border: none;
+  font-size: 20px;
+  padding: 0.2rem 1rem;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  border-radius: 10px;
+  outline: none; }
+
+.profile-menu {
+  height: 2rem;
+  transform: translateY(25%); }

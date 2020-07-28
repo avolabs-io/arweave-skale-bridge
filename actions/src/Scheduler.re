@@ -11,6 +11,7 @@
 
 open BsCron;
 open Globals;
+open BridgeSyncTypes;
 
 type apolloQueryResult('a) =
   ApolloClient__ApolloClient.ApolloQueryResult.t('a);
@@ -54,7 +55,16 @@ query GetItemsReadyForSync ($endTime: Int!) {
 module AddSyncItem = [%graphql
   {|
   mutation InsertBridgeSyncItem($bridgeId: Int!, $index: Int!, $startTime: Int!) {
-    insert_bridge_sync_one(object: {Info: "", bridge_id: $bridgeId, index: $index, start_time: $startTime, status: "Initiated"}) {
+    insert_bridge_sync_one(object: {info: "", bridge_id: $bridgeId, index: $index, start_time: $startTime, status: "Initiated"}) {
+      id
+    }
+  }
+|}
+];
+module CompleteSync = [%graphql
+  {|
+  mutation ScheduleNextSyncTime($id: Int!, $endTime: Int!) {
+    update_bridge_sync_by_pk(pk_columns: {id: $id}, _set: {end_time: $endTime, status: "complete"}) {
       id
     }
   }
@@ -65,7 +75,7 @@ module AddSyncItem = [%graphql
 module UpdateNextSync = [%graphql
   {|
 mutation ScheduleNextSyncTime($id: Int!, $nextScheduledSync: Int!) {
-  update_bridge_data_by_pk(pk_columns: {id: $id}, _inc: {next_scheduled_sync: $nextScheduledSync}) {
+  update_bridge_data_by_pk(pk_columns: {id: $id}, _set: {next_scheduled_sync: $nextScheduledSync}) {
     id
   }
 }
@@ -89,18 +99,20 @@ let handleMutateErrorPromise = (promise, ~onError) => {
         | {data: Some(data), errors: None} => Ok(data)
         | {errors: Some(error)} =>
           onError();
+          Js.log(error);
           Error(`Prometo_error(error->Obj.magic));
         | _ =>
           onError();
+          Js.log("error: unknown");
           Error(`Prometo_error("unknownError"->Obj.magic));
         }
       | Error(a) =>
         onError();
+        Js.log2("error: ", a);
         Error(a);
       }
     });
 };
-type addSyncItemResult = {syncItemId: int};
 let addSyncItem = (~onError, ~bridgeId, ~index, ~startTime) => {
   Client.instance
   ->ApolloClient.mutate(
@@ -124,6 +136,15 @@ let updateSyncTime = (~onError, id, nextScheduledSync) => {
   ->ApolloClient.mutate(
       ~mutation=(module UpdateNextSync),
       {id, nextScheduledSync},
+    )
+  ->handleMutateErrorPromise(~onError);
+};
+let completeSync = (~onError, ~id) => {
+  let currentTimestamp = Js.Math.floor_int(Js.Date.now() /. 1000.);
+  Client.instance
+  ->ApolloClient.mutate(
+      ~mutation=(module CompleteSync),
+      CompleteSync.makeVariables(~id, ~endTime=currentTimestamp, ()),
     )
   ->handleMutateErrorPromise(~onError);
 };
@@ -201,15 +222,29 @@ let processBridges = updateInterval => {
                     ~onError=_ => Js.log("Error fetching skale data"),
                     ~typeOfDataFetch=contentType,
                     ~endpoint=skaleEndpointUri,
+                    result,
                   )
                 })
+              // ->Prometo.flatMap(~f=result => {
+              // //Set status that fetching data from skale was successfull
+              //   })
               ->Prometo.flatMap(~f=result => {
                   Upload.uploadChunkToArweave(
                     ~protocol="http",
                     ~port=4646,
                     ~host="Arweave test port",
-                    ~onError=_ =>
-                    Js.log("error uploading to arweave")
+                    ~onError=_ => Js.log("error uploading to arweave"),
+                    result,
+                  )
+                })
+              ->Prometo.flatMap(~f=result => {
+                  completeSync(
+                    ~onError=
+                      _ =>
+                        Js.log(
+                          "there was an error marking this sync as complete",
+                        ),
+                    ~id=result.syncItemId,
                   )
                 })
               ->ignore;
