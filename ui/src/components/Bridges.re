@@ -83,6 +83,8 @@ let make = () => {
   let (mutate, result) = MarkBridgeInactiveQuery.use();
   let (mutateLabel, resultLabel) = AddLabelToBridgeQuery.use();
 
+  let (editLabel, setEditLabel) = React.useState(_ => false)
+
   let onClick = (id, _) => {
     id->Route.Bridge->Router.push;
   };
@@ -189,7 +191,16 @@ let make = () => {
                   <td onClick={onClick(id)}>
                     {numberOfSyncs->string_of_int->React.string}
                   </td>
-                  <td> {label->Option.getWithDefault("")->React.string} </td>
+                  <td> 
+                  
+                  {
+                    editLabel ? 
+                    label->Option.getWithDefault("")->React.string
+                    :
+                    <input>{label->Option.getWithDefault("")->React.string}</input>
+                    }
+                  
+                   </td>
                   <td>
                     <button
                       onClick={_ => deactivateBridge(id)}
@@ -197,7 +208,8 @@ let make = () => {
                       {js|🗑️|js}->React.string
                     </button>
                     <button
-                      onClick={_ => addLabel(id, "my label")}
+                      // onClick={_ => addLabel(id, "my label")}
+                      onClick={_ => setEditLabel(_ => !editLabel)}
                       className="bridge-action">
                       {js|🏷️|js}->React.string
                     </button>
