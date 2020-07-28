@@ -1,0 +1,5 @@
+- args:
+    cascade: false
+    read_only: false
+    sql: ALTER TABLE "public"."skale_endpoint" ADD COLUMN "chain_id" integer NOT NULL;
+  type: run_sql
