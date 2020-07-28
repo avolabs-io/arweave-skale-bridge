@@ -3,7 +3,8 @@ open BridgeSyncTypes;
 
 [@bs.module "./lib/ArweaveJS.js"]
 external uploadDataToArweave:
-  (. Arweave.jwk, Arweave.t, string) => Js.Promise.t(string) =
+  (. Arweave.jwk, Arweave.t, string) =>
+  Js.Promise.t(Arweave.transactionResult) =
   "uploadDataToArweave";
 
 // Mutation to change sync status + update endTime.

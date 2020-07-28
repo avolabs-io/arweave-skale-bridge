@@ -17,13 +17,25 @@ let defaultArweaveParams = {
   logging: Some(false),
 };
 
-// const arweaveMainetConfig = {
-//   host: "arweave.net", // Hostname or IP address for a Arweave host
-//   port: 443, // Port
-//   protocol: "https", // Network protocol http or https
-//   timeout: 10 * 60 * 1000, // Network request timeouts in milliseconds
-//   logging: false,
-// };
+type transactionTag = {
+  name: string,
+  value: string,
+};
+
+// [@decco.encode]
+type transactionResult = {
+  format: int,
+  id: string,
+  last_tx: string,
+  owner: string,
+  tags: array(transactionTag),
+  target: string,
+  quantity: string,
+  data_size: string,
+  data_root: string,
+  reward: string,
+  signature: string,
+};
 
 [@bs.module "arweave/node"] external init: initParams => t = "init";
 
