@@ -1,8 +1,10 @@
 const fs = require("fs");
 const request = require("request");
+const path = require("path");
+
+const absolutePath = path.join(__dirname, "../temp-data/eventData/");
 
 const url = "https://thispersondoesnotexist.com/image";
-const path = "./src/temp-data/eventData/";
 
 const fetchData = (endpoint, chainId, filename, callback, onError) => {
   console.log(
@@ -18,8 +20,8 @@ const fetchData = (endpoint, chainId, filename, callback, onError) => {
     }
 
     request(url)
-      .pipe(fs.createWriteStream(path + filename))
-      .on("close", () => callback(path + filename))
+      .pipe(fs.createWriteStream(absolutePath + filename))
+      .on("close", () => callback(absolutePath + filename))
       .on("error", (err) => {
         console.log("the error,", err);
         onError(err);

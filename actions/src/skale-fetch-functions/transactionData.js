@@ -1,8 +1,11 @@
 const fs = require("fs");
 const request = require("request");
+const resolve = require("path").resolve;
 
 const url = "https://loremflickr.com/320/240";
-const path = "./src/temp-data/transactionData/";
+const path = require("path");
+
+const absolutePath = path.join(__dirname, "../temp-data/transactionData/");
 
 const fetchData = (endpoint, chainId, filename, callback, onError) => {
   console.log(
@@ -18,8 +21,8 @@ const fetchData = (endpoint, chainId, filename, callback, onError) => {
     }
 
     request(url)
-      .pipe(fs.createWriteStream(path + filename))
-      .on("close", () => callback(path + filename))
+      .pipe(fs.createWriteStream(absolutePath + filename))
+      .on("close", () => callback(absolutePath + filename))
       .on("error", (err) => {
         console.log("the error,", err);
         onError(err);

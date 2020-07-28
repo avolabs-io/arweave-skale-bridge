@@ -1,6 +1,8 @@
 // https://github.com/ArweaveTeam/arweave-js
 const Arweave = require("arweave/node");
 
+//https://arweave.net/price/3
+
 const arweaveMainetConfig = {
   host: "arweave.net", // Hostname or IP address for a Arweave host
   port: 443, // Port

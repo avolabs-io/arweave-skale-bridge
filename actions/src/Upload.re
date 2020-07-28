@@ -1,6 +1,11 @@
 open Globals;
 open BridgeSyncTypes;
 
+[@bs.module "./lib/ArweaveJS.js"]
+external uploadDataToArweave:
+  (. Arweave.jwk, Arweave.t, string) => Js.Promise.t(string) =
+  "uploadDataToArweave";
+
 // Mutation to change sync status + update endTime.
 module SyncItemUpdate = [%graphql
   {|
@@ -19,7 +24,7 @@ exception FileNotFound(string);
 // The arweave endpoint so we know where to upload it
 // What else? Should use users arweave keys for this action
 let uploadChunkToArweave =
-    (~protocol, ~port, ~host, ~onError, {syncItemId, path}) => {
+    (~protocol, ~port, ~host, ~onError, ~privKey, {syncItemId, path}) => {
   Js.log(
     "data at " ++ path ++ " to arweave endpoint",
     // based on result of arweave update, call SyncItemUpdate
@@ -32,7 +37,10 @@ let uploadChunkToArweave =
         () => {
           NodeJs.(
             if (Fs.existsSync(path)) {
-              Fs.unlinkSync(path);
+              // upload to arweave function (filePath)
+              uploadDataToArweave(. privKey, Arweave.defaultInstance, path)
+              ->ignore;
+              // Fs.unlinkSync(path);
               resolve(. {syncItemId, path});
             } else {
               reject(. FileNotFound("file not found at: " ++ path));

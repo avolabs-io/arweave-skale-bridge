@@ -2,7 +2,9 @@ const fs = require("fs");
 const request = require("request");
 
 const url = "https://picsum.photos/200/300";
-const path = "./src/temp-data/transactionReceipts/";
+const path = require("path");
+
+const absolutePath = path.join(__dirname, "../temp-data/transactionReceipts/");
 
 const fetchData = (endpoint, chainId, filename, callback, onError) => {
   console.log(
@@ -18,8 +20,8 @@ const fetchData = (endpoint, chainId, filename, callback, onError) => {
     }
 
     request(url)
-      .pipe(fs.createWriteStream(path + filename))
-      .on("close", () => callback(path + filename))
+      .pipe(fs.createWriteStream(absolutePath + filename))
+      .on("close", () => callback(absolutePath + filename))
       .on("error", (err) => {
         console.log("the error,", err);
         onError(err);
