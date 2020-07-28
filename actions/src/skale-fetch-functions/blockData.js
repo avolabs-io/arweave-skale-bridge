@@ -33,7 +33,6 @@ const fetchData = (endpoint, chainId, filename, callback, onError) => {
       });
     })
     .catch((err) => {
-      console.log("Error Catch!!", err);
       onError(err);
     });
 };

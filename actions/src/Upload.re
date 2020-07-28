@@ -3,7 +3,7 @@ open BridgeSyncTypes;
 
 [@bs.module "./lib/ArweaveJS.js"]
 external uploadDataToArweave:
-  (. Arweave.jwk, Arweave.t, string) =>
+  (. Arweave.jwk, Arweave.t, string, string => unit) =>
   Js.Promise.t(Arweave.transactionResult) =
   "uploadDataToArweave";
 
@@ -25,7 +25,15 @@ exception FileNotFound(string);
 // The arweave endpoint so we know where to upload it
 // What else? Should use users arweave keys for this action
 let uploadChunkToArweave =
-    (~protocol, ~port, ~host, ~onError, ~privKey, {syncItemId, path}) => {
+    (
+      ~protocol,
+      ~port,
+      ~host,
+      ~onError,
+      ~privKey,
+      ~pushStatus,
+      {syncItemId, path}: BridgeSyncTypes.skaleFetchResult,
+    ) => {
   Js.log(
     "data at " ++ path ++ " to arweave endpoint",
     // based on result of arweave update, call SyncItemUpdate
@@ -36,17 +44,37 @@ let uploadChunkToArweave =
     ignore(
       Js.Global.setTimeout(
         () => {
+          let arweaveInstance =
+            Arweave.init({
+              host,
+              port,
+              protocol,
+              timeout: Some(10 * 60 * 1000),
+              logging: Some(false),
+            });
+
           NodeJs.(
             if (Fs.existsSync(path)) {
               // upload to arweave function (filePath)
-              uploadDataToArweave(. privKey, Arweave.defaultInstance, path)
+              uploadDataToArweave(.
+                privKey,
+                arweaveInstance,
+                path,
+                pushStatus,
+              )
+              ->Js.Promise.then_(
+                  arweaveTransactionResult => {
+                    Fs.unlinkSync(path);
+                    resolve(. {syncItemId, path, arweaveTransactionResult})
+                    ->async;
+                  },
+                  _,
+                )
               ->ignore;
-              // Fs.unlinkSync(path);
-              resolve(. {syncItemId, path});
             } else {
               reject(. FileNotFound("file not found at: " ++ path));
             }
-          )
+          );
         },
         1000,
       ),
@@ -57,7 +85,21 @@ let uploadChunkToArweave =
       switch (result) {
       | Ok(uploadResult) => Ok(uploadResult)
       | Error(error) =>
-        onError(error);
+        switch (error) {
+        | `Prometo_error(jsError) =>
+          let (errorMessage, errorStackTrace) =
+            Util.errorToMessageAndStacktrace(jsError);
+          onError(~errorMessage, ~errorStackTrace);
+        | _ =>
+          onError(
+            ~errorMessage=
+              "Unknown error when fetching uploading data to arweave. Please report to support.",
+            ~errorStackTrace="No stack trace",
+          );
+          Js.log(
+            "WARNING - unknown error when uploading data to arweave! Investigate this.",
+          );
+        };
         Error(error);
       }
     );

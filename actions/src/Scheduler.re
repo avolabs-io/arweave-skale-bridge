@@ -22,23 +22,18 @@ module GetNextScheduledSyncs = [%graphql
 query GetItemsReadyForSync ($endTime: Int!) {
   bridge_data(where: {next_scheduled_sync: { _lt: $endTime}, active: {_eq: true}}) {
     arweave_endpoint_rel {
-      id
-      user_id
       protocol
       url
       port
     }
-    arweave_endpoint_id
     contentType
     frequency_duration_seconds
     id
     next_scheduled_sync
     skale_endpoint {
       uri
-      user_id
       chain_id
     }
-    skale_endpoint_id
     userId
     bridge_sync_rel_aggregate {
       aggregate {
@@ -76,13 +71,33 @@ module AddSyncItem = [%graphql
 ];
 module CompleteSync = [%graphql
   {|
-  mutation ScheduleNextSyncTime($id: Int!, $endTime: Int!) {
-    update_bridge_sync_by_pk(pk_columns: {id: $id}, _set: {end_time: $endTime, status: "complete"}) {
+  mutation CompleteSync($id: Int!, $endTime: Int!, $arweaveTxId: String!) {
+    update_bridge_sync_by_pk(pk_columns: {id: $id}, _set: {end_time: $endTime, status: "complete", arweave_tx_id: $arweaveTxId}) {
       id
     }
   }
 |}
 ];
+module ReportStatus = [%graphql
+  {|
+  mutation ReportError($id: Int!, $status: String!) {
+    update_bridge_sync_by_pk(pk_columns: {id: $id}, _set: {status: $status}) {
+      id
+    }
+  }
+|}
+];
+
+module ReportError = [%graphql
+  {|
+  mutation ReportError($id: Int!, $errorMessage: String!, $errorStackTrace: String!) {
+    update_bridge_sync_by_pk(pk_columns: {id: $id}, _set: {error_message: $errorMessage, error_stack_trace: $errorStackTrace}) {
+      id
+    }
+  }
+|}
+];
+
 // Instead of an increment maybe we want this as a set.
 // Then if an arweave upload fails, we could set the sync time back to now to try again "immediately"
 module UpdateNextSync = [%graphql
@@ -152,12 +167,36 @@ let updateSyncTime = (~onError, id, nextScheduledSync) => {
     )
   ->handleMutateErrorPromise(~onError);
 };
-let completeSync = (~onError, ~id) => {
+
+let reportError = (~id, ~errorMessage, ~errorStackTrace) => {
+  Client.instance
+  ->ApolloClient.mutate(
+      ~mutation=(module ReportError),
+      ReportError.makeVariables(~id, ~errorMessage, ~errorStackTrace, ()),
+    )
+  ->ignore;
+};
+
+let reportStatus = (~id, status) => {
+  Client.instance
+  ->ApolloClient.mutate(
+      ~mutation=(module ReportStatus),
+      ReportStatus.makeVariables(~id, ~status, ()),
+    )
+  ->ignore;
+};
+
+let completeSync = (~onError, ~id, ~arweaveTxId) => {
   let currentTimestamp = Js.Math.floor_int(Js.Date.now() /. 1000.);
   Client.instance
   ->ApolloClient.mutate(
       ~mutation=(module CompleteSync),
-      CompleteSync.makeVariables(~id, ~endTime=currentTimestamp, ()),
+      CompleteSync.makeVariables(
+        ~id,
+        ~endTime=currentTimestamp,
+        ~arweaveTxId,
+        (),
+      ),
     )
   ->handleMutateErrorPromise(~onError);
 };
@@ -209,13 +248,28 @@ let processBridges = updateInterval => {
                   contentType,
                   skale_endpoint,
                   userId,
+                  arweave_endpoint_rel,
                 },
               ) => {
               // TODO: this is temporary code. Will make update hasura so that the scale endpoint isn't an `optional`
-              let skaleEndpointUri =
+              let {uri: skaleEndpointUri, chain_id} =
                 skale_endpoint->Option.mapWithDefault(
-                  "THIS SHOULD NEVER BE NULL - UPDATE HASURA ASAP", endpoint =>
-                  endpoint.uri
+                  {
+                    uri: "THIS SHOULD NEVER BE NULL - UPDATE HASURA ASAP",
+                    chain_id: 0,
+                  },
+                  endpoint =>
+                  endpoint
+                );
+              let {protocol, url: host, port} =
+                arweave_endpoint_rel->Option.mapWithDefault(
+                  {
+                    url: "THIS SHOULD NEVER BE NULL - UPDATE HASURA ASAP",
+                    protocol: "",
+                    port: 0,
+                  },
+                  endpoint =>
+                  endpoint
                 );
 
               let nextSyncTime = currentTimestamp + frequency_duration_seconds;
@@ -234,58 +288,67 @@ let processBridges = updateInterval => {
                       switch (arweaveKey) {
                       | Some({pub_key, priv_key}) =>
                         // TODO: use the correct decoder to prevent malformed private keys from being accepted.
-                        // let privKey = priv_key->Arweave.jwk_decode;
+                        let privKeyResult = priv_key->Arweave.jwk_decode;
 
-                        let privKey = priv_key->Obj.magic;
-
-                        updateSyncTime(
-                          ~onError=_ => Js.log("Unable to Sync Error."),
-                          id,
-                          nextSyncTime,
-                        )
-                        ->Prometo.flatMap(~f=_ => {
-                            addSyncItem(
-                              ~onError=_ => Js.log("error"),
-                              ~startTime=currentTimestamp,
-                              ~index=maxValue->getMaxIndexSyncFromAgregate + 1,
-                              ~bridgeId=id,
-                            )
-                          })
-                        ->Prometo.flatMap(~f=result => {
-                            Skale.processDataFetching(
-                              ~onError=
-                                _ => Js.log("Error fetching skale data"),
-                              ~typeOfDataFetch=contentType,
-                              ~endpoint=skaleEndpointUri,
-                              ~chainId=346750,
-                              result,
-                            )
-                          })
-                        // ->Prometo.flatMap(~f=result => {
-                        // //Set status that fetching data from skale was successfull
-                        //   })
-                        ->Prometo.flatMap(~f=result => {
-                            Upload.uploadChunkToArweave(
-                              ~protocol="http",
-                              ~port=4646,
-                              ~host="Arweave test port",
-                              ~privKey,
-                              ~onError=
-                                _ => Js.log("error uploading to arweave"),
-                              result,
-                            )
-                          })
-                        ->Prometo.flatMap(~f=result => {
-                            completeSync(
-                              ~onError=
-                                _ =>
-                                  Js.log(
-                                    "there was an error marking this sync as complete",
-                                  ),
-                              ~id=result.syncItemId,
-                            )
-                          })
-                        ->ignore;
+                        switch (privKeyResult) {
+                        | Ok(privKey) =>
+                          updateSyncTime(
+                            ~onError=_ => Js.log("Unable to Sync Error."),
+                            id,
+                            nextSyncTime,
+                          )
+                          ->Prometo.flatMap(~f=_ => {
+                              addSyncItem(
+                                ~onError=
+                                  () => {
+                                    Js.log(
+                                      "ERROR: couldn't record bridge sync.",
+                                    )
+                                  },
+                                ~startTime=currentTimestamp,
+                                ~index=
+                                  maxValue->getMaxIndexSyncFromAgregate + 1,
+                                ~bridgeId=id,
+                              )
+                            })
+                          ->Prometo.flatMap(~f=result => {
+                              Skale.processDataFetching(
+                                ~onError=reportError(~id=result.syncItemId),
+                                ~typeOfDataFetch=contentType,
+                                ~endpoint=skaleEndpointUri,
+                                ~chainId=chain_id,
+                                ~pushStatus=
+                                  reportStatus(~id=result.syncItemId),
+                                result,
+                              )
+                            })
+                          ->Prometo.flatMap(~f=result => {
+                              Upload.uploadChunkToArweave(
+                                ~protocol,
+                                ~port,
+                                ~host,
+                                ~privKey,
+                                ~onError=reportError(~id=result.syncItemId),
+                                ~pushStatus=
+                                  reportStatus(~id=result.syncItemId),
+                                result,
+                              )
+                            })
+                          ->Prometo.flatMap(~f=result => {
+                              completeSync(
+                                ~onError=
+                                  _ =>
+                                    Js.log(
+                                      "there was an error marking this sync as complete",
+                                    ),
+                                ~id=result.syncItemId,
+                                ~arweaveTxId=
+                                  result.arweaveTransactionResult.id,
+                              )
+                            })
+                          ->ignore
+                        | Error(error) => Js.log(error)
+                        };
                       | None =>
                         Js.log("ERROR: unable to load users arweave keys!")
                       };
