@@ -32,23 +32,14 @@ Dotenv.config();
  }
  */
 
-module GetUserBridgesQuery = [%graphql
-  {|
-  query BridgesQuery($userId: String!) {
-    bridge_data (where: {userId: {_eq: $userId}}){
-      id
-    }
-  }
-|}
-];
 // contentType
 // userId
 
 let useGetSkaleEndpointsQueryResult = userId =>
-  GetUserBridgesQuery.use(
+  BridgeSubmitted.GetUserBridgesQuery.use(
     ~fetchPolicy=CacheAndNetwork,
     ~errorPolicy=All,
-    GetUserBridgesQuery.makeVariables(~userId, ()),
+    BridgeSubmitted.GetUserBridgesQuery.makeVariables(~userId, ()),
   );
 
 module HasLoadedUsersBridgeData = {

@@ -1,5 +1,14 @@
 open Globals;
 
+module GetUserBridgesQuery = [%graphql
+  {|
+  query BridgesQuery($userId: String!) {
+    bridge_data (where: {userId: {_eq: $userId}}){
+      id
+    }
+  }
+|}
+];
 module GetUserArweaveWalletQuery = [%graphql
   {|
   query EndpointQuery ($userId: String!) {
@@ -38,6 +47,14 @@ module CreateBridgeForm = {
     let usersIdDetails = RootProvider.useCurrentUserDetailsWithDefault();
     let createBridge = () => {
       mutate(
+        ~refetchQueries=[|
+          GetUserBridgesQuery.refetchQueryDescription(
+            GetUserBridgesQuery.makeVariables(
+              ~userId=usersIdDetails.login,
+              (),
+            ),
+          ),
+        |],
         CreateBridge.makeVariables(
           ~arweaveEndpointId=arweaveEndpointInput,
           ~contentType=skaleDataTypeInput,
