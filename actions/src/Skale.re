@@ -85,9 +85,15 @@ let processDataFetching =
       | Error(error) =>
         switch (error) {
         | `Prometo_error(jsError) =>
-          let (errorMessage, errorStackTrace) =
+          let (errorMessage, optErrorStackTrace) =
             Util.errorToMessageAndStacktrace(jsError);
-          onError(~errorMessage, ~errorStackTrace);
+          onError(
+            ~errorMessage,
+            ~errorStackTrace=
+              optErrorStackTrace->Option.getWithDefault(
+                "No stacktrace available",
+              ),
+          );
         | _ =>
           onError(
             ~errorMessage=

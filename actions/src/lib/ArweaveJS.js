@@ -46,6 +46,8 @@ const uploadDataToArweave = async (key, arweave, pathToData, pushStatus) => {
   pushStatus("Starting arweave upload");
   let data = fs.readFileSync(pathToData);
 
+  throw "Some error";
+
   let transaction = await arweave.createTransaction({ data: data }, key);
 
   // TODO: add tags!

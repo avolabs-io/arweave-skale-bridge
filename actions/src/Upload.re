@@ -71,6 +71,8 @@ let uploadChunkToArweave =
                   },
                   _,
                 )
+              // The catch below is a bit of a hack, but it works. This should be reworked soon!
+              ->Js.Promise.catch(err => reject(. err->Obj.magic)->async, _)
               ->ignore;
             } else {
               reject(. FileNotFound("file not found at: " ++ path));
@@ -88,9 +90,15 @@ let uploadChunkToArweave =
       | Error(error) =>
         switch (error) {
         | `Prometo_error(jsError) =>
-          let (errorMessage, errorStackTrace) =
+          let (errorMessage, optErrorStackTrace) =
             Util.errorToMessageAndStacktrace(jsError);
-          onError(~errorMessage, ~errorStackTrace);
+          onError(
+            ~errorMessage,
+            ~errorStackTrace=
+              optErrorStackTrace->Option.getWithDefault(
+                "No stacktrace available",
+              ),
+          );
         | _ =>
           onError(
             ~errorMessage=
