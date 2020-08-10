@@ -42,6 +42,32 @@ const getTransactionData = async (transactionId, arweave) => {
     });
 };
 
+const waitForTxStatus = async (arweave, transactionId) => {
+  return await new Promise((res, rej) =>
+    arweave.transactions.getStatus(transactionId).then((status) => res(status))
+  );
+};
+
+const waitForTxStatusSucceedFail = async (
+  arweave,
+  transactionId,
+  pushStatus
+) => {
+  while (true) {
+    pushStatus(`Submitted but waiting for confirmation from arweave`);
+    const status = await waitForTxStatus(arweave, transactionId);
+    if (status.status === 200) {
+      return status;
+    } else if (status.status === 202) {
+      await sleep(2000);
+    } else {
+      // If it isn't 202 or 200 it must be some kind of error. (better control over specific codes can be added)
+      pushStatus(`Arweave rejected the transaction`);
+      return status;
+    }
+  }
+};
+
 const uploadDataToArweave = async (key, arweave, pathToData, pushStatus) => {
   pushStatus("Starting arweave upload");
   let data = fs.readFileSync(pathToData);
@@ -64,6 +90,19 @@ const uploadDataToArweave = async (key, arweave, pathToData, pushStatus) => {
 
   // Add a very small sleep here to prevent out of order data setting.
   await sleep(100);
+
+  const status = await waitForTxStatusSucceedFail(
+    arweave,
+    transaction.id,
+    pushStatus
+  );
+  if (status.status != 200) {
+    throw Error(
+      "Arweave (id:",
+      transaction.id,
+      "rejected transaction with status: " + JSON.stringify(status)
+    );
+  }
 
   return {
     format: transaction.format,
