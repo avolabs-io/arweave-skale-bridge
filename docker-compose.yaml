@@ -42,8 +42,7 @@ services:
     ports:
       - "${HASURA_EXTERNAL_PORT}:8080"
     volumes:
-      # - ./wildcards/metadata:/hasura-metadata
-      - ./wildcards/migrations:/hasura-migrations
+      - ./hasura/migrations:/hasura-migrations
     depends_on:
       - "postgres"
       - "hasura-actions"

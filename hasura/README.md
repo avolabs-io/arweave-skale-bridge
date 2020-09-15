@@ -35,10 +35,10 @@ Install cli: `npm install --global hasura-cli`
 Initialise new hasura project (Not needed for general use, this project is already initialised - ie don't run):
 
 ```
-hasura init --directory my-project --endpoint https://api.wildcards.world
+hasura init --directory my-project --endpoint <hasura endpoint>
 ```
 
-#### the following needs to be run inside the project folder (`wildcards` or `wildcards-goerli` for testnet)
+#### the following needs to be run inside the project folder
 
 Run migrations:
 
