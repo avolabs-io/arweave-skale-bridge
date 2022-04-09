@@ -35,7 +35,7 @@
     "bs-moment": "^0.6.0",
     "graphql": "^14.0.0",
     "link-check": "^4.5.0",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "onegraph-auth": "^2.2.4",
     "re-classnames": "^5.0.1",
     "react": "^16.13.1",
